@@ -5,4 +5,4 @@ package pro.apir.tko.domain.model
  * Date: 17.01.2020
  * Project: tko-android
  */
-data class RefreshTokenModel (val refresh: String)
+data class RefreshTokenModel (val access: String)

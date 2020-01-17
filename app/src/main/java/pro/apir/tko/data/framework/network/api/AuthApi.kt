@@ -17,11 +17,11 @@ import retrofit2.http.POST
 interface AuthApi {
 
     @FormUrlEncoded
-    @POST("/auth/token/")
+    @POST("auth/token/")
     suspend fun auth(@Field("email") email: String, @Field("password") password: String) : Response<AuthTokenResponse>
 
     @FormUrlEncoded
     @POST
-    suspend fun refresh(@Field("refresh") refresh: String): Response<RefreshTokenResponse>
+    suspend fun refresh(@Field("access") refresh: String): Response<RefreshTokenResponse>
 
 }

@@ -28,11 +28,12 @@ class FrameworkModule {
     //    @Named("main")
     @Singleton
     @Provides
-    fun provideRetrofitInterfaceMain(): Retrofit {
+    fun provideRetrofitInterfaceMain(authTokenRequestInterceptor: AuthTokenRequestInterceptor): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         val client = OkHttpClient.Builder()
+                .addInterceptor(authTokenRequestInterceptor)
                 .addInterceptor(loggingInterceptor)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.MINUTES)
@@ -50,7 +51,11 @@ class FrameworkModule {
     @Singleton
     @Provides
     fun provideRetrofitAuth(): Retrofit {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
         val client = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.MINUTES)
                 .build()

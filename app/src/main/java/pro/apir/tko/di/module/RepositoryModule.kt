@@ -3,6 +3,7 @@ package pro.apir.tko.di.module
 import dagger.Module
 import dagger.Provides
 import pro.apir.tko.data.framework.network.api.AuthApi
+import pro.apir.tko.data.framework.preferences.PreferencesManager
 import pro.apir.tko.data.framework.source.auth.AuthSource
 import pro.apir.tko.data.framework.source.example.ExampleSource
 import pro.apir.tko.data.repository.auth.AuthRepository
@@ -20,6 +21,6 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun authRepository(authApi: AuthApi): AuthRepository = AuthRepositoryImpl(authApi)
+    fun authRepository(authApi: AuthApi, preferencesManager: PreferencesManager): AuthRepository = AuthRepositoryImpl(authApi, preferencesManager)
 
 }

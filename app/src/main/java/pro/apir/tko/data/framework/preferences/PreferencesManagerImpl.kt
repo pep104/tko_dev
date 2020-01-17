@@ -22,6 +22,12 @@ class PreferencesManagerImpl @Inject constructor(context: Context) : Preferences
 
     override fun getInt(key: String): Int = sp.getInt(key, -1)
 
+    override fun saveLong(key: String, value: Long) {
+        sp.edit().putLong(key,value).apply()
+    }
+
+    override fun getLong(key: String) = sp.getLong(key, 0L)
+
     override fun saveBool(key: String, value: Boolean) {
         sp.edit().putBoolean(key,value).apply()
     }

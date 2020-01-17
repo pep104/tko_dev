@@ -10,6 +10,10 @@ interface PreferencesManager {
 
     fun getInt(key: String): Int
 
+    fun saveLong(key: String, value: Long)
+
+    fun getLong(key: String): Long
+
     fun saveBool(key: String, value: Boolean)
 
     fun getBool(key: String): Boolean

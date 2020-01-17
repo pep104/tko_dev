@@ -7,13 +7,14 @@ import pro.apir.tko.data.framework.network.model.response.RefreshTokenResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * Created by Антон Сарматин
  * Date: 17.01.2020
  * Project: tko-android
  */
-class AuthSource @Inject constructor(private val retrofit: Retrofit) : AuthApi {
+class AuthSource @Inject constructor(@Named("auth") private val retrofit: Retrofit) : AuthApi {
 
     private val api by lazy { retrofit.create(AuthApi::class.java) }
 
