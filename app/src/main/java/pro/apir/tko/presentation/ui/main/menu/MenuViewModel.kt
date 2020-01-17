@@ -1,0 +1,13 @@
+package pro.apir.tko.presentation.ui.main.menu
+
+import pro.apir.tko.presentation.platform.BaseViewModel
+import javax.inject.Inject
+
+/**
+ * Created by Антон Сарматин
+ * Date: 18.01.2020
+ * Project: tko-android
+ */
+class MenuViewModel @Inject constructor(): BaseViewModel(){
+
+}

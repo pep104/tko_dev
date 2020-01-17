@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">SarmatinTemplate</string>
+    <string name="app_name">APIR TKO</string>
+    <string name="btn_login">Войти</string>
 </resources>
