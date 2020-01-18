@@ -1,10 +1,9 @@
 package pro.apir.tko.data.repository
 
-import retrofit2.Response
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.TokenManager
+import retrofit2.Response
 
 abstract class BaseRepository(private val tokenManager: TokenManager, private val tokenStrategy: TokenStrategy? = TokenStrategy.CHECK) {
 
@@ -29,7 +28,8 @@ abstract class BaseRepository(private val tokenManager: TokenManager, private va
     }
 
     enum class TokenStrategy {
-        CHECK, NO_AUTH
+        CHECK,
+        NO_AUTH
     }
 
 }

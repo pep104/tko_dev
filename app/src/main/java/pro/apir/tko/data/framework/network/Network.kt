@@ -1,6 +1,6 @@
 package pro.apir.tko.data.framework.network
 
-import pro.apir.tko.data.framework.network.api.MainApi
+import pro.apir.tko.data.framework.network.api.InventoryApi
 import javax.inject.Inject
 
 /**
@@ -12,4 +12,4 @@ import javax.inject.Inject
 /**
  * Holder for all apis in the project
  */
-class Network @Inject constructor(api: MainApi)
+class Network @Inject constructor(api: InventoryApi)

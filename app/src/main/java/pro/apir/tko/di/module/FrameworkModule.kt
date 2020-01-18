@@ -5,21 +5,21 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import pro.apir.tko.core.constant.BASE_URL
-import pro.apir.tko.data.framework.network.NetworkHandler
-import pro.apir.tko.data.framework.network.api.AuthApi
-import pro.apir.tko.data.framework.network.api.MainApi
-import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
-import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManagerImpl
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.manager.token.TokenManagerImpl
+import pro.apir.tko.data.framework.network.NetworkHandler
+import pro.apir.tko.data.framework.network.api.AuthApi
+import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
+import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
+import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.source.auth.AuthSourceImpl
-import pro.apir.tko.data.framework.source.example.ExampleSource
+import pro.apir.tko.data.framework.source.inventory.InventorySource
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
@@ -74,7 +74,7 @@ class FrameworkModule {
 
 //    @Singleton
 //    @Provides
-//    fun provideMainGetApi(retrofit: Retrofit) = retrofit.create(MainApi::class.java)
+//    fun provideMainGetApi(retrofit: Retrofit) = retrofit.create(InventoryApi::class.java)
 //
 //    @Singleton
 //    @Provides
@@ -114,7 +114,7 @@ class FrameworkModule {
 
     @Singleton
     @Provides
-    fun exampleApi(retrofit: Retrofit): MainApi = ExampleSource(retrofit)
+    fun inventoryApi(retrofit: Retrofit): InventoryApi = InventorySource(retrofit)
 
     @Singleton
     @Provides
