@@ -33,6 +33,9 @@ class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle
 
         @Parcelize
         object LoginNeeded : UserState(), Parcelable
+
+        @Parcelize
+        object TokenExpired: UserState(), Parcelable
     }
 
 }

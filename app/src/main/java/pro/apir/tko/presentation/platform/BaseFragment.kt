@@ -41,6 +41,9 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
                 is Failure.FeatureFailure -> TODO()
                 Failure.NetworkConnection -> TODO()
                 Failure.ServerError -> TODO()
+                Failure.RefreshTokenExpired -> {
+                    globalState.setUserState(GlobalState.UserState.TokenExpired)
+                }
             }
         }
     }
