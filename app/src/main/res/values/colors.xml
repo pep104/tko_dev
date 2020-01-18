@@ -15,7 +15,10 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
-    <color name="textHintLogin">#99000000</color>
+    <color name="veryBlack">#212121</color>
+    <color name="veryBlackA10">#1A212121</color>
+
+    <color name="textBlackA60">#99000000</color>
     <color name="textButtonFocused">#4C81BF</color>
 
 </resources>

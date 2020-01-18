@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomsheetInventory"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_rounded_top_white"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="300dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <ImageView
+        android:id="@+id/imgPick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_bottom_sheet_pick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textHeader"
+        style="@style/TextBottomSheetHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Контейнерные площадки"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgPick" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textHeader">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="9dp"
+            tools:itemCount="20"
+            tools:listitem="@layout/item_container_list" />
+
+
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/fade"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@drawable/gradient_white_fading"
+        app:layout_constraintTop_toTopOf="@+id/nestedScrollView" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
