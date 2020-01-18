@@ -6,5 +6,7 @@
     <string name="hint_login">Введите логин</string>
     <string name="hint_pass">Введите пароль</string>
     <string name="btn_recovery_pass">Забыли пароль?</string>
+
     <string name="btn_inventory">Инвентаризация</string>
+    <string name="btn_routes">Маршруты</string>
 </resources>
