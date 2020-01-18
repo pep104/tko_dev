@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.core.constant.KEY_ACCESS_TOKEN
-import pro.apir.tko.data.framework.preferences.PreferencesManager
+import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.ui.main.GlobalState
 import javax.inject.Inject

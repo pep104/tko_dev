@@ -10,12 +10,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 import pro.apir.tko.core.constant.BASE_URL
 import pro.apir.tko.data.framework.network.NetworkHandler
 import pro.apir.tko.data.framework.network.api.AuthApi
-import pro.apir.tko.data.framework.network.api.ExampleApi
+import pro.apir.tko.data.framework.network.api.MainApi
 import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
-import pro.apir.tko.data.framework.preferences.PreferencesManager
-import pro.apir.tko.data.framework.preferences.PreferencesManagerImpl
-import pro.apir.tko.data.framework.source.auth.AuthSource
+import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
+import pro.apir.tko.data.framework.manager.preferences.PreferencesManagerImpl
+import pro.apir.tko.data.framework.manager.token.TokenManager
+import pro.apir.tko.data.framework.manager.token.TokenManagerImpl
+import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
+import pro.apir.tko.data.framework.source.auth.AuthSourceImpl
 import pro.apir.tko.data.framework.source.example.ExampleSource
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -28,13 +31,14 @@ class FrameworkModule {
     //    @Named("main")
     @Singleton
     @Provides
-    fun provideRetrofitInterfaceMain(authTokenRequestInterceptor: AuthTokenRequestInterceptor): Retrofit {
+    fun provideRetrofitInterfaceMain(authTokenRequestInterceptor: AuthTokenRequestInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         val client = OkHttpClient.Builder()
                 .addInterceptor(authTokenRequestInterceptor)
                 .addInterceptor(loggingInterceptor)
+                .authenticator(tokenAuthenticator)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(1, TimeUnit.MINUTES)
                 .build()
@@ -70,14 +74,23 @@ class FrameworkModule {
 
 //    @Singleton
 //    @Provides
-//    fun provideMainGetApi(@Named("main") retrofit: Retrofit): ExampleApi {
-//        return retrofit.create(ExampleApi::class.java)
-//    }
+//    fun provideMainGetApi(retrofit: Retrofit) = retrofit.create(MainApi::class.java)
+//
+//    @Singleton
+//    @Provides
+//    fun provideAuthApi(@Named("auth") retrofit: Retrofit) = retrofit.create(AuthApi::class.java)
 
+    //Managers
 
     @Singleton
     @Provides
     fun preferencesManager(context: Context): PreferencesManager = PreferencesManagerImpl(context)
+
+    @Singleton
+    @Provides
+    fun tokenManager(preferencesManager: PreferencesManager): TokenManager = TokenManagerImpl(preferencesManager)
+
+    //Interceptors and etc.
 
     @Singleton
     @Provides
@@ -86,6 +99,10 @@ class FrameworkModule {
     @Singleton
     @Provides
     fun cacheInterceptor(networkHandler: NetworkHandler): CacheInterceptor = CacheInterceptor(networkHandler)
+
+    @Singleton
+    @Provides
+    fun authenticator(tokenManager: TokenManager, authApi: AuthApi): TokenAuthenticator = TokenAuthenticator(tokenManager, authApi)
 
     //
 
@@ -97,10 +114,10 @@ class FrameworkModule {
 
     @Singleton
     @Provides
-    fun exampleApi(retrofit: Retrofit): ExampleApi = ExampleSource(retrofit)
+    fun exampleApi(retrofit: Retrofit): MainApi = ExampleSource(retrofit)
 
     @Singleton
     @Provides
-    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = AuthSource(retrofit)
+    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = AuthSourceImpl(retrofit)
 
 }
