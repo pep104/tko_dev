@@ -9,6 +9,7 @@ import dagger.multibindings.Multibinds
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.di.ViewModelKey
 import pro.apir.tko.presentation.ui.main.GlobalState
+import pro.apir.tko.presentation.ui.main.inventory.InventoryListViewModel
 import pro.apir.tko.presentation.ui.main.login.LoginViewModel
 import pro.apir.tko.presentation.ui.main.menu.MenuViewModel
 import pro.apir.tko.presentation.ui.main.splash.SplashViewModel
@@ -46,6 +47,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(LoginViewModel::class)
     abstract fun bindLoginViewModelFactory(f: LoginViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(InventoryListViewModel::class)
+    abstract fun bindInventoryListViewModelFactory(f: InventoryListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
 
 }

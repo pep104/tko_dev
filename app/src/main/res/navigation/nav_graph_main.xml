@@ -32,5 +32,13 @@
     <fragment
         android:id="@+id/menuFragment"
         android:name="pro.apir.tko.presentation.ui.main.menu.MenuFragment"
-        android:label="MenuFragment" />
+        android:label="MenuFragment" >
+        <action
+            android:id="@+id/action_menuFragment_to_inventoryListFragment"
+            app:destination="@id/inventoryListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inventoryListFragment"
+        android:name="pro.apir.tko.presentation.ui.main.inventory.InventoryListFragment"
+        android:label="InventoryListFragment" />
 </navigation>
