@@ -46,6 +46,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingTop="9dp"
+            android:paddingBottom="56dp"
             tools:itemCount="20"
             tools:listitem="@layout/item_container_list" />
 
@@ -58,6 +59,15 @@
         android:layout_height="8dp"
         android:background="@drawable/gradient_white_fading"
         app:layout_constraintTop_toTopOf="@+id/nestedScrollView" />
+
+    <ProgressBar
+        android:id="@+id/loadingList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fade" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

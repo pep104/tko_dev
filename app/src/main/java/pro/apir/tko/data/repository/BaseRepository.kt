@@ -11,10 +11,11 @@ abstract class BaseRepository(private val tokenManager: TokenManager, private va
     //мб есть вариант провернуть проверку истечения рефрештокена лучше,
     //чем внедряя менеджер в каждый класс наследующийся от базового репозитория
 
-    protected suspend fun <T, R> request(call: Response<T>, transform: (T) -> R): Either<Failure, R> {
+    protected suspend fun <T, R> request(call: suspend () -> Response<T>, transform: (T) -> R): Either<Failure, R> {
         return if (!tokenManager.isRefreshTokenExpired() || tokenStrategy == TokenStrategy.NO_AUTH) {
             try {
-                val body = call.body()
+                val call = call.invoke()
+                val body =  call.body()
                 when (call.isSuccessful && body != null) {
                     true -> Either.Right(transform(body))
                     false -> Either.Left(Failure.ServerError)

@@ -10,9 +10,7 @@ import javax.inject.Inject
 
 class InventoryRepositoryImpl @Inject constructor(private val tokenManager: TokenManager, private val inventoryApi: InventoryApi) : InventoryRepository, BaseRepository(tokenManager) {
     override suspend fun getContainers(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerModel>> {
-        val result = request(inventoryApi.getContainers(page, pageSize, location)) { it ->
-            it.results.map { it.toModel() }
-        }
+        val result = request({ inventoryApi.getContainers(page, pageSize, location) }, { it.results.map { it.toModel() } })
         return result
     }
 }

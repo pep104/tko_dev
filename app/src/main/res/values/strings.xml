@@ -9,4 +9,18 @@
 
     <string name="btn_inventory">Инвентаризация</string>
     <string name="btn_routes">Маршруты</string>
+    <string name="btn_add_inventory">Добавить конт. площадку</string>
+
+    <string name="text_list_container_message">%1$s • %2$s  • %3$sм³</string>
+
+    <plurals name="plurals_containers">
+        <item quantity="zero">0 контейнеров</item>
+        <item quantity="one">%1$d контейнер</item>
+        <item quantity="two">%1$d контейнера</item>
+        <item quantity="few">%1$d контейнера</item>
+        <item quantity="many">%1$d контейнеров</item>
+        <item quantity="other">%1$d контейнер</item>
+    </plurals>
+
+
 </resources>

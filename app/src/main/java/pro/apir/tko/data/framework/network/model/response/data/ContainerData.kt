@@ -10,50 +10,50 @@ import pro.apir.tko.domain.model.ContainerModel
  */
 data class ContainerData(
         val id: Int,
-        val access: String,
-        val area: Double,
+        val access: String?,
+        val area: Double?,
         @SerializedName("close_at")
-        val closeAt: String,
+        val closeAt: String?,
         @SerializedName("containers_count")
-        val containersCount: Int,
-        val coordinates: CoordinatesData,
+        val containersCount: Int?,
+        val coordinates: CoordinatesData?,
         @SerializedName("coverage_type")
-        val coverageType: String,
+        val coverageType: String?,
         @SerializedName("events_count")
-        val eventsCount: Int,
-        val fence: String,
+        val eventsCount: Int?,
+        val fence: String?,
         @SerializedName("fullness_percent")
-        val fullnessPercent: String,
-        val has_cover: Boolean,
-        val identifier: String,
+        val fullnessPercent: String?,
+        val has_cover: Boolean?,
+        val identifier: String?,
         @SerializedName("information_plate")
-        val informationPlate: Boolean,
+        val informationPlate: Boolean?,
         @SerializedName("last_update_at")
-        val lastUpdateAt: String,
+        val lastUpdateAt: String?,
         @SerializedName("last_update_person")
-        val lastUpdatePerson: String,
-        val length: Double,
-        val location: String,
+        val lastUpdatePerson: String?,
+        val length: Double?,
+        val location: String?,
         @SerializedName("other_basement_description")
-        val otherBasementDescription: String,
+        val otherBasementDescription: String?,
         @SerializedName("owners_names")
-        val ownersNames: String,
+        val ownersNames: String?,
         @SerializedName("owners_waste_sources_names")
-        val ownersWasteSourcesNames: String,
-        val platform_basement: String,
-        val registry_number: String,
-        val remoteness: String,
+        val ownersWasteSourcesNames: String?,
+        val platform_basement: String?,
+        val registry_number: String?,
+        val remoteness: String?,
 //        @SerializedName("responsible_person")
 //        val responsiblePerson: Any,
         @SerializedName("sources_count")
-        val sourcesCount: Int,
-        val status: String,
+        val sourcesCount: Int?,
+        val status: String?,
         @SerializedName("total_normative")
-        val totalNormative: Double,
-        val width: Double
+        val totalNormative: Double?,
+        val width: Double?
 ) {
     fun toModel(): ContainerModel {
-        val coordinates = coordinates.toModel()
+        val coordinates = coordinates?.toModel()
         return ContainerModel(id,
                 access,
                 area,

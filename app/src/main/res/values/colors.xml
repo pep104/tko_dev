@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">@color/blueMain</color>
     <color name="colorPrimaryDark">@color/blueDark</color>
-    <color name="colorAccent">@color/white</color>
+    <color name="colorAccent">@color/blueMain</color>
 
     <color name="blueMain">#3469A8</color>
     <color name="blueDark">#1656A3</color>

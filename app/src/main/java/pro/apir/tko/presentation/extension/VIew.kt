@@ -32,6 +32,18 @@ fun View.gone() {
     this.visibility = View.GONE
 }
 
+fun View.goneWithFade() {
+    val view = this
+    view.animate()
+            .alpha(0f)
+            .setDuration(200L)
+            .withEndAction {
+                view.gone()
+                view.alpha = 1f
+            }
+
+}
+
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int): View =
         LayoutInflater.from(context).inflate(layoutRes, this, false)
 
