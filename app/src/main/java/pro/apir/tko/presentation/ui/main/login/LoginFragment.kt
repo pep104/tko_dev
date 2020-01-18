@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import pro.apir.tko.R
-import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.platform.BaseFragment
 
@@ -19,6 +19,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 17.01.2020
  * Project: tko-android
  */
+//TODO LOADING HANDLING
 class LoginFragment : BaseFragment() {
 
     private val viewModel: LoginViewModel by viewModels()
@@ -53,7 +54,13 @@ class LoginFragment : BaseFragment() {
             viewModel.login(etMail.getTextValue(), etPass.getTextValue())
         }
 
+        observeViewModel()
+    }
 
+    private fun observeViewModel(){
+        viewModel.requestState.observe(viewLifecycleOwner, Observer {
+            findNavController().navigate(R.id.action_loginFragment_to_menuFragment)
+        })
     }
 
 }

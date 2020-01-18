@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.login
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
@@ -15,16 +16,22 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Date: 2020-01-15
  * Project: android-template
  */
-class LoginViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle, private val authInteractor: AuthInteractor) : BaseViewModel(){
+class LoginViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle, private val authInteractor: AuthInteractor) : BaseViewModel() {
 
     @AssistedInject.Factory
-    interface Factory: ViewModelAssistedFactory<LoginViewModel>
+    interface Factory : ViewModelAssistedFactory<LoginViewModel>
 
-    fun login(email: String, pass: String){
-        //todo
-       viewModelScope.launch {
-           authInteractor.auth(email, pass)
-       }
+    private val _requestState = MutableLiveData<Boolean>()
+    val requestState: LiveData<Boolean>
+        get() = _requestState
+
+    fun login(email: String, pass: String) {
+        //TODO LOADING HANDLING
+        viewModelScope.launch {
+            authInteractor.auth(email, pass).fold(::handleFailure) {
+                _requestState.postValue(true)
+            }
+        }
 
     }
 

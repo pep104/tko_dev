@@ -7,6 +7,11 @@
     <color name="blueMain">#3469A8</color>
     <color name="blueDark">#1656A3</color>
 
+    <color name="blueMainA08">#143469A8</color>
+
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="textHintLogin">#99000000</color>
 
 </resources>

@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.HasDefaultViewModelProviderFactory
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import pro.apir.tko.App
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.di.ViewModelFactory
@@ -19,6 +22,7 @@ import javax.inject.Inject
  *
  * @see Fragment
  */
+//TODO LOADING HANDLING
 abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 
     abstract fun layoutId(): Int
