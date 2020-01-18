@@ -28,7 +28,9 @@ class LoginViewModel @AssistedInject constructor(@Assisted private val handle: S
     fun login(email: String, pass: String) {
         //TODO LOADING HANDLING
         viewModelScope.launch {
+            loading(true)
             authInteractor.auth(email, pass).fold(::handleFailure) {
+                loading(false)
                 _requestState.postValue(true)
             }
         }

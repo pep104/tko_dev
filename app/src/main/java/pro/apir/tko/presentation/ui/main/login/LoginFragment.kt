@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ProgressBar
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -28,6 +30,8 @@ class LoginFragment : BaseFragment() {
     private lateinit var etPass: EditText
     private lateinit var btnLogin: MaterialButton
 
+    private lateinit var loading: ProgressBar
+
     override fun layoutId() = R.layout.fragment_login
 
     override fun handleFailure() = viewModel.failure
@@ -47,6 +51,7 @@ class LoginFragment : BaseFragment() {
         etMail = view.etLogin
         etPass = view.etPass
         btnLogin = view.btnLogin
+        loading = view.loading
 
         etMail.setText("admin@apir.pro")
         etPass.setText("JsXkQCBv758uxWK92iRY")
@@ -57,9 +62,16 @@ class LoginFragment : BaseFragment() {
         observeViewModel()
     }
 
-    private fun observeViewModel(){
+    private fun observeViewModel() {
         viewModel.requestState.observe(viewLifecycleOwner, Observer {
             findNavController().navigate(R.id.action_loginFragment_to_menuFragment)
+        })
+
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
+            btnLogin.isEnabled = !it
+            etPass.isEnabled = !it
+            etMail.isEnabled = !it
+            loading.isVisible = it
         })
     }
 
