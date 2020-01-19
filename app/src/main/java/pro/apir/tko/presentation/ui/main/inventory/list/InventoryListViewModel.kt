@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.inventory
+package pro.apir.tko.presentation.ui.main.inventory.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle

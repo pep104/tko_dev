@@ -2,7 +2,7 @@ package pro.apir.tko.di.component
 
 import dagger.Subcomponent
 import pro.apir.tko.di.module.PresentationModule
-import pro.apir.tko.presentation.ui.main.inventory.InventoryListFragment
+import pro.apir.tko.presentation.ui.main.inventory.list.InventoryListFragment
 import pro.apir.tko.presentation.ui.main.login.LoginFragment
 import pro.apir.tko.presentation.ui.main.menu.MenuFragment
 import pro.apir.tko.presentation.ui.main.splash.SplashFragment

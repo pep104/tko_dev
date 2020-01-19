@@ -111,6 +111,9 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'jp.wasabeef:glide-transformations:4.0.0'
 
+    //OSM
+    implementation 'org.osmdroid:osmdroid-android:6.1.5'
+
 
 }
 

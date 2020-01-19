@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.inventory
+package pro.apir.tko.presentation.ui.main.inventory.list
 
 import android.os.Bundle
 import android.view.View

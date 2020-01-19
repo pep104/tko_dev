@@ -36,6 +36,9 @@ class MenuFragment : BaseFragment() {
         view.btnRoutes.setOnClickListener {
             //TODO navigate to routes list
         }
+
+        //todo ask for permissions - location and file
+
     }
 
 }

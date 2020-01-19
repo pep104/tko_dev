@@ -53,6 +53,6 @@
     </fragment>
     <fragment
         android:id="@+id/inventoryListFragment"
-        android:name="pro.apir.tko.presentation.ui.main.inventory.InventoryListFragment"
+        android:name="pro.apir.tko.presentation.ui.main.inventory.list.InventoryListFragment"
         android:label="InventoryListFragment" />
 </navigation>
