@@ -2,6 +2,7 @@ package pro.apir.tko.presentation.ui.main.inventory.list
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
+import kotlinx.android.synthetic.main.content_inventory_list.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -34,6 +36,10 @@ class InventoryListFragment : BaseFragment() {
     private lateinit var loadingList: ProgressBar
     private lateinit var recyclerView: RecyclerView
 
+    private lateinit var btnMenu: ImageView
+    private lateinit var btnSearch: ImageView
+
+
     private lateinit var adapter: ContainerListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +54,9 @@ class InventoryListFragment : BaseFragment() {
 
         recyclerView = view.recyclerView
         loadingList = view.loadingList
+
+        btnMenu = view.btnMenu
+        btnSearch = view.btnSearch
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {

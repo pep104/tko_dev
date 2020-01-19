@@ -49,10 +49,21 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="TextBottomSheetHeader">
+    <style name="TextBottomSheetPrimaryHeader">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">24sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextBottomSheetSecondaryHeader">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextInfo">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="TextListHeader">
@@ -65,6 +76,14 @@
         <item name="android:textColor">@color/textBlackA60</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+
+    <style name="AppBarIconStyle">
+        <item name="android:padding">16dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_width">56dp</item>
+
     </style>
 
 </resources>

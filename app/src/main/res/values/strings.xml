@@ -12,6 +12,7 @@
     <string name="btn_add_inventory">Добавить конт. площадку</string>
 
     <string name="text_list_container_message">%1$s • %2$s  • %3$sм³</string>
+    <string name="text_inventory_list_header">Контейнерные площадки</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
