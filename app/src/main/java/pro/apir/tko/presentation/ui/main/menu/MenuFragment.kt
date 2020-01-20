@@ -3,6 +3,7 @@ package pro.apir.tko.presentation.ui.main.menu
 import android.Manifest
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -37,9 +38,14 @@ class MenuFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectMenuFragment(this)
 
-//        requireActivity().onBackPressedDispatcher.addCallback {
-//            activity?.finish()
-//        }
+        requireActivity()
+                .onBackPressedDispatcher
+                .addCallback(this, object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        activity?.finish()
+                    }
+                }
+                )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
