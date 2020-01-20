@@ -4,12 +4,12 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 /**
- * Created by Антон Сарматин
- * Date: 18.01.2020
+ * Created by antonsarmatin
+ * Date: 2020-01-20
  * Project: tko-android
  */
 @Parcelize
-data class ContainerModel(
+data class ContainerAreaDetailedModel(
         val id: Int,
         val access: String?,
         val area: Double?,
@@ -37,5 +37,6 @@ data class ContainerModel(
         val sourcesCount: Int?,
         val status: String? = "this was null",
         val totalNormative: Double?,
-        val width: Double?
+        val width: Double?,
+        val parameters: List<ContainerAreaParametersModel>
 ): Parcelable

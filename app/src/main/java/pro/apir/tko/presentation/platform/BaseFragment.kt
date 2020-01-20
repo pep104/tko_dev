@@ -76,5 +76,8 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 //    private fun progressStatus(viewStatus: Int) =
 //        with(activity) { if (this is BaseActivity) this.progress.visibility = viewStatus }
 
+    internal fun back(view: View) {
+        activity?.onBackPressed()
+    }
 
 }

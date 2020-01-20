@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">APIR TKO</string>
+
+    <string name="url_file">https://test.tko.apir.pro%1$s</string>
+
+
     <string name="btn_login">Войти</string>
     <string name="text_login_hint">Логин</string>
     <string name="text_mail_hint">Пароль</string>
@@ -14,13 +18,15 @@
     <string name="text_list_container_message">%1$s • %2$s  • %3$sм³</string>
     <string name="text_inventory_list_header">Контейнерные площадки</string>
 
+    <string name="text_container_detailed_info"> %1$s  • %2$sм³</string>
+
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
         <item quantity="one">%1$d контейнер</item>
         <item quantity="two">%1$d контейнера</item>
         <item quantity="few">%1$d контейнера</item>
         <item quantity="many">%1$d контейнеров</item>
-        <item quantity="other">%1$d контейнер</item>
+        <item quantity="other">%1$d контейнеров</item>
     </plurals>
 
 

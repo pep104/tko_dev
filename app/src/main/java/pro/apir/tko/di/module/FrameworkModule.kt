@@ -1,6 +1,8 @@
 package pro.apir.tko.di.module
 
 import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -43,10 +45,12 @@ class FrameworkModule {
                 .readTimeout(1, TimeUnit.MINUTES)
                 .build()
 
+        val gson = GsonBuilder().setLenient().create()
+
         return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
 
     }

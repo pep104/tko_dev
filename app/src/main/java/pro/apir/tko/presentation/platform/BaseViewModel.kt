@@ -24,6 +24,6 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     protected fun loading(isLoading: Boolean) {
-        this._loading.value = isLoading
+        this._loading.postValue(isLoading)
     }
 }

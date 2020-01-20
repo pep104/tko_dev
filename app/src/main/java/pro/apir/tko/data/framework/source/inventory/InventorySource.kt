@@ -1,7 +1,8 @@
 package pro.apir.tko.data.framework.source.inventory
 
 import pro.apir.tko.data.framework.network.api.InventoryApi
-import pro.apir.tko.data.framework.network.model.response.ContainersResponse
+import pro.apir.tko.data.framework.network.model.response.ContainerAreaDetailedResponse
+import pro.apir.tko.data.framework.network.model.response.ContainerAreasResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -15,7 +16,11 @@ class InventorySource @Inject constructor(retrofit: Retrofit) : InventoryApi {
 
     private val api by lazy { retrofit.create(InventoryApi::class.java) }
 
-    override suspend fun getContainers(page: Int, pageSize: Int, location: String): Response<ContainersResponse> {
-        return api.getContainers(page, pageSize, location)
+    override suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Response<ContainerAreasResponse> {
+        return api.getContainerAreas(page, pageSize, location)
+    }
+
+    override suspend fun getContainerArea(id: Long): Response<ContainerAreaDetailedResponse> {
+        return api.getContainerArea(id)
     }
 }

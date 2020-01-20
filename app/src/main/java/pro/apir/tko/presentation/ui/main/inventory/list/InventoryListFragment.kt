@@ -1,27 +1,33 @@
 package pro.apir.tko.presentation.ui.main.inventory.list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
 import kotlinx.android.synthetic.main.content_inventory_list.view.*
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.ContainerAreaDetailedModel
+import pro.apir.tko.domain.model.ContainerAreaModel
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.platform.BaseFragment
+import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
 
 /**
  * Created by Антон Сарматин
  * Date: 18.01.2020
  * Project: tko-android
  */
-class InventoryListFragment : BaseFragment() {
+class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickListener {
 
     private val viewModel: InventoryListViewModel by viewModels()
 
@@ -68,19 +74,25 @@ class InventoryListFragment : BaseFragment() {
 
             }
         })
-        adapter = ContainerListAdapter()
+        adapter = ContainerListAdapter().apply { setListener(this@InventoryListFragment) }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
 
-
         observeViewModel()
+
+        Log.e("viewSize", bottomSheetLayout.height.toString())
     }
 
     override fun onResume() {
         super.onResume()
         //TODO REMOVE?
         viewModel.testGet()
+    }
+
+    override fun onDestroyView() {
+        adapter.setListener(null)
+        super.onDestroyView()
     }
 
     private fun observeViewModel() {
@@ -92,4 +104,7 @@ class InventoryListFragment : BaseFragment() {
         })
     }
 
+    override fun onItemClicked(item: ContainerAreaModel) {
+        findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryDetailedFragment, bundleOf(InventoryDetailedFragment.KEY_ID to item.id, InventoryDetailedFragment.KEY_HEADER to item.location))
+    }
 }

@@ -2,6 +2,7 @@ package pro.apir.tko.presentation.ui.main.menu
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_menu.view.*
@@ -24,6 +25,10 @@ class MenuFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectMenuFragment(this)
+
+//        requireActivity().onBackPressedDispatcher.addCallback {
+//            activity?.finish()
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

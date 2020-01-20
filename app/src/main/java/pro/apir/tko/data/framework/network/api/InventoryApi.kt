@@ -1,16 +1,20 @@
 package pro.apir.tko.data.framework.network.api
 
-import pro.apir.tko.data.framework.network.model.response.ContainersResponse
+import pro.apir.tko.data.framework.network.model.response.ContainerAreaDetailedResponse
+import pro.apir.tko.data.framework.network.model.response.ContainerAreasResponse
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-//Create new interface for each entityя
 interface InventoryApi {
 
     //TEMP
     @GET("waste-area/container/")
-    suspend fun getContainers(@Query("page") page: Int, @Query("page_size") pageSize: Int, @Query("location") location: String): Response<ContainersResponse>
+    suspend fun getContainerAreas(@Query("page") page: Int, @Query("page_size") pageSize: Int, @Query("location") location: String): Response<ContainerAreasResponse>
+
+    @GET("waste-area/container/{id}/")
+    suspend fun getContainerArea(@Path("id") id: Long): Response<ContainerAreaDetailedResponse>
 
 }
