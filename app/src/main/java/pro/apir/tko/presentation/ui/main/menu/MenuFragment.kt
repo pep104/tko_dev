@@ -6,6 +6,7 @@ import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_menu.view.*
+import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseFragment
 
@@ -33,6 +34,8 @@ class MenuFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.textToolbarTitle.text = getString(R.string.title_menu)
 
         view.btnInventory.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_inventoryListFragment)

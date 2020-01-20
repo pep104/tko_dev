@@ -54,14 +54,10 @@
     <fragment
         android:id="@+id/inventoryListFragment"
         android:name="pro.apir.tko.presentation.ui.main.inventory.list.InventoryListFragment"
-        android:label="InventoryListFragment" >
+        android:label="InventoryListFragment">
         <action
             android:id="@+id/action_inventoryListFragment_to_inventoryDetailedFragment"
-            app:destination="@id/inventoryDetailedFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:destination="@id/inventoryDetailedFragment" />
     </fragment>
     <fragment
         android:id="@+id/inventoryDetailedFragment"

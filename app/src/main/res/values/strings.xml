@@ -19,6 +19,8 @@
     <string name="text_inventory_list_header">Контейнерные площадки</string>
 
     <string name="text_container_detailed_info"> %1$s  • %2$sм³</string>
+    <string name="title_auth">Вход</string>
+    <string name="title_menu">Главная</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

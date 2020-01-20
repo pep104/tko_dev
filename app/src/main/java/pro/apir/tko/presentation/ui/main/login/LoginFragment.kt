@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -48,6 +49,9 @@ class LoginFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.textToolbarTitle.text = getString(R.string.title_auth)
+
         etMail = view.etLogin
         etPass = view.etPass
         btnLogin = view.btnLogin
