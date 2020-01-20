@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.inventory.list
 
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -15,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
 import kotlinx.android.synthetic.main.content_inventory_list.view.*
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.views.MapView
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaDetailedModel
 import pro.apir.tko.domain.model.ContainerAreaModel
@@ -44,6 +48,8 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
     private lateinit var btnMenu: ImageView
     private lateinit var btnSearch: ImageView
+
+    private lateinit var mapView: MapView
 
 
     private lateinit var adapter: ContainerListAdapter
@@ -82,12 +88,24 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         observeViewModel()
 
         Log.e("viewSize", bottomSheetLayout.height.toString())
+
+        //todo
+        mapView = view.map
+        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+
     }
 
     override fun onResume() {
         super.onResume()
         //TODO REMOVE?
         viewModel.testGet()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        mapView.onPause()
+        super.onPause()
     }
 
     override fun onDestroyView() {
