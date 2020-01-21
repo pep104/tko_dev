@@ -1,9 +1,13 @@
 package pro.apir.tko.presentation.platform
 
+import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
@@ -16,6 +20,7 @@ import pro.apir.tko.di.ViewModelFactory
 import pro.apir.tko.di.component.AppComponent
 import pro.apir.tko.presentation.ui.main.GlobalState
 import javax.inject.Inject
+
 
 /**
  * Base Fragment class with helper methods for handling views and back button events.
@@ -78,6 +83,21 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 
     internal fun back(view: View) {
         activity?.onBackPressed()
+    }
+
+    internal fun setStatusBarColor(@ColorRes color: Int){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val startColor = activity?.window?.statusBarColor
+            val endColor = ContextCompat.getColor(context!!,color)
+            ObjectAnimator.ofArgb(activity?.window, "statusBarColor", startColor!!, endColor).start()
+        }
+    }
+
+    internal fun setStatusBarLightMode(isLight: Boolean){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity?.window?.decorView?.systemUiVisibility = if(isLight) View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        }
+
     }
 
 }

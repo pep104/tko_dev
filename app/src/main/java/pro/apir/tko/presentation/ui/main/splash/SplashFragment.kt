@@ -28,6 +28,8 @@ class SplashFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
+        setStatusBarColor(R.color.colorPrimary)
+//        setStatusBarLightMode(false)
     }
 
     //TODO HANDLE AUTH STATE AND TOKEN REFRESH
@@ -35,9 +37,13 @@ class SplashFragment : BaseFragment() {
         viewModel.state.observe(viewLifecycleOwner, Observer {
             when(it){
                 is GlobalState.UserState.Authenticated -> {
+                    setStatusBarColor(R.color.white)
+//                    setStatusBarLightMode(true)
                     findNavController().navigate(R.id.action_splashFragment_to_menuFragment)
                 }
                 is GlobalState.UserState.LoginNeeded -> {
+                    setStatusBarColor(R.color.white)
+//                    setStatusBarLightMode(true)
                    findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
                 }
             }

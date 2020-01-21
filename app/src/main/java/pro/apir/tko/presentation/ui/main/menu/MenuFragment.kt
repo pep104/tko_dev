@@ -4,7 +4,6 @@ import android.Manifest
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -78,6 +77,7 @@ class MenuFragment : BaseFragment() {
             }
         }).check()
 
+        activity?.window?.decorView?.systemUiVisibility =  View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
 
 }

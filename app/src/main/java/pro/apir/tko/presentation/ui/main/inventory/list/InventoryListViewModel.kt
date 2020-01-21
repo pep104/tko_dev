@@ -23,7 +23,7 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted handle: Saved
     fun testGet() {
         viewModelScope.launch {
             if(_containers.value.isNullOrEmpty()){
-                inventoryInteractor.getContainerAreas(1, 500, "Казань").fold(::handleFailure) {
+                inventoryInteractor.getContainerAreas(1, 500, "").fold(::handleFailure) {
                     _containers.postValue(it)
                 }
             }

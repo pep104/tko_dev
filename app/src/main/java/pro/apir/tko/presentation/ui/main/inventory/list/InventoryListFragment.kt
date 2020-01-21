@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -16,12 +17,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
 import kotlinx.android.synthetic.main.content_inventory_list.view.*
+import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
 import pro.apir.tko.domain.model.ContainerAreaModel
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -51,7 +55,8 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private lateinit var btnSearch: ImageView
 
     private lateinit var mapView: MapView
-
+    private var mapJob: Job? = null
+    private var myLocationOverlay: MyLocationNewOverlay? = null
 
     private lateinit var adapter: ContainerListAdapter
 
@@ -92,8 +97,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         //todo
         mapView = view.map
-        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
-        mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        setMap(mapView)
 
     }
 
@@ -102,10 +106,12 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         //TODO REMOVE?
         viewModel.testGet()
         mapView.onResume()
+        myLocationOverlay?.enableMyLocation()
     }
 
     override fun onPause() {
         mapView.onPause()
+        myLocationOverlay?.disableMyLocation()
         super.onPause()
     }
 
@@ -120,18 +126,43 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 adapter.setList(it)
                 loadingList.goneWithFade()
 
-
-
+                setMarkers(it)
             }
         })
     }
 
-    private fun setMarkers(list: List<ContainerAreaModel>){
+    private fun setMap(mapView: MapView) {
+        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mapView.controller.zoomTo(12.0, 0L)
 
+        val locationProvider = GpsMyLocationProvider(context)
+        myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
+        myLocationOverlay?.enableFollowLocation()
+
+        mapView.overlayManager.add(myLocationOverlay)
+    }
+
+    //TODO to vm and background task
+    private fun setMarkers(list: List<ContainerAreaModel>) {
         val markers = arrayListOf<Marker>()
-        list.forEach {
-            val marker = Marker(mapView).apply {
+        mapJob?.cancel()
+        mapJob = CoroutineScope(Dispatchers.IO).launch {
+            list.forEach {
+                if (it.coordinates != null
+                        && it.coordinates.lat != 0.0 && it.coordinates.lng != 0.0
+                        && it.coordinates.lat in -85.05..85.05) {
+                    val location = GeoPoint(it.coordinates.lat, it.coordinates.lng)
+                    val marker = Marker(mapView)
+                    marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    marker.position = location
+                    markers.add(marker)
 
+                }
+            }
+            withContext(Dispatchers.Main) {
+                mapView.overlays.addAll(markers)
             }
         }
 
