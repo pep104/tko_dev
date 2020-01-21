@@ -20,7 +20,7 @@ class TokenAuthenticator @Inject constructor(private val tokenManager: TokenMana
     override fun authenticate(route: Route?, response: Response): Request? {
         Log.e("authenticator", "authenticate runs")
         val refreshToken = tokenManager.getRefreshToken()
-        val ref = authApi.refresh(refreshToken)
+        val ref = authApi.refresh(refreshToken).execute()
         return if (ref.isSuccessful && ref.body() != null) {
             val newToken = ref.body()!!.accessRefreshed
             Log.e("authenticator", "new token: $newToken")
