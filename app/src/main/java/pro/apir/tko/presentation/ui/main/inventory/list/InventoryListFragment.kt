@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.content_inventory_list.view.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaDetailedModel
 import pro.apir.tko.domain.model.ContainerAreaModel
@@ -118,8 +119,23 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
             if (!it.isNullOrEmpty()) {
                 adapter.setList(it)
                 loadingList.goneWithFade()
+
+
+
             }
         })
+    }
+
+    private fun setMarkers(list: List<ContainerAreaModel>){
+
+        val markers = arrayListOf<Marker>()
+        list.forEach {
+            val marker = Marker(mapView).apply {
+
+            }
+        }
+
+
     }
 
     override fun onItemClicked(item: ContainerAreaModel) {
