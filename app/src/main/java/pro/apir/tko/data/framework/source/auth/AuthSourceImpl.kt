@@ -3,6 +3,7 @@ package pro.apir.tko.data.framework.source.auth
 import pro.apir.tko.data.framework.network.api.AuthApi
 import pro.apir.tko.data.framework.network.model.response.AuthTokenResponse
 import pro.apir.tko.data.framework.network.model.response.RefreshAccessTokenResponse
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -21,7 +22,7 @@ class AuthSourceImpl @Inject constructor(@Named("auth") private val retrofit: Re
         return api.auth(email, password)
     }
 
-    override fun refresh(refresh: String): Response<RefreshAccessTokenResponse> {
+    override fun refresh(refresh: String): Call<RefreshAccessTokenResponse> {
         return api.refresh(refresh)
     }
 }

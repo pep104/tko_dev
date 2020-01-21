@@ -21,6 +21,8 @@
     <string name="text_container_detailed_info"> %1$s  • %2$sм³</string>
     <string name="title_auth">Вход</string>
     <string name="title_menu">Главная</string>
+    <string name="title_container_new">Добавить конт. площадку</string>
+    <string name="title_container_edit">Уточнить данные</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

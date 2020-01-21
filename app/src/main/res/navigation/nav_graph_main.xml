@@ -58,9 +58,28 @@
         <action
             android:id="@+id/action_inventoryListFragment_to_inventoryDetailedFragment"
             app:destination="@id/inventoryDetailedFragment" />
+        <action
+            android:id="@+id/action_inventoryListFragment_to_inventoryEditFragment"
+            app:destination="@id/inventoryEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/inventoryDetailedFragment"
         android:name="pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment"
-        android:label="InventoryDetailedFragment" />
+        android:label="InventoryDetailedFragment" >
+        <action
+            android:id="@+id/action_inventoryDetailedFragment_to_inventoryEditFragment"
+            app:destination="@id/inventoryEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="pro.apir.tko.presentation.ui.main.address.AddressFragment"
+        android:label="AddressFragment" />
+    <fragment
+        android:id="@+id/inventoryEditFragment"
+        android:name="pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment"
+        android:label="InventoryEditFragment" >
+        <action
+            android:id="@+id/action_inventoryEditFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+    </fragment>
 </navigation>

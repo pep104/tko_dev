@@ -3,7 +3,6 @@ package pro.apir.tko.presentation.ui.main.inventory.detailed
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
@@ -22,6 +21,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 2020-01-19
  * Project: tko-android
  */
+//TODO ADD EDIT BUTTON
 class InventoryDetailedFragment : BaseFragment() {
 
     private val viewModel: InventoryDetailedViewModel by viewModels()

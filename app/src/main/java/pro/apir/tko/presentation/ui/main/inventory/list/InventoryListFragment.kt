@@ -2,7 +2,6 @@ package pro.apir.tko.presentation.ui.main.inventory.list
 
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -15,8 +14,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
 import kotlinx.android.synthetic.main.content_inventory_list.view.*
+import kotlinx.android.synthetic.main.fragment_inventory_list.view.*
 import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -51,6 +52,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private lateinit var loadingList: ProgressBar
     private lateinit var recyclerView: RecyclerView
 
+    private lateinit var btnAdd: MaterialButton
     private lateinit var btnMenu: ImageView
     private lateinit var btnSearch: ImageView
 
@@ -73,8 +75,11 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         recyclerView = view.recyclerView
         loadingList = view.loadingList
 
+        btnAdd = view.btnAdd
         btnMenu = view.btnMenu
         btnSearch = view.btnSearch
+
+        mapView = view.map
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -90,15 +95,11 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
+        btnAdd.setOnClickListener { findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryEditFragment) }
 
-        observeViewModel()
-
-        Log.e("viewSize", bottomSheetLayout.height.toString())
-
-        //todo
-        mapView = view.map
         setMap(mapView)
 
+        observeViewModel()
     }
 
     override fun onResume() {
