@@ -16,4 +16,6 @@ interface InventoryRepository {
 
     suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaDetailedModel>
 
+    suspend fun updateContainer(containerAreaDetailedModel: ContainerAreaDetailedModel): Either<Failure, ContainerAreaDetailedModel>
+
 }

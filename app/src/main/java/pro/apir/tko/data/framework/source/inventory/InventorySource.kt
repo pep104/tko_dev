@@ -1,6 +1,7 @@
 package pro.apir.tko.data.framework.source.inventory
 
 import pro.apir.tko.data.framework.network.api.InventoryApi
+import pro.apir.tko.data.framework.network.model.request.ContainerAreaDetailedRequest
 import pro.apir.tko.data.framework.network.model.response.ContainerAreaDetailedResponse
 import pro.apir.tko.data.framework.network.model.response.ContainerAreasResponse
 import retrofit2.Response
@@ -22,5 +23,9 @@ class InventorySource @Inject constructor(retrofit: Retrofit) : InventoryApi {
 
     override suspend fun getContainerArea(id: Long): Response<ContainerAreaDetailedResponse> {
         return api.getContainerArea(id)
+    }
+
+    override suspend fun updateContainerArea(id: Long, containerArea: ContainerAreaDetailedRequest): Response<ContainerAreaDetailedResponse> {
+        return api.updateContainerArea(id, containerArea)
     }
 }

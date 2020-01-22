@@ -16,4 +16,6 @@ interface InventoryInteractor {
 
     suspend fun getContainerDetailed(id: Long): Either<Failure, ContainerAreaDetailedModel>
 
+    suspend fun updateContainer(containerAreaDetailedModel: ContainerAreaDetailedModel): Either<Failure, ContainerAreaDetailedModel>
+
 }

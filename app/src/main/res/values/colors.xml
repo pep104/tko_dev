@@ -22,4 +22,6 @@
     <color name="textBlackA60">#99000000</color>
     <color name="textButtonFocused">#4C81BF</color>
 
+    <color name="blueDivider">#331F5099</color>
+
 </resources>

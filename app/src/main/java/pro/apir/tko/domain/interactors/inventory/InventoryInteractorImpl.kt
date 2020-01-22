@@ -17,4 +17,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         return inventoryRepository.getContainerArea(id)
     }
 
+    override suspend fun updateContainer(containerAreaDetailedModel: ContainerAreaDetailedModel): Either<Failure, ContainerAreaDetailedModel> {
+        return inventoryRepository.updateContainer(containerAreaDetailedModel)
+    }
 }

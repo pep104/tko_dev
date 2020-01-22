@@ -24,6 +24,15 @@
     <string name="title_container_new">Добавить конт. площадку</string>
     <string name="title_container_edit">Уточнить данные</string>
     <string name="btn_edit_inventory">Уточнить данные</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="text_reg_number">Реестровый номер</string>
+    <string name="text_address_hint">Фактический адрес</string>
+    <string name="text_coordinates_placeholder">%1$s, %2$s</string>
+    <string name="text_address">Адрес</string>
+    <string name="text_coordinates">Координаты</string>
+    <string name="hint_address_search">Введите адрес</string>
+    <string name="btn_done">Готово</string>
+    <string name="btn_add_photo">Добавить фотографию</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

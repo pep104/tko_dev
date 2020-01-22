@@ -37,7 +37,7 @@
 
         <EditText
             android:id="@+id/etLogin"
-            style="@style/EditTextMain"
+            style="@style/EditTextAuth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -72,7 +72,7 @@
 
         <EditText
             android:id="@+id/etPass"
-            style="@style/EditTextMain"
+            style="@style/EditTextAuth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
