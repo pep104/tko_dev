@@ -5,16 +5,21 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_detailed.view.*
 import kotlinx.android.synthetic.main.content_inventory_detailed.view.*
+import kotlinx.android.synthetic.main.fragment_inventory_detailed.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
+import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
 
 /**
  * Created by antonsarmatin
@@ -41,6 +46,7 @@ class InventoryDetailedFragment : BaseFragment() {
 
     private lateinit var btnBack: ImageView
     private lateinit var btnSearch: ImageView
+    private lateinit var btnEdit: MaterialButton
 
     private lateinit var imageRecyclerView: RecyclerView
     private lateinit var adapter: ContainerImagesAdapter
@@ -68,6 +74,7 @@ class InventoryDetailedFragment : BaseFragment() {
         imgThrash = view.imgThrash
         imgClose = view.imgClose
         btnBack = view.btnBack
+        btnEdit = view.btnEdit
 
         imageRecyclerView = view.imageRecyclerView
         adapter = ContainerImagesAdapter()
@@ -75,6 +82,7 @@ class InventoryDetailedFragment : BaseFragment() {
 
         imgClose.setOnClickListener(::back)
         btnBack.setOnClickListener(::back)
+        btnEdit.setOnClickListener { findNavController().navigate(R.id.action_inventoryDetailedFragment_to_inventoryEditFragment, bundleOf(InventoryEditFragment.KEY_CONTAINER to viewModel.data.value)) }
 
         observeViewModel()
     }

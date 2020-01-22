@@ -1,6 +1,5 @@
 package pro.apir.tko.presentation.ui.main.inventory.detailed
 
-import android.media.Image
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -42,7 +41,7 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
         if (_data.value == null) {
             loading(true)
             viewModelScope.launch(Dispatchers.IO) {
-                val result = inventoryInteractor.getContainerDetailed(id).fold(::handleFailure) {
+                inventoryInteractor.getContainerDetailed(id).fold(::handleFailure) {
                     _data.postValue(it)
                     getAllImages(it.parameters)
                     loading(false)

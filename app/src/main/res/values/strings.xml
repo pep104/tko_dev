@@ -23,6 +23,7 @@
     <string name="title_menu">Главная</string>
     <string name="title_container_new">Добавить конт. площадку</string>
     <string name="title_container_edit">Уточнить данные</string>
+    <string name="btn_edit_inventory">Уточнить данные</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
