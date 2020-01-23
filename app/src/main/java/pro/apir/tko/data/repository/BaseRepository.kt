@@ -5,14 +5,14 @@ import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import retrofit2.Response
 
-abstract class BaseRepository(private val tokenManager: TokenManager, private val tokenStrategy: TokenStrategy? = TokenStrategy.CHECK) {
+abstract class BaseRepository(private val tokenManager: TokenManager?, private val tokenStrategy: TokenStrategy? = TokenStrategy.CHECK) {
 
     //Подумать над внедрением лишней зависимости,
     //мб есть вариант провернуть проверку истечения рефрештокена лучше,
     //чем внедряя менеджер в каждый класс наследующийся от базового репозитория
 
     protected suspend fun <T, R> request(call: suspend () -> Response<T>, transform: (T) -> R): Either<Failure, R> {
-        return if (!tokenManager.isRefreshTokenExpired() || tokenStrategy == TokenStrategy.NO_AUTH) {
+        return if (tokenStrategy == TokenStrategy.NO_AUTH || (tokenManager!= null && !tokenManager.isRefreshTokenExpired() )) {
             try {
                 val call = call.invoke()
                 val body =  call.body()

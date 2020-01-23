@@ -7,3 +7,4 @@ package pro.apir.tko.core.constant
  */
 
 const val BASE_URL = "https://test.tko.apir.pro/api/"
+const val DADATA_URL = "http://suggestions.dadata.ru/"

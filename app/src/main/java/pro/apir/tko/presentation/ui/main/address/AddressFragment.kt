@@ -7,7 +7,9 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_address.view.*
 import org.osmdroid.config.Configuration
@@ -39,6 +41,9 @@ class AddressFragment : BaseFragment() {
 
     private lateinit var etAddress: EditText
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var suggestionAdapter: SuggestionsAdapter
+
     private lateinit var btnSave: MaterialButton
 
     private lateinit var mapView: MapView
@@ -62,12 +67,16 @@ class AddressFragment : BaseFragment() {
         cardBottom = view.cardBottom
         cardSearch = view.cardSearch
 
+        recyclerView = view.recyclerView
+        suggestionAdapter = SuggestionsAdapter()
+
         etAddress = view.etAddress
         btnSave = view.btnSave
 
         mapView = view.map
         setMap(mapView)
 
+        //TODO VIEW STATE (SHOW, EDIT, LOCATION)
         view.btnSearch.setOnClickListener {
             //TODO FOCUS ET SEARCH
             //HIDE BOTTOMCARD
@@ -83,6 +92,7 @@ class AddressFragment : BaseFragment() {
                 .onBackPressedDispatcher
                 .addCallback(this, object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
+                        //TODO VIEW STATE (SHOW, EDIT, LOCATION)?
                         if (cardSearch.isVisible()) {
                             cardSearch.gone()
                             btnSave.visible()
@@ -106,6 +116,12 @@ class AddressFragment : BaseFragment() {
         mapView.onPause()
         myLocationOverlay?.disableMyLocation()
         super.onPause()
+    }
+
+    private fun observeViewModel(){
+        viewModel.suggestions.observe(viewLifecycleOwner, Observer {
+
+        })
     }
 
     private fun setMap(mapView: MapView) {

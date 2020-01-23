@@ -1,24 +1,27 @@
 package pro.apir.tko.di.module
 
 import android.content.Context
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pro.apir.tko.core.constant.BASE_URL
+import pro.apir.tko.core.constant.DADATA_URL
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManagerImpl
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.manager.token.TokenManagerImpl
 import pro.apir.tko.data.framework.network.NetworkHandler
+import pro.apir.tko.data.framework.network.api.AddressApi
 import pro.apir.tko.data.framework.network.api.AuthApi
 import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
 import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
-import pro.apir.tko.data.framework.source.auth.AuthSourceImpl
+import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
+import pro.apir.tko.data.framework.source.address.AddressSource
+import pro.apir.tko.data.framework.source.auth.AuthSource
 import pro.apir.tko.data.framework.source.inventory.InventorySource
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -75,6 +78,29 @@ class FrameworkModule {
                 .build()
     }
 
+    @Named("address")
+    @Singleton
+    @Provides
+    fun provideRetorifutAddress(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val client = OkHttpClient.Builder()
+                .addInterceptor(daDataTokenInterceptor)
+                .addInterceptor(loggingInterceptor)
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .build()
+
+        val gson = GsonBuilder().setLenient().create()
+
+        return Retrofit.Builder()
+                .baseUrl(DADATA_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+    }
+
 
 //    @Singleton
 //    @Provides
@@ -102,6 +128,10 @@ class FrameworkModule {
 
     @Singleton
     @Provides
+    fun daDataInterceptor(): DaDataTokenInterceptor = DaDataTokenInterceptor()
+
+    @Singleton
+    @Provides
     fun cacheInterceptor(networkHandler: NetworkHandler): CacheInterceptor = CacheInterceptor(networkHandler)
 
     @Singleton
@@ -122,6 +152,10 @@ class FrameworkModule {
 
     @Singleton
     @Provides
-    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = AuthSourceImpl(retrofit)
+    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = AuthSource(retrofit)
+
+    @Singleton
+    @Provides
+    fun addressApi(@Named("address") retrofit: Retrofit): AddressApi = AddressSource(retrofit)
 
 }

@@ -3,8 +3,11 @@ package pro.apir.tko.di.module
 import dagger.Module
 import dagger.Provides
 import pro.apir.tko.data.framework.manager.token.TokenManager
+import pro.apir.tko.data.framework.network.api.AddressApi
 import pro.apir.tko.data.framework.network.api.AuthApi
 import pro.apir.tko.data.framework.network.api.InventoryApi
+import pro.apir.tko.data.repository.address.AddressRepository
+import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.auth.AuthRepository
 import pro.apir.tko.data.repository.auth.AuthRepositoryImpl
 import pro.apir.tko.data.repository.inventory.InventoryRepository
@@ -21,5 +24,9 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun inventoryRepository(tokenManager: TokenManager, inventoryApi: InventoryApi): InventoryRepository = InventoryRepositoryImpl(tokenManager, inventoryApi)
+
+    @Provides
+    @Singleton
+    fun addressRepository(addressApi: AddressApi): AddressRepository = AddressRepositoryImpl(addressApi)
 
 }
