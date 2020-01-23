@@ -12,5 +12,5 @@ data class ContainerAreaParametersData(
         val id: Long,
         val photos: List<ImageData>
 ) {
-    fun toModel() = ContainerAreaParametersModel(id, photos.map { it.toModel() })
+    fun toModel() = ContainerAreaParametersModel(id, photos.map { it.toModel() }.toMutableList())
 }

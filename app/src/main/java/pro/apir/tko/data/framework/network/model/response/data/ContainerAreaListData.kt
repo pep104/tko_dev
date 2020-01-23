@@ -1,7 +1,7 @@
 package pro.apir.tko.data.framework.network.model.response.data
 
 import com.google.gson.annotations.SerializedName
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaListModel
 
 /**
  * Created by Антон Сарматин
@@ -52,9 +52,9 @@ data class ContainerAreaListData(
         val totalNormative: Double?,
         val width: Double?
 ) {
-    fun toModel(): ContainerAreaModel {
+    fun toModel(): ContainerAreaListModel {
         val coordinates = coordinates?.toModel()
-        return ContainerAreaModel(id,
+        return ContainerAreaListModel(id,
                 access,
                 area,
                 closeAt,

@@ -11,5 +11,5 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class ContainerAreaParametersModel(
         val id: Long,
-        val photos: List<ImageModel>
+        var photos: MutableList<ImageModel>
 ): Parcelable

@@ -1,10 +1,12 @@
 package pro.apir.tko.presentation.ui.main.inventory.detailed
 
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,6 +17,14 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_detailed.view.*
 import kotlinx.android.synthetic.main.content_inventory_detailed.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_detailed.view.*
+import kotlinx.coroutines.Job
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
@@ -51,6 +61,10 @@ class InventoryDetailedFragment : BaseFragment() {
     private lateinit var imageRecyclerView: RecyclerView
     private lateinit var adapter: ContainerImagesAdapter
 
+    private lateinit var mapView: MapView
+    private var mapJob: Job? = null
+    private var myLocationOverlay: MyLocationNewOverlay? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectInventoryDetailedFragment(this)
@@ -76,6 +90,8 @@ class InventoryDetailedFragment : BaseFragment() {
         btnBack = view.btnBack
         btnEdit = view.btnEdit
 
+        mapView = view.map
+
         imageRecyclerView = view.imageRecyclerView
         adapter = ContainerImagesAdapter()
         imageRecyclerView.adapter = adapter
@@ -84,12 +100,26 @@ class InventoryDetailedFragment : BaseFragment() {
         btnBack.setOnClickListener(::back)
         btnEdit.setOnClickListener { findNavController().navigate(R.id.action_inventoryDetailedFragment_to_inventoryEditFragment, bundleOf(InventoryEditFragment.KEY_CONTAINER to viewModel.data.value)) }
 
+        setMap(mapView)
+
         observeViewModel()
     }
 
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+        myLocationOverlay?.enableMyLocation()
+    }
+
+    override fun onPause() {
+        mapView.onPause()
+        myLocationOverlay?.disableMyLocation()
+        super.onPause()
+    }
 
     private fun observeViewModel() {
 
+        //TODO FROM FIELDS?
         viewModel.data.observe(viewLifecycleOwner, Observer {
             btnEdit.isEnabled = true
 
@@ -100,6 +130,10 @@ class InventoryDetailedFragment : BaseFragment() {
             val area = it.area ?: 0.0
 
             textContainerInfo.text = getString(R.string.text_container_detailed_info, pluredCount, area.toString())
+
+            it.coordinates?.let { coord ->
+                setMapPoint(coord.lat, coord.lng)
+            }
 
             loading.goneWithFade()
             imgThrash.visible()
@@ -113,6 +147,28 @@ class InventoryDetailedFragment : BaseFragment() {
         viewModel.header.observe(viewLifecycleOwner, Observer {
             textHeader.text = it
         })
+    }
+
+    private fun setMap(mapView: MapView) {
+        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mapView.controller.zoomTo(17.0, 0L)
+
+        val locationProvider = GpsMyLocationProvider(context)
+        myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
+
+        mapView.overlayManager.add(myLocationOverlay)
+    }
+
+    private fun setMapPoint(lat: Double, lng: Double) {
+        mapView.overlays.clear()
+        mapView.controller.setCenter(GeoPoint(lat, lng))
+        val location = GeoPoint(lat, lng)
+        val marker = Marker(mapView)
+        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        marker.position = location
+        mapView.overlays.add(marker)
     }
 
     companion object {

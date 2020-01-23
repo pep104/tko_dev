@@ -20,7 +20,7 @@ abstract class BaseViewModel : ViewModel() {
 
     protected fun handleFailure(failure: Failure) {
         loading(false)
-        this.failure.value = failure
+        this.failure.postValue(failure)
     }
 
     protected fun loading(isLoading: Boolean) {

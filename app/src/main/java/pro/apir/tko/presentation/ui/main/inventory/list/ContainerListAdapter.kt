@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_list.view.*
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaListModel
 
 /**
  * Created by Антон Сарматин
@@ -16,17 +16,17 @@ import pro.apir.tko.domain.model.ContainerAreaModel
  */
 class ContainerListAdapter : RecyclerView.Adapter<ContainerListAdapter.ContainerHolder>() {
 
-    private val data = arrayListOf<ContainerAreaModel>()
+    private val data = arrayListOf<ContainerAreaListModel>()
 
     private var listener: OnItemClickListener? = null
 
     interface OnItemClickListener {
 
-        fun onItemClicked(item: ContainerAreaModel)
+        fun onItemClicked(item: ContainerAreaListModel)
 
     }
 
-    fun setList(list: List<ContainerAreaModel>) {
+    fun setList(list: List<ContainerAreaListModel>) {
         //TODO diffutil
         this.data.clear()
         this.data.addAll(list)
@@ -57,7 +57,7 @@ class ContainerListAdapter : RecyclerView.Adapter<ContainerListAdapter.Container
             textMessage = itemView.textMessage
         }
 
-        fun bind(item: ContainerAreaModel, pos: Int) {
+        fun bind(item: ContainerAreaListModel, pos: Int) {
 
             textHeader.text = item.location
             val pluredCount = textMessage.context.resources.getQuantityString(R.plurals.plurals_containers, item.containersCount

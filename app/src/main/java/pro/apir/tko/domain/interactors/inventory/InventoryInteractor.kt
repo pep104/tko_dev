@@ -2,8 +2,8 @@ package pro.apir.tko.domain.interactors.inventory
 
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaListModel
+import pro.apir.tko.domain.model.ContainerAreaShortModel
 
 /**
  * Created by Антон Сарматин
@@ -12,10 +12,10 @@ import pro.apir.tko.domain.model.ContainerAreaModel
  */
 interface InventoryInteractor {
 
-    suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerAreaModel>>
+    suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerAreaListModel>>
 
-    suspend fun getContainerDetailed(id: Long): Either<Failure, ContainerAreaDetailedModel>
+    suspend fun getContainerDetailed(id: Long): Either<Failure, ContainerAreaShortModel>
 
-    suspend fun updateContainer(containerAreaDetailedModel: ContainerAreaDetailedModel): Either<Failure, ContainerAreaDetailedModel>
+    suspend fun updateContainer(containerAreaShortModel: ContainerAreaShortModel): Either<Failure, ContainerAreaShortModel>
 
 }

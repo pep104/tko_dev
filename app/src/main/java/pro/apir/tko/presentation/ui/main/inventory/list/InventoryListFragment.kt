@@ -27,7 +27,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
@@ -145,7 +145,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     }
 
     //TODO to vm and background task
-    private fun setMarkers(list: List<ContainerAreaModel>) {
+    private fun setMarkers(list: List<ContainerAreaListModel>) {
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()
         mapJob = CoroutineScope(Dispatchers.IO).launch {
@@ -156,7 +156,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                     val location = GeoPoint(it.coordinates.lat, it.coordinates.lng)
                     val marker = Marker(mapView)
                     marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
-                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                     marker.position = location
                     markers.add(marker)
 
@@ -170,7 +170,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
     }
 
-    override fun onItemClicked(item: ContainerAreaModel) {
+    override fun onItemClicked(item: ContainerAreaListModel) {
         findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryDetailedFragment, bundleOf(InventoryDetailedFragment.KEY_ID to item.id, InventoryDetailedFragment.KEY_HEADER to item.location))
     }
 }

@@ -9,8 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
 import pro.apir.tko.domain.model.ContainerAreaParametersModel
+import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.domain.model.ImageModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
@@ -24,8 +24,8 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<InventoryDetailedViewModel>
 
-    private val _data = handle.getLiveData<ContainerAreaDetailedModel>("data")
-    val data: LiveData<ContainerAreaDetailedModel>
+    private val _data = handle.getLiveData<ContainerAreaShortModel>("data")
+    val data: LiveData<ContainerAreaShortModel>
         get() = _data
 
     private val _images = handle.getLiveData<List<ImageModel>>("images")

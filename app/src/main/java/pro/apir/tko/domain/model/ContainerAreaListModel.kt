@@ -9,7 +9,7 @@ import kotlinx.android.parcel.Parcelize
  * Project: tko-android
  */
 @Parcelize
-data class ContainerAreaModel(
+data class ContainerAreaListModel(
         val id: Long,
         val access: String?,
         val area: Double?,

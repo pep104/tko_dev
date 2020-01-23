@@ -8,6 +8,8 @@ sealed class Failure {
     object NetworkConnection : Failure()
     object ServerError : Failure()
     object RefreshTokenExpired: Failure()
+
+    object Ignore: Failure()
     /** * Extend this class for feature specific failures.*/
     abstract class FeatureFailure: Failure()
 }

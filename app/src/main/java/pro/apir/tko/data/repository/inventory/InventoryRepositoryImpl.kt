@@ -9,24 +9,25 @@ import pro.apir.tko.data.framework.network.model.response.data.ContainerAreaPara
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
 import pro.apir.tko.data.framework.network.model.response.data.ImageData
 import pro.apir.tko.data.repository.BaseRepository
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaListModel
+import pro.apir.tko.domain.model.ContainerAreaShortModel
 import javax.inject.Inject
 
 class InventoryRepositoryImpl @Inject constructor(private val tokenManager: TokenManager, private val inventoryApi: InventoryApi) : InventoryRepository, BaseRepository(tokenManager) {
 
-    override suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerAreaModel>> {
+    override suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerAreaListModel>> {
         val result = request({ inventoryApi.getContainerAreas(page, pageSize, location) }, { it.results.map { it.toModel() } })
         return result
     }
 
-    override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaDetailedModel> {
+    override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaShortModel> {
         val result = request({ inventoryApi.getContainerArea(id) }, { it.toModel() })
         return result
     }
 
-    override suspend fun updateContainer(model: ContainerAreaDetailedModel): Either<Failure, ContainerAreaDetailedModel> {
-        val coord: CoordinatesData? = if (model.coordinates?.lat == null || model.coordinates.lng == null) null else CoordinatesData(model.coordinates.lng, model.coordinates.lat)
+    override suspend fun updateContainer(model: ContainerAreaShortModel): Either<Failure, ContainerAreaShortModel> {
+        val coordinatesModel = model.coordinates
+        val coordinatesData = if (coordinatesModel != null) CoordinatesData(coordinatesModel.lng, coordinatesModel.lat) else null
 
         val params = model.parameters.map { parametersModel ->
             val photos = parametersModel.photos.map {
@@ -34,7 +35,8 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
             }
             ContainerAreaParametersData(parametersModel.id, photos)
         }
-        val req = ContainerAreaDetailedRequest(model.id, coord, model.location, model.registry_number+"mob", params)
+        
+        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber + "mob", params)
         return request({ inventoryApi.updateContainerArea(model.id.toLong(), req) }, { it.toModel() })
     }
 }

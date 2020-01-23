@@ -4,26 +4,20 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_address.*
-import kotlinx.android.synthetic.main.fragment_address.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
-import kotlinx.android.synthetic.main.fragment_inventory_edit.view.btnSave
-import kotlinx.android.synthetic.main.fragment_inventory_edit.view.recyclerView
-import kotlinx.android.synthetic.main.fragment_inventory_edit.view.textAddress
-import kotlinx.android.synthetic.main.fragment_inventory_edit.view.textCoordinates
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
-import pro.apir.tko.presentation.extension.getTextValue
+import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
-import pro.apir.tko.presentation.ui.main.address.AddressFragment
+import pro.apir.tko.presentation.ui.main.address.AddressSharedViewModel
 
 /**
  * Created by Антон Сарматин
@@ -33,6 +27,7 @@ import pro.apir.tko.presentation.ui.main.address.AddressFragment
 class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemClickListener {
 
     private val viewModel: InventoryEditViewModel by viewModels()
+    private val sharedViewModel: AddressSharedViewModel by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_inventory_edit
 
@@ -52,7 +47,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
         arguments?.let { bundle ->
             if (bundle.containsKey(KEY_CONTAINER)) {
-                val container: ContainerAreaDetailedModel? = bundle.getParcelable(KEY_CONTAINER) as ContainerAreaDetailedModel
+                val container: ContainerAreaShortModel? = bundle.getParcelable(KEY_CONTAINER) as ContainerAreaShortModel
                 container?.let { viewModel.setEditData(it) }
             }
         }
@@ -79,30 +74,39 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         recyclerView.adapter = adapter
         recyclerView.layoutManager = PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
+        etRegNum.doAfterTextChanged {
+            viewModel.updateRegNum(it.toString())
+        }
+
         view.layoutAddress.setOnClickListener {
-           openAdressFragment()
+            openAddressFragment()
         }
 
         view.btnToolbarBack.setOnClickListener(::back)
-        observeViewModel()
 
         view.btnSave.setOnClickListener {
-            viewModel.testSave(etRegNum.getTextValue(), textAddress.text.toString())
+            viewModel.save()
         }
+
+        observeViewModel()
     }
 
     private fun observeViewModel() {
 
         viewModel.containerArea.observe(viewLifecycleOwner, Observer {
-            etRegNum.setText(it.registry_number)
-            textAddress.text = it.location
-            textCoordinates.text = getString(R.string.text_coordinates_placeholder, it.coordinates?.lat.toString(), it.coordinates?.lng.toString())
+            etRegNum.setText(it.registryNumber)
+            setLocationViews(it.location, it.coordinates?.lat, it.coordinates?.lng)
         })
 
         viewModel.images.observe(viewLifecycleOwner, Observer {
             adapter.setData(it)
         })
 
+
+        sharedViewModel.address.observe(viewLifecycleOwner, Observer {
+            setLocationViews(it.value, it.lat, it.lng)
+            viewModel.updateAddress(it)
+        })
     }
 
     override fun onDestroyView() {
@@ -110,12 +114,17 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         super.onDestroyView()
     }
 
+    private fun setLocationViews(location: String?, lat: Double?, lng: Double?) {
+        textAddress.text = location
+        textCoordinates.text = getString(R.string.text_coordinates_placeholder, lat.toString(), lng.toString())
+    }
+
     override fun onImageDeleteClicked(image: Int) {
         viewModel.deletePhoto(image)
     }
 
 
-    private fun openAdressFragment(){
+    private fun openAddressFragment() {
         findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)
     }
 

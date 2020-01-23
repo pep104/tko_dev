@@ -5,6 +5,8 @@
     android:id="@+id/bottomsheetInventory"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/bottomsheet_margin_top"
+    android:elevation="@dimen/bottomsheet_elevation"
     android:background="@drawable/shape_rounded_top_white"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottomsheet_peek_height"

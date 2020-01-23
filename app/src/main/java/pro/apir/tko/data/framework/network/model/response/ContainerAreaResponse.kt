@@ -3,15 +3,14 @@ package pro.apir.tko.data.framework.network.model.response
 import com.google.gson.annotations.SerializedName
 import pro.apir.tko.data.framework.network.model.response.data.ContainerAreaParametersData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaShortModel
 
 /**
  * Created by antonsarmatin
  * Date: 2020-01-20
  * Project: tko-android
  */
-data class ContainerAreaDetailedResponse(
+data class ContainerAreaResponse(
         val id: Int,
         val access: String?,
         val area: Double?,
@@ -44,7 +43,8 @@ data class ContainerAreaDetailedResponse(
         @SerializedName("owners_waste_sources_names")
         val ownersWasteSourcesNames: String?,
         val platform_basement: String?,
-        val registry_number: String?,
+        @SerializedName("registry_number")
+        val registryNumber: String?,
         val remoteness: String?,
 //        @SerializedName("responsible_person")
 //        val responsiblePerson: Any,
@@ -56,37 +56,16 @@ data class ContainerAreaDetailedResponse(
         val width: Double?,
         val parameters: List<ContainerAreaParametersData>
 ) {
-    fun toModel(): ContainerAreaDetailedModel {
+    fun toModel(): ContainerAreaShortModel {
         val coordinates = coordinates?.toModel()
         val parameters = parameters.map { it.toModel() }
-        return ContainerAreaDetailedModel(
+        return ContainerAreaShortModel(
                 id,
-                access,
                 area,
-                closeAt,
                 containersCount,
                 coordinates,
-                coverageType,
-                eventsCount,
-                fence,
-                fullnessPercent,
-                has_cover,
-                identifier,
-                informationPlate,
-                lastUpdateAt,
-                lastUpdatePerson,
-                length,
                 location,
-                otherBasementDescription,
-                ownersNames,
-                ownersWasteSourcesNames,
-                platform_basement,
-                registry_number,
-                remoteness,
-                sourcesCount,
-                status,
-                totalNormative,
-                width,
-                parameters)
+                registryNumber,
+                parameters.toMutableList())
     }
 }

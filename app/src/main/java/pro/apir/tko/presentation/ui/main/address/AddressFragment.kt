@@ -7,8 +7,11 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -16,10 +19,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_address.view.*
-import kotlinx.android.synthetic.main.fragment_inventory_edit.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
@@ -35,6 +39,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
 class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
 
     private val viewModel: AddressViewModel by viewModels()
+    private val sharedViewModel: AddressSharedViewModel by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_address
 
@@ -42,6 +47,9 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
 
     private lateinit var cardBottom: CardView
     private lateinit var cardSearch: CardView
+
+    private lateinit var textAddress: TextView
+    private lateinit var textCoordinates: TextView
 
     private lateinit var etAddress: EditText
 
@@ -73,7 +81,7 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
 
         arguments?.let { bundle ->
             if (bundle.containsKey(KEY_ADDRESS)) {
-                //todo set to vm?
+                viewModel.setChoosed(bundle.get(KEY_ADDRESS) as SuggestionModel)
             }
         }
 
@@ -85,15 +93,21 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         cardBottom = view.cardBottom
         cardSearch = view.cardSearch
 
+        //Search card
+        etAddress = view.etAddress
+        btnClearAddress = view.btnClearAddress
         recyclerView = view.recyclerView
         suggestionAdapter = SuggestionsAdapter()
         suggestionAdapter.setListener(this)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = suggestionAdapter
 
-        etAddress = view.etAddress
+        //Bottom card
+        textAddress = view.textAddress
+        textCoordinates = view.textCoordinates
+
         btnSave = view.btnSave
-        btnClearAddress = view.btnClearAddress
+
 
         mapView = view.map
         setMap(mapView)
@@ -106,6 +120,11 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
 
         view.btnSearch.setOnClickListener {
             setViewState(1)
+        }
+
+        view.btnSave.setOnClickListener {
+            viewModel.address.value?.let { sharedViewModel.setAddress(it) }
+            findNavController().popBackStack()
         }
 
         requireActivity()
@@ -140,6 +159,15 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         viewModel.suggestions.observe(viewLifecycleOwner, Observer {
             suggestionAdapter.setList(it)
         })
+
+        viewModel.address.observe(viewLifecycleOwner, Observer {
+            textAddress.text = it.value
+            if (it.lat != null && it.lng != null) {
+                textCoordinates.text = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
+                myLocationOverlay?.disableFollowLocation()
+                setMapPoint(it.lat, it.lng)
+            }
+        })
     }
 
     private fun setMap(mapView: MapView) {
@@ -149,9 +177,21 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.enableFollowLocation()
+
+        if (viewModel.address.value == null) myLocationOverlay?.enableFollowLocation()
 
         mapView.overlayManager.add(myLocationOverlay)
+    }
+
+    private fun setMapPoint(lat: Double, lng: Double) {
+        mapView.overlays.clear()
+        mapView.controller.animateTo(GeoPoint(lat, lng))
+        val location = GeoPoint(lat, lng)
+        val marker = Marker(mapView)
+        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        marker.position = location
+        mapView.overlays.add(marker)
     }
 
     override fun onAddressItemChoosed(data: SuggestionModel) {
@@ -160,8 +200,8 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
     }
 
     //TODO VM based
-    private fun setViewState(type: Int){
-        when(type){
+    private fun setViewState(type: Int) {
+        when (type) {
             0 -> {
                 cardSearch.gone()
                 btnSave.visible()

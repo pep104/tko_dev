@@ -9,9 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
-import pro.apir.tko.domain.model.ContainerAreaDetailedModel
-import pro.apir.tko.domain.model.ContainerAreaParametersModel
-import pro.apir.tko.domain.model.ImageModel
+import pro.apir.tko.domain.model.*
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -19,6 +17,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Date: 22.01.2020
  * Project: tko-android
  */
+//TODO REFACTOR FORM PROCESSING
+//TODO CREATE NEW?
 class InventoryEditViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
 
     @AssistedInject.Factory
@@ -28,23 +28,21 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val isNewMode: LiveData<Boolean>
         get() = _isNewMode
 
-    private val _containerArea = handle.getLiveData<ContainerAreaDetailedModel>("containerArea")
-    val containerArea: LiveData<ContainerAreaDetailedModel>
+    private val _containerArea = handle.getLiveData<ContainerAreaShortModel>("containerArea")
+    val containerArea: LiveData<ContainerAreaShortModel>
         get() = _containerArea
 
     private val _images = handle.getLiveData<List<ImageModel>>("images")
     val images: LiveData<List<ImageModel>>
         get() = _images
 
-    fun setEditData(data: ContainerAreaDetailedModel) {
+    fun setEditData(data: ContainerAreaShortModel) {
         _isNewMode.value = false
         _containerArea.value = data
         getAllImages(data.parameters)
     }
 
-    //TODO FIELDS SAVE STATE
 
-    //TODO PHOTOS
     //TODO Extract?
     private fun getAllImages(params: List<ContainerAreaParametersModel>) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -57,15 +55,42 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     }
 
     //???
+    fun deletePhoto(image: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _containerArea.value?.let {
+                it.parameters.forEach {
+                    it.photos.removeAll { it.image == image }
+                }
+                getAllImages(it.parameters)
+            }
 
-    fun deletePhoto(image: Int){
-        //TODO REMOVE FROM container
-
+        }
     }
 
+    fun updateRegNum(text: String) {
+        _containerArea.value?.let {
+            it.registryNumber = text
+        }
+    }
 
-    fun testSave(reg: String, adress: String){
-        viewModelScope.launch(Dispatchers.IO) { inventoryInteractor.updateContainer(_containerArea.value!!) }
+    fun updateAddress(suggestionModel: SuggestionModel) {
+        _containerArea.value?.let {
+            it.location = suggestionModel.value
+            if (suggestionModel.lng != null && suggestionModel.lat != null)
+                it.coordinates = CoordinatesModel(suggestionModel.lng, suggestionModel.lat)
+            else
+                it.coordinates = null
+        }
+    }
+
+    fun save() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _containerArea.value?.let {
+                inventoryInteractor.updateContainer(it).fold(::handleFailure) {
+                    //TODO RESULT
+                }
+            }
+        }
     }
 
 }

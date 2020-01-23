@@ -8,7 +8,7 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
-import pro.apir.tko.domain.model.ContainerAreaModel
+import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 class InventoryListViewModel @AssistedInject constructor(@Assisted handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
@@ -16,8 +16,8 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted handle: Saved
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<InventoryListViewModel>
 
-    private val _containers = handle.getLiveData<List<ContainerAreaModel>>("containers")
-    val containers: LiveData<List<ContainerAreaModel>>
+    private val _containers = handle.getLiveData<List<ContainerAreaListModel>>("containers")
+    val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
 
     fun testGet() {

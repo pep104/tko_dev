@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 /**
- * Created by antonsarmatin
- * Date: 2020-01-20
+ * Created by Антон Сарматин
+ * Date: 23.01.2020
  * Project: tko-android
  */
 @Parcelize
@@ -15,7 +15,7 @@ data class ContainerAreaDetailedModel(
         val area: Double?,
         val closeAt: String?,
         val containersCount: Int?,
-        val coordinates: CoordinatesModel?,
+        var coordinates: CoordinatesModel?,
         val coverageType: String?,
         val eventsCount: Int?,
         val fence: String?,
@@ -26,7 +26,7 @@ data class ContainerAreaDetailedModel(
         val lastUpdateAt: String?,
         val lastUpdatePerson: String?,
         val length: Double?,
-        val location: String?,
+        var location: String?,
         val otherBasementDescription: String?,
         val ownersNames: String?,
         val ownersWasteSourcesNames: String?,
@@ -39,4 +39,4 @@ data class ContainerAreaDetailedModel(
         val totalNormative: Double?,
         val width: Double?,
         val parameters: List<ContainerAreaParametersModel>
-): Parcelable
+) : Parcelable

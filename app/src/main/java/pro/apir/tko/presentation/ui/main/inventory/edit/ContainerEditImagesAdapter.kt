@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -33,10 +34,11 @@ class ContainerEditImagesAdapter: RecyclerView.Adapter<ContainerEditImagesAdapte
     }
 
     fun setData(data: List<ImageModel>) {
+        val diffCallback = ContainerEditImagesDiffCallback(this.data,data)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
         this.data.addAll(data)
-        notifyItemRangeChanged(0, data.size)
-        //todo diffutil
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setListener(listener: OnItemClickListener?){
