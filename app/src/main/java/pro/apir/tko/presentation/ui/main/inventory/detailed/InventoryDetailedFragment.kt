@@ -91,6 +91,7 @@ class InventoryDetailedFragment : BaseFragment() {
     private fun observeViewModel() {
 
         viewModel.data.observe(viewLifecycleOwner, Observer {
+            btnEdit.isEnabled = true
 
             val pluredCount = resources.getQuantityString(
                     R.plurals.plurals_containers,

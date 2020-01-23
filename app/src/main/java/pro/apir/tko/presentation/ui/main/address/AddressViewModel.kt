@@ -8,6 +8,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.address.AddressInteractor
@@ -29,8 +30,8 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     private var queryJob: Job? = null
 
-    private val _address = handle.getLiveData<AddressEntity>("address")
-    val address: LiveData<AddressEntity>
+    private val _address = handle.getLiveData<SuggestionModel>("address")
+    val address: LiveData<SuggestionModel>
         get() = _address
 
     private val _suggestions = MutableLiveData<List<SuggestionModel>>()
@@ -41,11 +42,16 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
         if (query.length > 3) {
             queryJob?.cancel()
             viewModelScope.launch(Dispatchers.IO) {
+                delay(300)
                 addressInteractor.getAddressSuggestions(query).fold(::handleFailure) {
                     _suggestions.postValue(it)
                 }
             }
         }
+    }
+
+    fun setChoosed(suggestionModel: SuggestionModel) {
+        _address.value = suggestionModel
     }
 
 }

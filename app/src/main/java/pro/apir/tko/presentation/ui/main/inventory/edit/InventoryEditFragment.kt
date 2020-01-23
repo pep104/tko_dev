@@ -4,18 +4,26 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.fragment_address.*
+import kotlinx.android.synthetic.main.fragment_address.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
+import kotlinx.android.synthetic.main.fragment_inventory_edit.view.btnSave
+import kotlinx.android.synthetic.main.fragment_inventory_edit.view.recyclerView
+import kotlinx.android.synthetic.main.fragment_inventory_edit.view.textAddress
+import kotlinx.android.synthetic.main.fragment_inventory_edit.view.textCoordinates
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaDetailedModel
 import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
+import pro.apir.tko.presentation.ui.main.address.AddressFragment
 
 /**
  * Created by Антон Сарматин
@@ -72,8 +80,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         recyclerView.layoutManager = PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         view.layoutAddress.setOnClickListener {
-            //TODO PUT ADDRESS DATA IF EXISTS
-            findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)
+           openAdressFragment()
         }
 
         view.btnToolbarBack.setOnClickListener(::back)
@@ -105,6 +112,11 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     override fun onImageDeleteClicked(image: Int) {
         viewModel.deletePhoto(image)
+    }
+
+
+    private fun openAdressFragment(){
+        findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)
     }
 
     companion object {

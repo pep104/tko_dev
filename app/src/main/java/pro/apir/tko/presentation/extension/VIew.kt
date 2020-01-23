@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.extension
 
 import android.app.Activity
+import android.content.Context
 import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +14,12 @@ import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+
 
 fun View.isVisible() = this.visibility == View.VISIBLE
 
@@ -122,9 +125,26 @@ fun FragmentActivity.hideKeyborad() {
     imm.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
+fun Fragment.hideKeyboard(){
+    val imm = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+
+    var view = this.view?.rootView
+    if (view == null)
+        view = View(context)
+
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
 val Int.dpToPx: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 val Int.pxToDp: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+
+fun EditText.focusWithKeyboard() {
+    this.requestFocusFromTouch()
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+    imm?.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+}
 

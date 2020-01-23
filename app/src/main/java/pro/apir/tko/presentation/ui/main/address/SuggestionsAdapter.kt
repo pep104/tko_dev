@@ -1,9 +1,14 @@
 package pro.apir.tko.presentation.ui.main.address
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.item_suggestion.view.*
+import org.w3c.dom.Text
+import pro.apir.tko.R
 import pro.apir.tko.domain.model.SuggestionModel
 
 /**
@@ -23,7 +28,7 @@ class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.SuggestionHol
 
     }
 
-    fun setList(data: List<SuggestionModel>){
+    fun setList(data: List<SuggestionModel>) {
         val diffCallback = SuggestionDiffCallback(this.data, data)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
@@ -36,20 +41,36 @@ class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.SuggestionHol
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionHolder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return SuggestionHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_suggestion, parent, false))
     }
 
     override fun getItemCount() = data.size
 
     override fun onBindViewHolder(holder: SuggestionHolder, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        holder.bind(data[position])
     }
 
-    inner class SuggestionHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class SuggestionHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        //todo views
+        private val textAddress: TextView
+        private val textCoordinates: TextView
 
-        fun bind(item: SuggestionModel){
+        init {
+            textAddress = itemView.textAddress
+            textCoordinates = itemView.textCoordinates
+        }
+
+        fun bind(item: SuggestionModel) {
+
+            textAddress.text = item.value
+
+            if (item.lat != null && item.lng != null) {
+                textCoordinates.text = textCoordinates.context.getString(R.string.text_coordinates_placeholder, item.lat.toString(), item.lng.toString())
+            } else {
+                textCoordinates.text = ""
+            }
+
+            itemView.setOnClickListener { listener?.onAddressItemChoosed(item) }
 
         }
 
