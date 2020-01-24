@@ -63,7 +63,7 @@ class ContainerListAdapter : RecyclerView.Adapter<ContainerListAdapter.Container
             val pluredCount = textMessage.context.resources.getQuantityString(R.plurals.plurals_containers, item.containersCount
                     ?: 0, item.containersCount)
             val area = item.area ?: 0.0
-            textMessage.text = textMessage.context.getString(R.string.text_list_container_message, item.registry_number, pluredCount, area.toInt().toString())
+            textMessage.text = textMessage.context.getString(R.string.text_list_container_message, item.registryNumber, pluredCount, area.toInt().toString())
 
             itemView.setOnClickListener {
                 listener?.onItemClicked(item)
