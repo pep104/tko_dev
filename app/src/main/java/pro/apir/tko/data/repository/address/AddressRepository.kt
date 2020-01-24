@@ -2,7 +2,7 @@ package pro.apir.tko.data.repository.address
 
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.domain.model.SuggestionModel
+import pro.apir.tko.domain.model.AddressModel
 
 /**
  * Created by antonsarmatin
@@ -11,6 +11,8 @@ import pro.apir.tko.domain.model.SuggestionModel
  */
 interface AddressRepository {
 
-    suspend fun getAddressSuggestions(query: String): Either<Failure, List<SuggestionModel>>
+    suspend fun getAddressSuggestions(query: String): Either<Failure, List<AddressModel>>
+
+    suspend fun getAddressDetailed(query: String): Either<Failure, List<AddressModel>>
 
 }

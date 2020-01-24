@@ -3,7 +3,7 @@ package pro.apir.tko.presentation.ui.main.address
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import pro.apir.tko.domain.model.SuggestionModel
+import pro.apir.tko.domain.model.AddressModel
 
 /**
  * Created by Антон Сарматин
@@ -12,11 +12,11 @@ import pro.apir.tko.domain.model.SuggestionModel
  */
 class AddressSharedViewModel : ViewModel() {
 
-    private val _address = MutableLiveData<SuggestionModel>()
-    val address: LiveData<SuggestionModel>
+    private val _address = MutableLiveData<AddressModel>()
+    val address: LiveData<AddressModel>
         get() = _address
 
-    internal fun setAddress(data: SuggestionModel){
+    internal fun setAddress(data: AddressModel){
         _address.postValue(data)
     }
 

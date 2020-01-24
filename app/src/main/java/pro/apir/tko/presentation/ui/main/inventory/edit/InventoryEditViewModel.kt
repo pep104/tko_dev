@@ -18,7 +18,6 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Project: tko-android
  */
 //TODO REFACTOR FORM PROCESSING
-//TODO CREATE NEW?
 class InventoryEditViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
 
     @AssistedInject.Factory
@@ -28,7 +27,7 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val isNewMode: LiveData<Boolean>
         get() = _isNewMode
 
-    private val _containerArea = handle.getLiveData<ContainerAreaShortModel>("containerArea")
+    private val _containerArea = handle.getLiveData<ContainerAreaShortModel>("containerArea", ContainerAreaShortModel())
     val containerArea: LiveData<ContainerAreaShortModel>
         get() = _containerArea
 
@@ -36,23 +35,14 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val images: LiveData<List<ImageModel>>
         get() = _images
 
-    fun setEditData(data: ContainerAreaShortModel) {
-        _isNewMode.value = false
-        _containerArea.value = data
-        getAllImages(data.parameters)
-    }
-
-
-    //TODO Extract?
-    private fun getAllImages(params: List<ContainerAreaParametersModel>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = arrayListOf<ImageModel>()
-            params.forEach {
-                result.addAll(it.photos)
-            }
-            _images.postValue(result)
+    fun setEditData(data: ContainerAreaShortModel?) {
+        if(data != null){
+            _isNewMode.value = false
+            _containerArea.value = data
+            getAllImages(data.parameters)
         }
     }
+
 
     //???
     fun deletePhoto(image: Int) {
@@ -73,11 +63,11 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
-    fun updateAddress(suggestionModel: SuggestionModel) {
+    fun updateAddress(addressModel: AddressModel) {
         _containerArea.value?.let {
-            it.location = suggestionModel.value
-            if (suggestionModel.lng != null && suggestionModel.lat != null)
-                it.coordinates = CoordinatesModel(suggestionModel.lng, suggestionModel.lat)
+            it.location = addressModel.value
+            if (addressModel.lng != null && addressModel.lat != null)
+                it.coordinates = CoordinatesModel(addressModel.lng, addressModel.lat)
             else
                 it.coordinates = null
         }
@@ -90,6 +80,18 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                     //TODO RESULT
                 }
             }
+        }
+    }
+
+    //
+    //TODO Extract?
+    private fun getAllImages(params: List<ContainerAreaParametersModel>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = arrayListOf<ImageModel>()
+            params.forEach {
+                result.addAll(it.photos)
+            }
+            _images.postValue(result)
         }
     }
 

@@ -9,7 +9,7 @@ import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
  * Project: tko-android
  */
 data class ContainerAreaDetailedRequest(
-        val id: Int,
+        val id: Int?,
         val coordinates: CoordinatesData?,
         val location: String?,
         val registry_number: String?,

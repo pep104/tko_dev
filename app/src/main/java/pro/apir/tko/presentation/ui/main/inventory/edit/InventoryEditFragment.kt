@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -14,9 +15,13 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.presentation.entities.AddressEntity
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
+import pro.apir.tko.presentation.ui.main.address.AddressFragment
+import pro.apir.tko.presentation.ui.main.address.AddressFragment_MembersInjector
 import pro.apir.tko.presentation.ui.main.address.AddressSharedViewModel
 
 /**
@@ -93,15 +98,21 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     private fun observeViewModel() {
 
-        viewModel.containerArea.observe(viewLifecycleOwner, Observer {
-            etRegNum.setText(it.registryNumber)
-            setLocationViews(it.location, it.coordinates?.lat, it.coordinates?.lng)
+        viewModel.containerArea.observe(viewLifecycleOwner, Observer { data ->
+            data.registryNumber?.let {
+                etRegNum.setText(it)
+            }
+
+            data.location?.let {
+                setLocationViews(data.location, data.coordinates?.lat, data.coordinates?.lng)
+            }
         })
 
-        viewModel.images.observe(viewLifecycleOwner, Observer {
-            adapter.setData(it)
+        viewModel.images.observe(viewLifecycleOwner, Observer { images ->
+            images.let {
+                adapter.setData(it)
+            }
         })
-
 
         sharedViewModel.address.observe(viewLifecycleOwner, Observer {
             setLocationViews(it.value, it.lat, it.lng)
@@ -125,7 +136,18 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
 
     private fun openAddressFragment() {
-        findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)
+        //FIXME
+        //Temp
+        val container = viewModel.containerArea.value
+        val location = container?.location
+        val coordinates = container?.coordinates
+        if (location != null && coordinates != null) {
+            val address = AddressModel(location, location, coordinates.lat, coordinates.lng)
+            findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment, bundleOf(AddressFragment.KEY_ADDRESS to address))
+        } else {
+            findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)
+        }
+
     }
 
     companion object {

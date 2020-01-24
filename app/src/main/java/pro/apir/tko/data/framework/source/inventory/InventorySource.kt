@@ -28,4 +28,8 @@ class InventorySource @Inject constructor(retrofit: Retrofit) : InventoryApi {
     override suspend fun updateContainerArea(id: Long, containerArea: ContainerAreaDetailedRequest): Response<ContainerAreaResponse> {
         return api.updateContainerArea(id, containerArea)
     }
+
+    override suspend fun createContainerArea(containerArea: ContainerAreaDetailedRequest): Response<ContainerAreaResponse> {
+        return api.createContainerArea(containerArea)
+    }
 }

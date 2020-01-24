@@ -15,11 +15,11 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardSearch"
+        style="@style/CardViewWhite8"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         android:visibility="gone"
-        app:cardCornerRadius="@dimen/round_address_cards"
         tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -101,7 +101,7 @@
         android:background="@color/white"
         android:elevation="4dp"
         android:minHeight="152dp"
-        app:cardCornerRadius="@dimen/round_address_cards"
+        style="@style/CardViewWhite8"
         app:layout_constraintBottom_toTopOf="@id/btnSave"
         tools:visibility="gone">
 

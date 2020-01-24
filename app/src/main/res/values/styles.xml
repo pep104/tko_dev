@@ -114,4 +114,9 @@
 
     </style>
 
+    <style name="CardViewWhite8">
+        <item name="cardCornerRadius">@dimen/round_address_cards</item>
+        <item name="cardBackgroundColor">@color/white</item>
+    </style>
+
 </resources>

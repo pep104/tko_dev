@@ -7,29 +7,28 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_suggestion.view.*
-import org.w3c.dom.Text
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.SuggestionModel
+import pro.apir.tko.domain.model.AddressModel
 
 /**
  * Created by antonsarmatin
  * Date: 2020-01-23
  * Project: tko-android
  */
-class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.SuggestionHolder>() {
+class AddressSearchAdapter : RecyclerView.Adapter<AddressSearchAdapter.SuggestionHolder>() {
 
-    private val data = arrayListOf<SuggestionModel>()
+    private val data = arrayListOf<AddressModel>()
 
-    private var listener: SuggestionsAdapter.OnItemClickListener? = null
+    private var listener: AddressSearchAdapter.OnItemClickListener? = null
 
     interface OnItemClickListener {
 
-        fun onAddressItemChoosed(data: SuggestionModel)
+        fun onSuggestionSelected(data: AddressModel)
 
     }
 
-    fun setList(data: List<SuggestionModel>) {
-        val diffCallback = SuggestionDiffCallback(this.data, data)
+    fun setList(data: List<AddressModel>) {
+        val diffCallback = AddressDiffCallback(this.data, data)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
         this.data.addAll(data)
@@ -60,7 +59,7 @@ class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.SuggestionHol
             textCoordinates = itemView.textCoordinates
         }
 
-        fun bind(item: SuggestionModel) {
+        fun bind(item: AddressModel) {
 
             textAddress.text = item.value
 
@@ -70,7 +69,7 @@ class SuggestionsAdapter : RecyclerView.Adapter<SuggestionsAdapter.SuggestionHol
                 textCoordinates.text = ""
             }
 
-            itemView.setOnClickListener { listener?.onAddressItemChoosed(item) }
+            itemView.setOnClickListener { listener?.onSuggestionSelected(item) }
 
         }
 

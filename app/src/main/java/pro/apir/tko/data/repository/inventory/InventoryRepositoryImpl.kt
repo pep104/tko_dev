@@ -35,8 +35,15 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
             }
             ContainerAreaParametersData(parametersModel.id, photos)
         }
-        
-        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber + "mob", params)
-        return request({ inventoryApi.updateContainerArea(model.id.toLong(), req) }, { it.toModel() })
+
+        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber, params)
+        return request({
+            if (model.id == null) {
+                inventoryApi.createContainerArea(req)
+            } else {
+                inventoryApi.updateContainerArea(model.id.toLong(), req)
+            }
+        },
+                { it.toModel() })
     }
 }

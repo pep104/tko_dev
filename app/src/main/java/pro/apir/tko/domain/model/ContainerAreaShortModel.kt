@@ -10,11 +10,15 @@ import kotlinx.android.parcel.Parcelize
  */
 @Parcelize
 data class ContainerAreaShortModel(
-        val id: Int,
+        val id: Int?,
         val area: Double?,
         val containersCount: Int?,
         var coordinates: CoordinatesModel?,
         var location: String?,
         var registryNumber: String?,
         val parameters: MutableList<ContainerAreaParametersModel>
-) : Parcelable
+) : Parcelable {
+
+    constructor() : this(null, null, null, null,null, null, mutableListOf())
+
+}

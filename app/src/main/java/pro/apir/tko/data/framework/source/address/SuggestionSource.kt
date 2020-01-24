@@ -1,6 +1,6 @@
 package pro.apir.tko.data.framework.source.address
 
-import pro.apir.tko.data.framework.network.api.AddressApi
+import pro.apir.tko.data.framework.network.api.SuggestionApi
 import pro.apir.tko.data.framework.network.model.request.SuggestionRequest
 import pro.apir.tko.data.framework.network.model.response.SuggestionResponse
 import retrofit2.Response
@@ -13,12 +13,14 @@ import javax.inject.Named
  * Date: 2020-01-23
  * Project: tko-android
  */
-class AddressSource @Inject constructor(@Named("address") retrofit: Retrofit): AddressApi{
+class SuggestionSource @Inject constructor(@Named("suggestion") suggestion: Retrofit ): SuggestionApi{
 
-    private val api by lazy { retrofit.create(AddressApi::class.java) }
+    private val api by lazy { suggestion.create(SuggestionApi::class.java) }
+
 
     override suspend fun getAddressSuggestions(request: SuggestionRequest): Response<SuggestionResponse> {
         return api.getAddressSuggestions(request)
     }
+
 
 }

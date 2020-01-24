@@ -3,9 +3,10 @@ package pro.apir.tko.di.module
 import dagger.Module
 import dagger.Provides
 import pro.apir.tko.data.framework.manager.token.TokenManager
-import pro.apir.tko.data.framework.network.api.AddressApi
+import pro.apir.tko.data.framework.network.api.SuggestionApi
 import pro.apir.tko.data.framework.network.api.AuthApi
 import pro.apir.tko.data.framework.network.api.InventoryApi
+import pro.apir.tko.data.framework.network.api.SuggestionDetailedApi
 import pro.apir.tko.data.repository.address.AddressRepository
 import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.auth.AuthRepository
@@ -27,6 +28,6 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun addressRepository(addressApi: AddressApi): AddressRepository = AddressRepositoryImpl(addressApi)
+    fun addressRepository(suggestionApi: SuggestionApi, suggestionDetailedApi: SuggestionDetailedApi): AddressRepository = AddressRepositoryImpl(suggestionApi, suggestionDetailedApi)
 
 }

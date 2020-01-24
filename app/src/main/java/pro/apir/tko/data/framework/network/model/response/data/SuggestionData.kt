@@ -1,7 +1,7 @@
 package pro.apir.tko.data.framework.network.model.response.data
 
 import com.google.gson.annotations.SerializedName
-import pro.apir.tko.domain.model.SuggestionModel
+import pro.apir.tko.domain.model.AddressModel
 
 /**
  * Created by antonsarmatin
@@ -15,6 +15,6 @@ data class SuggestionData(
         val data: SuggestionAddressData
 ){
 
-    fun toModel() = SuggestionModel(value, unrestrictedValue, data.lat, data.lng)
+    fun toModel() = AddressModel(value, unrestrictedValue, data.lat, data.lng)
 
 }

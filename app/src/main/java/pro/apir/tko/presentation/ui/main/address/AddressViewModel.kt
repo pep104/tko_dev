@@ -12,8 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.address.AddressInteractor
-import pro.apir.tko.domain.model.SuggestionModel
-import pro.apir.tko.presentation.entities.AddressEntity
+import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -30,12 +29,12 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     private var queryJob: Job? = null
 
-    private val _address = handle.getLiveData<SuggestionModel>("address")
-    val address: LiveData<SuggestionModel>
+    private val _address = handle.getLiveData<AddressModel>("address")
+    val address: LiveData<AddressModel>
         get() = _address
 
-    private val _suggestions = MutableLiveData<List<SuggestionModel>>()
-    val suggestions: LiveData<List<SuggestionModel>>
+    private val _suggestions = MutableLiveData<List<AddressModel>>()
+    val suggestions: LiveData<List<AddressModel>>
         get() = _suggestions
 
     fun query(query: String) {
@@ -50,8 +49,25 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
         }
     }
 
-    fun setChoosed(suggestionModel: SuggestionModel) {
-        _address.value = suggestionModel
+    fun setChoosed(addressModel: AddressModel) {
+        if (addressModel.lat != null && addressModel.lng != null) {
+            _address.postValue(addressModel)
+        } else {
+            fetchDetailed(addressModel)
+        }
+    }
+
+    private fun fetchDetailed(addressModel: AddressModel) {
+        queryJob?.cancel()
+        viewModelScope.launch(Dispatchers.IO) {
+            addressInteractor.getAddressDetailed(addressModel.value).fold({}, {
+                if (it.isNotEmpty() && it.first().lat != null && it.first().lng != null) {
+                    setChoosed(it.first())
+                } else {
+                    setChoosed(addressModel)
+                }
+            })
+        }
     }
 
 }

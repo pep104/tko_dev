@@ -27,7 +27,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.SuggestionModel
+import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 
@@ -36,7 +36,8 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 22.01.2020
  * Project: tko-android
  */
-class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
+//Fragment for pick or edit address of container area
+class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener {
 
     private val viewModel: AddressViewModel by viewModels()
     private val sharedViewModel: AddressSharedViewModel by activityViewModels()
@@ -54,7 +55,7 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
     private lateinit var etAddress: EditText
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var suggestionAdapter: SuggestionsAdapter
+    private lateinit var suggestionAdapter: AddressSearchAdapter
 
     private lateinit var btnSave: MaterialButton
     private lateinit var btnClearAddress: ImageView
@@ -79,9 +80,10 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectAddressFragment(this)
 
+        //Try to get AddressModel parcelable
         arguments?.let { bundle ->
             if (bundle.containsKey(KEY_ADDRESS)) {
-                viewModel.setChoosed(bundle.get(KEY_ADDRESS) as SuggestionModel)
+                viewModel.setChoosed(bundle.get(KEY_ADDRESS) as AddressModel)
             }
         }
 
@@ -97,7 +99,7 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         etAddress = view.etAddress
         btnClearAddress = view.btnClearAddress
         recyclerView = view.recyclerView
-        suggestionAdapter = SuggestionsAdapter()
+        suggestionAdapter = AddressSearchAdapter()
         suggestionAdapter.setListener(this)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = suggestionAdapter
@@ -107,8 +109,6 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         textCoordinates = view.textCoordinates
 
         btnSave = view.btnSave
-
-
         mapView = view.map
         setMap(mapView)
 
@@ -122,7 +122,12 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
             setViewState(1)
         }
 
+        view.textAddress.setOnClickListener {
+            setViewState(1)
+        }
+
         view.btnSave.setOnClickListener {
+            //Set current address to shared VM and pop back
             viewModel.address.value?.let { sharedViewModel.setAddress(it) }
             findNavController().popBackStack()
         }
@@ -131,10 +136,12 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
                 .onBackPressedDispatcher
                 .addCallback(this, object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
-                        if (cardSearch.isVisible()) {
-                            setViewState(0)
-                        } else {
+                        //Close this fragment only if state is 0 (bottom card visible)
+                        if (cardBottom.isVisible()) {
                             findNavController().navigateUp()
+                        } else {
+                            //Else show bottom card
+                            setViewState(0)
                         }
                     }
                 }
@@ -170,6 +177,7 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         })
     }
 
+    //Configure map view
     private fun setMap(mapView: MapView) {
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
@@ -183,7 +191,10 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         mapView.overlayManager.add(myLocationOverlay)
     }
 
+    //Set current map point from coordinates
     private fun setMapPoint(lat: Double, lng: Double) {
+        //
+        //FIXME Clears user location
         mapView.overlays.clear()
         mapView.controller.animateTo(GeoPoint(lat, lng))
         val location = GeoPoint(lat, lng)
@@ -194,7 +205,9 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
         mapView.overlays.add(marker)
     }
 
-    override fun onAddressItemChoosed(data: SuggestionModel) {
+    //Suggestion RecyclerView callback
+    override fun onSuggestionSelected(data: AddressModel) {
+        //Set selected suggestion to VM
         viewModel.setChoosed(data)
         setViewState(0)
     }
@@ -202,17 +215,23 @@ class AddressFragment : BaseFragment(), SuggestionsAdapter.OnItemClickListener {
     //TODO VM based
     private fun setViewState(type: Int) {
         when (type) {
+            //Bottom card visible
             0 -> {
                 cardSearch.gone()
                 btnSave.visible()
                 cardBottom.visible()
                 hideKeyboard()
             }
+            //Search card visible
             1 -> {
                 cardBottom.gone()
                 btnSave.gone()
                 cardSearch.visible()
                 etAddress.focusWithKeyboard()
+            }
+            //Location card visible
+            2 -> {
+                //TODO Location pick card
             }
         }
     }

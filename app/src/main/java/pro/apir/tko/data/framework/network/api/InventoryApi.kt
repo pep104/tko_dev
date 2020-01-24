@@ -19,8 +19,10 @@ interface InventoryApi {
     @PATCH("waste-area/container/{id}/")
     suspend fun updateContainerArea(@Path("id") id: Long, @Body containerArea: ContainerAreaDetailedRequest): Response<ContainerAreaResponse>
 
+    @POST("waste-area/container/")
+    suspend fun createContainerArea(@Body containerArea: ContainerAreaDetailedRequest): Response<ContainerAreaResponse>
+
 //    @GET("public/map/list/")
 //    suspend fun getContainerAreasByBoundingBox(@Query("lng_min") lngMin: String, @Query("lat_min") latMin: String, @Query("lng_max") lngMax: String, @Query("lat_max") latMax: String): Response<>
-
 
 }

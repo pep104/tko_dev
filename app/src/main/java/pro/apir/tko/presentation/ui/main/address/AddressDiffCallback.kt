@@ -1,16 +1,16 @@
 package pro.apir.tko.presentation.ui.main.address
 
 import androidx.recyclerview.widget.DiffUtil
-import pro.apir.tko.domain.model.SuggestionModel
+import pro.apir.tko.domain.model.AddressModel
 
 /**
  * Created by antonsarmatin
  * Date: 2020-01-23
  * Project: tko-android
  */
-class SuggestionDiffCallback(
-        private val oldList: List<SuggestionModel>,
-        private val newList: List<SuggestionModel>
+class AddressDiffCallback(
+        private val oldList: List<AddressModel>,
+        private val newList: List<AddressModel>
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
