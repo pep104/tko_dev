@@ -28,6 +28,8 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaListModel
+import pro.apir.tko.presentation.extension.addViewObserver
+import pro.apir.tko.presentation.extension.dpToPx
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
@@ -48,6 +50,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private lateinit var bottomSheetLayout: ConstraintLayout
+    private lateinit var contentLayout: ConstraintLayout
 
     private lateinit var loadingList: ProgressBar
     private lateinit var recyclerView: RecyclerView
@@ -71,6 +74,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         super.onViewCreated(view, savedInstanceState)
 
         bottomSheetLayout = view.bottomsheetInventory
+        contentLayout = view.contentInventoryList
 
         recyclerView = view.recyclerView
         loadingList = view.loadingList
@@ -100,6 +104,12 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         setMap(mapView)
 
         observeViewModel()
+
+        bottomSheetLayout.addViewObserver {
+            contentLayout.layoutParams.height = bottomSheetLayout.y.toInt() + 16.dpToPx
+            contentLayout.requestLayout()
+        }
+
     }
 
     override fun onResume() {

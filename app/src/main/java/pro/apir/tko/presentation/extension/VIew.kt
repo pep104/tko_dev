@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
@@ -148,3 +147,12 @@ fun EditText.focusWithKeyboard() {
     imm?.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
 }
 
+fun View.addViewObserver(function: () -> Unit) {
+    val view = this
+    view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            function.invoke()
+        }
+    })
+}

@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -26,6 +27,8 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
+import pro.apir.tko.presentation.extension.addViewObserver
+import pro.apir.tko.presentation.extension.dpToPx
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -46,6 +49,9 @@ class InventoryDetailedFragment : BaseFragment() {
     override fun handleFailure() = viewModel.failure
 
     private lateinit var loading: ProgressBar
+
+    private lateinit var bottomSheetLayout: ConstraintLayout
+    private lateinit var contentLayout: ConstraintLayout
 
     private lateinit var textHeader: TextView
     private lateinit var textContainerInfo: TextView
@@ -81,6 +87,10 @@ class InventoryDetailedFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         loading = view.loading
+
+        bottomSheetLayout = view.bottomsheetInventoryDetailed
+        contentLayout = view.contentInventoryDetailed
+
         textHeader = view.textHeader
         textContainerInfo = view.textContainerInfo
         textContainerNumber = view.textContainerNumber
@@ -103,6 +113,11 @@ class InventoryDetailedFragment : BaseFragment() {
         setMap(mapView)
 
         observeViewModel()
+
+        bottomSheetLayout.addViewObserver {
+            contentLayout.layoutParams.height = bottomSheetLayout.y.toInt() + 16.dpToPx
+            contentLayout.requestLayout()
+        }
     }
 
     override fun onResume() {
@@ -171,6 +186,7 @@ class InventoryDetailedFragment : BaseFragment() {
         mapView.overlays.add(marker)
     }
 
+    //TODO LOCATION
     companion object {
 
         const val KEY_ID = "id"

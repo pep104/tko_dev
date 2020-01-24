@@ -2,23 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:id="@+id/contentInventoryDetailed"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical">
 
-
-
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:background="@color/blueMain" />
-
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="450dp" />
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/btnBack"
