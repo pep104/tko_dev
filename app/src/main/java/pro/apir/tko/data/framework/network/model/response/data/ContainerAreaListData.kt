@@ -10,76 +10,30 @@ import pro.apir.tko.domain.model.ContainerAreaListModel
  */
 data class ContainerAreaListData(
         val id: Long,
-        val access: String?,
-        val area: Double?,
-        @SerializedName("close_at")
-        val closeAt: String?,
-        @SerializedName("containers_count")
-        val containersCount: Int?,
-        val coordinates: CoordinatesData?,
-        @SerializedName("coverage_type")
-        val coverageType: String?,
-        @SerializedName("events_count")
-        val eventsCount: Int?,
-        val fence: String?,
-        @SerializedName("fullness_percent")
-        val fullnessPercent: String?,
-        val has_cover: Boolean?,
         val identifier: String?,
-        @SerializedName("information_plate")
-        val informationPlate: Boolean?,
-        @SerializedName("last_update_at")
-        val lastUpdateAt: String?,
-        @SerializedName("last_update_person")
-        val lastUpdatePerson: String?,
-        val length: Double?,
+        @SerializedName("registry_nuber")
+        val registyNumber: String?,
         val location: String?,
-        @SerializedName("other_basement_description")
-        val otherBasementDescription: String?,
-        @SerializedName("owners_names")
-        val ownersNames: String?,
-        @SerializedName("owners_waste_sources_names")
-        val ownersWasteSourcesNames: String?,
-        val platform_basement: String?,
-        val registry_number: String?,
-        val remoteness: String?,
-//        @SerializedName("responsible_person")
-//        val responsiblePerson: Any,
-        @SerializedName("sources_count")
-        val sourcesCount: Int?,
         val status: String?,
-        @SerializedName("total_normative")
-        val totalNormative: Double?,
-        val width: Double?
+        val coordinates: CoordinatesData?,
+        @SerializedName("containers_count")
+        val containersCount: Int,
+        val area: Double? = 0.0,
+        @SerializedName("resoyrcetype")
+        val resourceType: String?
+
 ) {
     fun toModel(): ContainerAreaListModel {
-        val coordinates = coordinates?.toModel()
-        return ContainerAreaListModel(id,
-                access,
-                area,
-                closeAt,
+        return ContainerAreaListModel(
+                id,
+                identifier ?: "",
+                registyNumber ?: "",
+                location ?: "",
+                status ?: "",
+                coordinates?.toModel(),
                 containersCount,
-                coordinates,
-                coverageType,
-                eventsCount,
-                fence,
-                fullnessPercent,
-                has_cover,
-                identifier,
-                informationPlate,
-                lastUpdateAt,
-                lastUpdatePerson,
-                length,
-                location,
-                otherBasementDescription,
-                ownersNames,
-                ownersWasteSourcesNames,
-                platform_basement,
-                registry_number,
-                remoteness,
-                sourcesCount,
-                status,
-                totalNormative,
-                width)
+                area ?: 0.0,
+                resourceType ?: "Unknown"
+        )
     }
 }

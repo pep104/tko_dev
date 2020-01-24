@@ -46,4 +46,9 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
         },
                 { it.toModel() })
     }
+
+
+    override suspend fun getContainerAreasByBoundingBox(lngMin: String, latMin: String, lngMax: String, latMax: String, page: Int, pageSize: Int): Either<Failure, List<ContainerAreaListModel>> {
+        return request({ inventoryApi.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize) }, { it.results.map { resp -> resp.toModel() } })
+    }
 }

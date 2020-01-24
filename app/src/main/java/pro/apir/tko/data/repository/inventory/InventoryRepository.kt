@@ -18,4 +18,7 @@ interface InventoryRepository {
 
     suspend fun updateContainer(containerAreaShortModel: ContainerAreaShortModel): Either<Failure, ContainerAreaShortModel>
 
+    suspend fun getContainerAreasByBoundingBox(lngMin: String, latMin: String, lngMax: String, latMax: String, page: Int,  pageSize: Int): Either<Failure, List<ContainerAreaListModel>>
+
+
 }

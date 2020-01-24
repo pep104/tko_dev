@@ -20,4 +20,8 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
     override suspend fun updateContainer(containerAreaShortModel: ContainerAreaShortModel): Either<Failure, ContainerAreaShortModel> {
         return inventoryRepository.updateContainer(containerAreaShortModel)
     }
+
+    override suspend fun getContainerAreasByBoundingBox(lngMin: String, latMin: String, lngMax: String, latMax: String, page: Int, pageSize: Int): Either<Failure, List<ContainerAreaListModel>> {
+        return inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
+    }
 }

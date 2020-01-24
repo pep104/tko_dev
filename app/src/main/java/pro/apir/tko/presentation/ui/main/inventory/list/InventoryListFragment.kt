@@ -150,10 +150,11 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         mapJob?.cancel()
         mapJob = CoroutineScope(Dispatchers.IO).launch {
             list.forEach {
-                if (it.coordinates != null
-                        && it.coordinates.lat != 0.0 && it.coordinates.lng != 0.0
-                        && it.coordinates.lat in -85.05..85.05) {
-                    val location = GeoPoint(it.coordinates.lat, it.coordinates.lng)
+                val coordinates = it.coordinates
+                if (coordinates != null
+                        && coordinates.lat != 0.0 && coordinates.lng != 0.0
+                        && coordinates.lat in -85.05..85.05) {
+                    val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
                     marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
