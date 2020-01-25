@@ -19,7 +19,7 @@ data class ContainerAreaListData(
         @SerializedName("containers_count")
         val containersCount: Int,
         val area: Double? = 0.0,
-        @SerializedName("resoyrcetype")
+        @SerializedName("resourcetype")
         val resourceType: String?
 
 ) {

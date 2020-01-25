@@ -22,12 +22,16 @@ abstract class BaseRepository(private val tokenManager: TokenManager?, private v
                     true -> Either.Right(transform(body))
                     false -> Either.Left(Failure.ServerError)
                 }
-            } catch (exception: IOException) {
-                Log.e("failure","Failure: "+exception.localizedMessage)
-                Either.Left(Failure.Ignore)
-            } catch (exception: Throwable){
-                Log.e("failure","Failure: "+exception.localizedMessage)
-                Either.Left(Failure.ServerError)
+            } catch (exception: Throwable) {
+                Log.e("failure", "Failure: " + exception.localizedMessage)
+                when (exception) {
+                    is IOException -> {
+                        Either.Left(Failure.Ignore)
+                    }
+                    else -> {
+                        Either.Left(Failure.ServerError)
+                    }
+                }
             }
         } else {
             Either.Left(Failure.RefreshTokenExpired)

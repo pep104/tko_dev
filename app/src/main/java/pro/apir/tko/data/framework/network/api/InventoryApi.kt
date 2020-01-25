@@ -22,7 +22,7 @@ interface InventoryApi {
     @POST("waste-area/container/")
     suspend fun createContainerArea(@Body containerArea: ContainerAreaDetailedRequest): Response<ContainerAreaResponse>
 
-    @GET("public/map/list/")
+    @GET("waste-area/")
     suspend fun getContainerAreasByBoundingBox(@Query("lng_min") lngMin: String, @Query("lat_min") latMin: String, @Query("lng_max") lngMax: String, @Query("lat_max") latMax: String, @Query("page") page: Int, @Query("page_size") pageSize: Int): Response<ContainerAreaListResponse>
 
 }

@@ -2,6 +2,7 @@ package pro.apir.tko.presentation.ui.main.inventory.list
 
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -21,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_address.*
 import kotlinx.android.synthetic.main.fragment_inventory_list.view.*
 import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.*
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -120,7 +122,12 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         viewModel.testGet()
         mapView.onResume()
         myLocationOverlay?.enableMyLocation()
+
+        viewModel.zoomLevel?.let {
+            mapView.controller.zoomTo(it, 0L)
+        }
     }
+
 
     override fun onPause() {
         mapView.onPause()
@@ -157,6 +164,25 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         mapView.overlayManager.add(myLocationOverlay)
 
+        mapView.addMapListener(DelayedMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                val map = mapView.mapCenter
+                val box = mapView.boundingBox
+                Log.e("mapCallback", "scroll ${map.latitude}, ${map.longitude}")
+                Log.e("mapCallback", "scroll ${box.lonWest}, ${box.latSouth} : ${box.lonEast}, ${box.latNorth}")
+                //todo save to vm
+                //todo fetch data
+                viewModel.fetch(box.lonWest, box.latSouth, box.lonEast, box.latNorth)
+                return true
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                val map = mapView.mapCenter
+                Log.e("mapCallback", "zoom ${map.latitude}, ${map.longitude}")
+                viewModel.setZoomLevel(mapView.zoomLevelDouble)
+                return false
+            }
+        }))
 
     }
 
@@ -183,7 +209,6 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 mapView.overlays.addAll(markers)
             }
         }
-
 
     }
 

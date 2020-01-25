@@ -21,7 +21,13 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         return inventoryRepository.updateContainer(containerAreaShortModel)
     }
 
-    override suspend fun getContainerAreasByBoundingBox(lngMin: String, latMin: String, lngMax: String, latMax: String, page: Int, pageSize: Int): Either<Failure, List<ContainerAreaListModel>> {
-        return inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
+    override suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Either<Failure, List<ContainerAreaListModel>> {
+        val result = inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
+
+        return if (result is Either.Right) {
+            Either.Right(result.b.filter { it.resourceType == "ContainerWasteArea" })
+        } else {
+            result
+        }
     }
 }
