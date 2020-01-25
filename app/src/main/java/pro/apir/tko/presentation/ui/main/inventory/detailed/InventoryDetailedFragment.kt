@@ -189,10 +189,11 @@ class InventoryDetailedFragment : BaseFragment() {
         mapView.controller.setCenter(GeoPoint(lat, lng))
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)
-        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_pin)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.position = location
         mapView.overlays.add(marker)
+        mapView.overlayManager.add(myLocationOverlay)
     }
 
     companion object {
