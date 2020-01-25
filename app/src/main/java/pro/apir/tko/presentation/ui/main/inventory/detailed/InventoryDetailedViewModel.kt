@@ -11,6 +11,7 @@ import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.ContainerAreaParametersModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.ImageModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
@@ -36,8 +37,13 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
     val header: LiveData<String>
         get() = _header
 
-    fun fetchInfo(id: Long, header: String) {
+    private val _coordingates = handle.getLiveData<CoordinatesModel>("coordinates")
+    val coordinates: LiveData<CoordinatesModel>
+        get() = _coordingates
+
+    fun fetchInfo(id: Long, header: String, coordinates: CoordinatesModel) {
         setHeader(header)
+        setCoordinates(coordinates)
         if (_data.value == null) {
             loading(true)
             viewModelScope.launch(Dispatchers.IO) {
@@ -64,6 +70,12 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
     private fun setHeader(header: String) {
         if (_header.value == null) {
             _header.postValue(header)
+        }
+    }
+
+    private fun setCoordinates(coordinates: CoordinatesModel) {
+        if (_data.value == null && _coordingates.value == null) {
+            _coordingates.postValue(coordinates)
         }
     }
 

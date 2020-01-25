@@ -22,11 +22,13 @@ import kotlinx.coroutines.Job
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.presentation.extension.addViewObserver
 import pro.apir.tko.presentation.extension.dpToPx
 import pro.apir.tko.presentation.extension.goneWithFade
@@ -78,7 +80,8 @@ class InventoryDetailedFragment : BaseFragment() {
         arguments?.let {
             val id = it.getLong(KEY_ID, 0L)
             val header = it.getString(KEY_HEADER, "")
-            viewModel.fetchInfo(id, header)
+            val coordinates = it.getParcelable<CoordinatesModel>(KEY_COORDINATES)
+            viewModel.fetchInfo(id, header, coordinates)
         }
 
     }
@@ -146,9 +149,9 @@ class InventoryDetailedFragment : BaseFragment() {
 
             textContainerInfo.text = getString(R.string.text_container_detailed_info, pluredCount, area.toString())
 
-            it.coordinates?.let { coord ->
-                setMapPoint(coord.lat, coord.lng)
-            }
+//            it.coordinates?.let { coord ->
+//                setMapPoint(coord.lat, coord.lng)
+//            }
 
             loading.goneWithFade()
             imgThrash.visible()
@@ -162,11 +165,17 @@ class InventoryDetailedFragment : BaseFragment() {
         viewModel.header.observe(viewLifecycleOwner, Observer {
             textHeader.text = it
         })
+
+        viewModel.coordinates.observe(viewLifecycleOwner, Observer {
+            it?.let { setMapPoint(it.lat, it.lng) }
+        })
     }
 
     private fun setMap(mapView: MapView) {
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mapView.setMultiTouchControls(true)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.controller.zoomTo(17.0, 0L)
 
         val locationProvider = GpsMyLocationProvider(context)
@@ -186,11 +195,11 @@ class InventoryDetailedFragment : BaseFragment() {
         mapView.overlays.add(marker)
     }
 
-    //TODO LOCATION
     companion object {
 
         const val KEY_ID = "id"
         const val KEY_HEADER = "header"
+        const val KEY_COORDINATES = "coordinates"
 
     }
 

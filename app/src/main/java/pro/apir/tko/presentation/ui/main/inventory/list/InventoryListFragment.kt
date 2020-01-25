@@ -17,11 +17,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
 import kotlinx.android.synthetic.main.content_inventory_list.view.*
+import kotlinx.android.synthetic.main.fragment_address.*
 import kotlinx.android.synthetic.main.fragment_inventory_list.view.*
 import kotlinx.coroutines.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -145,6 +147,8 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private fun setMap(mapView: MapView) {
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mapView.setMultiTouchControls(true)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.controller.zoomTo(12.0, 0L)
 
         val locationProvider = GpsMyLocationProvider(context)
@@ -152,6 +156,8 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         myLocationOverlay?.enableFollowLocation()
 
         mapView.overlayManager.add(myLocationOverlay)
+
+
     }
 
     //TODO to vm and background task
@@ -182,6 +188,11 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     }
 
     override fun onItemClicked(item: ContainerAreaListModel) {
-        findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryDetailedFragment, bundleOf(InventoryDetailedFragment.KEY_ID to item.id, InventoryDetailedFragment.KEY_HEADER to item.location))
+        findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryDetailedFragment,
+                bundleOf(
+                        InventoryDetailedFragment.KEY_ID to item.id,
+                        InventoryDetailedFragment.KEY_HEADER to item.location,
+                        InventoryDetailedFragment.KEY_COORDINATES to item.coordinates
+                ))
     }
 }
