@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -190,7 +191,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private fun setMarkers(list: List<ContainerAreaListModel>) {
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()
-        mapJob = CoroutineScope(Dispatchers.IO).launch {
+        mapJob = lifecycleScope.launch(Dispatchers.IO) {
             list.forEach {
                 val coordinates = it.coordinates
                 if (coordinates != null

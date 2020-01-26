@@ -1,11 +1,18 @@
 package pro.apir.tko.presentation.ui.main
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.lifecycle.Observer
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseActivity
+
+const val KEY_EVENT_ACTION = "key_event_action"
+const val KEY_EVENT_EXTRA = "key_event_extra"
+private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
 class MainActivity : BaseActivity() {
 
@@ -19,6 +26,16 @@ class MainActivity : BaseActivity() {
         observeGlobalState()
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        return when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                val intent = Intent(KEY_EVENT_ACTION).apply { putExtra(KEY_EVENT_EXTRA, keyCode) }
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+                true
+            }
+            else -> super.onKeyDown(keyCode, event)
+        }
+    }
 
     private fun observeGlobalState(){
         globalState.userState.observe(this, Observer {

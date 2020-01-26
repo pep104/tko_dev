@@ -12,6 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
@@ -23,6 +30,7 @@ import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
 import pro.apir.tko.presentation.ui.main.address.AddressFragment_MembersInjector
 import pro.apir.tko.presentation.ui.main.address.AddressSharedViewModel
+import java.util.jar.Manifest
 
 /**
  * Created by Антон Сарматин
@@ -46,6 +54,8 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     private lateinit var textAddress: TextView
     private lateinit var textCoordinates: TextView
 
+    private lateinit var btnAddPhoto: MaterialButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectInventoryEditFragment(this)
@@ -68,6 +78,8 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
                 view.textToolbarTitle.text = getString(R.string.title_container_edit)
             }
         })
+
+        btnAddPhoto = view.btnAddPhoto.also { it.isEnabled = false }
 
         etRegNum = view.et
         textAddress = view.textAddress
@@ -93,6 +105,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             viewModel.save()
         }
 
+        askForPemission()
         observeViewModel()
     }
 
@@ -148,6 +161,27 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)
         }
 
+    }
+
+    private fun askForPemission() {
+        Dexter.withActivity(activity).withPermission(android.Manifest.permission.CAMERA).withListener(object : PermissionListener {
+            override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+                btnAddPhoto.apply {
+                    isEnabled = true
+                    setOnClickListener {
+                        findNavController().navigate(R.id.action_inventoryEditFragment_to_cameraFragment)
+                    }
+                }
+            }
+
+            override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
+                token?.continuePermissionRequest()
+            }
+
+            override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+
+            }
+        }).check()
     }
 
     companion object {
