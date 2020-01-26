@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_container_list.view.*
 import pro.apir.tko.R
@@ -27,10 +28,11 @@ class ContainerListAdapter : RecyclerView.Adapter<ContainerListAdapter.Container
     }
 
     fun setList(list: List<ContainerAreaListModel>) {
-        //TODO diffutil
+        val diffCallback = ContainerDiffCallback(this.data, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
         this.data.addAll(list)
-        notifyItemRangeInserted(0, list.size)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setListener(listener: OnItemClickListener?) {
