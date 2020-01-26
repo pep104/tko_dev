@@ -9,6 +9,7 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
@@ -56,8 +57,7 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted handle: Saved
 
     fun fetch(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double) {
         //TODO COUNT DELTA?
-
-        //TODO CATCH EXCEPTION
+        //FIXME coroutine cancellation
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500).fold(::handleFailure) {

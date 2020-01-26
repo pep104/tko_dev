@@ -1,11 +1,16 @@
 package pro.apir.tko.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import retrofit2.Response
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
 abstract class BaseRepository(private val tokenManager: TokenManager?, private val tokenStrategy: TokenStrategy? = TokenStrategy.CHECK) {
 
@@ -26,6 +31,10 @@ abstract class BaseRepository(private val tokenManager: TokenManager?, private v
                 Log.e("failure", "Failure: " + exception.localizedMessage)
                 when (exception) {
                     is IOException -> {
+                        Either.Left(Failure.Ignore)
+                    }
+                    //WARNING
+                    is CancellationException -> {
                         Either.Left(Failure.Ignore)
                     }
                     else -> {

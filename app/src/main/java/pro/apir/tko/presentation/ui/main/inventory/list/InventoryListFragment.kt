@@ -206,7 +206,9 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 }
             }
             withContext(Dispatchers.Main) {
+                mapView.overlays.clear()
                 mapView.overlays.addAll(markers)
+                mapView.overlayManager.add(myLocationOverlay)
             }
         }
 
