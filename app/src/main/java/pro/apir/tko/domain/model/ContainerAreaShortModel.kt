@@ -16,7 +16,7 @@ data class ContainerAreaShortModel(
         var coordinates: CoordinatesModel?,
         var location: String?,
         var registryNumber: String?,
-        var photos: String?
+        var photos: List<ImageModel>?
 ) : Parcelable {
 
     constructor() : this(null, null, null, null,null, null, null)

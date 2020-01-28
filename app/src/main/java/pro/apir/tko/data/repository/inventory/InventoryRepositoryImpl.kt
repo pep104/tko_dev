@@ -5,10 +5,10 @@ import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.model.request.ContainerAreaDetailedRequest
-import pro.apir.tko.data.framework.network.model.response.data.ContainerAreaParametersData
+import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
-import pro.apir.tko.data.framework.network.model.response.data.ImageData
 import pro.apir.tko.data.repository.BaseRepository
+import pro.apir.tko.domain.model.ContainerAreaEditModel
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import javax.inject.Inject
@@ -25,19 +25,11 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
         return result
     }
 
-    override suspend fun updateContainer(model: ContainerAreaShortModel): Either<Failure, ContainerAreaShortModel> {
+    override suspend fun updateContainer(model: ContainerAreaEditModel): Either<Failure, ContainerAreaShortModel> {
         val coordinatesModel = model.coordinates
         val coordinatesData = if (coordinatesModel != null) CoordinatesData(coordinatesModel.lng, coordinatesModel.lat) else null
 
-        //TODO PHOTOS
-//        val params = model.parameters.map { parametersModel ->
-//            val photos = parametersModel.photos.map {
-//                ImageData(it.side, it.image, it.url)
-//            }
-//            ContainerAreaParametersData(parametersModel.id, photos)
-//        }
-
-        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber)
+        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber, model.photos?.map { ImageRequestData(it.image) })
         return request({
             if (model.id == null) {
                 inventoryApi.createContainerArea(req)

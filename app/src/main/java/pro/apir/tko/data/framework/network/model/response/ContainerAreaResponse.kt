@@ -1,8 +1,8 @@
 package pro.apir.tko.data.framework.network.model.response
 
 import com.google.gson.annotations.SerializedName
-import pro.apir.tko.data.framework.network.model.response.data.ContainerAreaParametersData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
+import pro.apir.tko.data.framework.network.model.response.data.ImageData
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 
 /**
@@ -54,7 +54,7 @@ data class ContainerAreaResponse(
         @SerializedName("total_normative")
         val totalNormative: Double?,
         val width: Double?,
-        val photos: String?
+        val photos: List<ImageData>?
 ) {
     //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel(): ContainerAreaShortModel {
@@ -66,6 +66,6 @@ data class ContainerAreaResponse(
                 coordinates,
                 location,
                 registryNumber,
-                photos)
+                photos?.map { it.toModel() })
     }
 }

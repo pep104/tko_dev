@@ -37,6 +37,5 @@ data class ContainerAreaDetailedModel(
         val sourcesCount: Int?,
         val status: String? = "this was null",
         val totalNormative: Double?,
-        val width: Double?,
-        val parameters: List<ContainerAreaParametersModel>
+        val width: Double?
 ) : Parcelable

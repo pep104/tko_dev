@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
-import pro.apir.tko.domain.model.ContainerAreaParametersModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.ImageModel
@@ -53,7 +52,7 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
         if (_data.value == null) {
             loading(true)
             viewModelScope.launch(Dispatchers.IO) {
-                inventoryInteractor.getContainerDetailed(id).fold(::handleFailure) {
+                inventoryInteractor.getContainerArea(id).fold(::handleFailure) {
                     _data.postValue(it)
                     //TODO PHOTOS
 //                    getAllImages(it.parameters)
@@ -63,16 +62,7 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
         }
     }
 
-    //TODO Extract?
-    private fun getAllImages(params: List<ContainerAreaParametersModel>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = arrayListOf<ImageModel>()
-            params.forEach {
-                result.addAll(it.photos)
-            }
-            _images.postValue(result)
-        }
-    }
+
 
     private fun setHeader(header: String) {
         if (_header.value == null) {

@@ -3,6 +3,7 @@ package pro.apir.tko.di.module
 import dagger.Module
 import dagger.Provides
 import pro.apir.tko.data.repository.address.AddressRepository
+import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.auth.AuthRepository
 import pro.apir.tko.data.repository.inventory.InventoryRepository
 import pro.apir.tko.domain.interactors.address.AddressInteractor
@@ -23,7 +24,7 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun inventoryInteractor(inventoryRepository: InventoryRepository): InventoryInteractor = InventoryInteractorImpl(inventoryRepository)
+    fun inventoryInteractor(inventoryRepository: InventoryRepository, attachmentRepository: AttachmentRepository): InventoryInteractor = InventoryInteractorImpl(inventoryRepository, attachmentRepository)
 
     @Provides
     @Singleton

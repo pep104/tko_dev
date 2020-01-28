@@ -14,9 +14,9 @@ import pro.apir.tko.data.framework.manager.preferences.PreferencesManagerImpl
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.manager.token.TokenManagerImpl
 import pro.apir.tko.data.framework.network.NetworkHandler
-import pro.apir.tko.data.framework.network.api.SuggestionApi
 import pro.apir.tko.data.framework.network.api.AuthApi
 import pro.apir.tko.data.framework.network.api.InventoryApi
+import pro.apir.tko.data.framework.network.api.SuggestionApi
 import pro.apir.tko.data.framework.network.api.SuggestionDetailedApi
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
 import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
@@ -24,6 +24,8 @@ import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
 import pro.apir.tko.data.framework.source.address.SuggestionDetailedSource
 import pro.apir.tko.data.framework.source.address.SuggestionSource
+import pro.apir.tko.data.framework.source.attachment.AttachmentSource
+import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
 import pro.apir.tko.data.framework.source.auth.AuthSource
 import pro.apir.tko.data.framework.source.inventory.InventorySource
 import retrofit2.Retrofit
@@ -182,10 +184,14 @@ class FrameworkModule {
 
     @Singleton
     @Provides
+    fun attachmentApi(retrofit: Retrofit): IAttachmentSource = AttachmentSource(retrofit)
+
+    @Singleton
+    @Provides
     fun suggestionApi(@Named("suggestion") retrofit: Retrofit): SuggestionApi = SuggestionSource(retrofit)
 
     @Singleton
     @Provides
-    fun suggestionDetailedApo(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
+    fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
 
 }

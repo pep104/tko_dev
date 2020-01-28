@@ -54,18 +54,9 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         _images.notifyObserver()
     }
 
-    //???
-    fun deletePhoto(image: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _containerArea.value?.let {
-                //TODO PHOTOS
-//                it.parameters.forEach {
-//                    it.photos.removeAll { it.image == image }
-//                }
-//                getAllImages(it.parameters)
-            }
 
-        }
+    fun deletePhoto(image: Int) {
+        //TODO
     }
 
     fun updateRegNum(text: String) {
@@ -87,9 +78,9 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
             _containerArea.value?.let {
-                inventoryInteractor.updateContainer(it).fold(::handleFailure) {
-                    //TODO RESULT
-                }
+//                inventoryInteractor.updateContainer(it).fold(::handleFailure) {
+//                    //TODO RESULT
+//                }
             }
         }
     }
