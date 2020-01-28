@@ -2,15 +2,15 @@ package pro.apir.tko.presentation.ui.main.address
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import pro.apir.tko.domain.model.AddressModel
+import pro.apir.tko.presentation.platform.BaseSharedViewModel
 
 /**
  * Created by Антон Сарматин
  * Date: 23.01.2020
  * Project: tko-android
  */
-class AddressSharedViewModel : ViewModel() {
+class AddressSharedViewModel : BaseSharedViewModel() {
 
     private val _address = MutableLiveData<AddressModel>()
     val address: LiveData<AddressModel>
@@ -20,4 +20,7 @@ class AddressSharedViewModel : ViewModel() {
         _address.postValue(data)
     }
 
+    override fun consume() {
+        _address.postValue(null)
+    }
 }

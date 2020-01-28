@@ -3,6 +3,7 @@ package pro.apir.tko.di.component
 import dagger.Subcomponent
 import pro.apir.tko.di.module.PresentationModule
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
+import pro.apir.tko.presentation.ui.main.camera.CameraFragment
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
 import pro.apir.tko.presentation.ui.main.inventory.list.InventoryListFragment
@@ -26,5 +27,7 @@ interface MainComponent {
     fun injectInventoryEditFragment(fragment: InventoryEditFragment)
 
     fun injectAddressFragment(fragment: AddressFragment)
+
+    fun injectCameraFragment(fragment: CameraFragment)
 
 }

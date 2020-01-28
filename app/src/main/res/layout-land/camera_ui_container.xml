@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layoutDirection="ltr"
-    android:background="@color/black"
+    tools:background="@color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@id/camera_switch_button"
+        android:id="@id/btnAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@id/camera_capture_button"
+        android:id="@id/btnShutter"
         android:layout_width="@dimen/round_button_large"
         android:layout_height="@dimen/round_button_large"
         android:layout_marginEnd="@dimen/shutter_button_margin"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/photo_view_button"
+        android:id="@+id/imagePreview"
         android:layout_width="@dimen/round_button_previews"
         android:layout_height="@dimen/round_button_previews"
         android:layout_marginBottom="24dp"
@@ -43,7 +43,22 @@
         android:padding="@dimen/spacing_large"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/camera_capture_button"
-        app:layout_constraintStart_toStartOf="@+id/camera_capture_button" />
+        app:layout_constraintEnd_toEndOf="@+id/btnShutter"
+        app:layout_constraintStart_toStartOf="@+id/btnShutter" />
+
+    <TextView
+        android:id="@+id/textBadge"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/shape_oval_white"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toTopOf="@+id/imagePreview"
+        app:layout_constraintEnd_toEndOf="@+id/imagePreview"
+        app:layout_constraintStart_toEndOf="@+id/imagePreview"
+        app:layout_constraintTop_toTopOf="@+id/imagePreview"
+        tools:text="2" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.inventory.edit
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -24,13 +25,11 @@ import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
-import pro.apir.tko.presentation.entities.AddressEntity
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
-import pro.apir.tko.presentation.ui.main.address.AddressFragment_MembersInjector
 import pro.apir.tko.presentation.ui.main.address.AddressSharedViewModel
-import java.util.jar.Manifest
+import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel
 
 /**
  * Created by Антон Сарматин
@@ -40,7 +39,8 @@ import java.util.jar.Manifest
 class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemClickListener {
 
     private val viewModel: InventoryEditViewModel by viewModels()
-    private val sharedViewModel: AddressSharedViewModel by activityViewModels()
+    private val sharedAddressViewModel: AddressSharedViewModel by activityViewModels()
+    private val sharedCameraViewModel: CameraSharedViewModel by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_inventory_edit
 
@@ -127,10 +127,23 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             }
         })
 
-        sharedViewModel.address.observe(viewLifecycleOwner, Observer {
-            setLocationViews(it.value, it.lat, it.lng)
-            viewModel.updateAddress(it)
+        sharedAddressViewModel.address.observe(viewLifecycleOwner, Observer {
+            if (it != null){
+                //todo observe?
+                setLocationViews(it.value, it.lat, it.lng)
+                viewModel.updateAddress(it)
+                sharedAddressViewModel.consume()
+            }
         })
+
+        sharedCameraViewModel.photos.observe(viewLifecycleOwner, Observer {
+            if (!it.isNullOrEmpty()) {
+                Log.e("edit", "camera observe callback")
+                viewModel.addNewPhotos(it)
+                sharedCameraViewModel.consume()
+            }
+        })
+
     }
 
     override fun onDestroyView() {

@@ -1,7 +1,7 @@
 package pro.apir.tko.presentation.ui.main.inventory.edit
 
 import androidx.recyclerview.widget.DiffUtil
-import pro.apir.tko.domain.model.ImageModel
+import pro.apir.tko.presentation.entities.PhotoWrapper
 
 /**
  * Created by Антон Сарматин
@@ -9,8 +9,8 @@ import pro.apir.tko.domain.model.ImageModel
  * Project: tko-android
  */
 class ContainerEditImagesDiffCallback(
-        private val oldList: List<ImageModel>,
-        private val newList: List<ImageModel>
+        private val oldList: List<PhotoWrapper>,
+        private val newList: List<PhotoWrapper>
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -18,7 +18,7 @@ class ContainerEditImagesDiffCallback(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].image == newList[newItemPosition].image
+        return oldList[oldItemPosition].new == newList[newItemPosition].new || oldList[oldItemPosition].uploaded?.image == newList[newItemPosition].uploaded?.image
     }
 
     override fun getOldListSize() = oldList.size

@@ -10,6 +10,7 @@ import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.di.ViewModelKey
 import pro.apir.tko.presentation.ui.main.GlobalState
 import pro.apir.tko.presentation.ui.main.address.AddressViewModel
+import pro.apir.tko.presentation.ui.main.camera.CameraViewModel
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedViewModel
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditViewModel
 import pro.apir.tko.presentation.ui.main.inventory.list.InventoryListViewModel
@@ -70,5 +71,10 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(AddressViewModel::class)
     abstract fun bindAddressViewModelFactory(f: AddressViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CameraViewModel::class)
+    abstract fun bindCameraViewModelFactory(f: CameraViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
 }

@@ -9,8 +9,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
-import pro.apir.tko.domain.model.*
+import pro.apir.tko.domain.model.AddressModel
+import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.domain.model.CoordinatesModel
+import pro.apir.tko.presentation.entities.PhotoWrapper
+import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.platform.BaseViewModel
+import java.io.File
 
 /**
  * Created by Антон Сарматин
@@ -31,12 +36,12 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val containerArea: LiveData<ContainerAreaShortModel>
         get() = _containerArea
 
-    private val _images = handle.getLiveData<List<ImageModel>>("images")
-    val images: LiveData<List<ImageModel>>
+    private val _images = handle.getLiveData<MutableList<PhotoWrapper>>("images", mutableListOf())
+    val images: LiveData<MutableList<PhotoWrapper>>
         get() = _images
 
     fun setEditData(data: ContainerAreaShortModel?) {
-        if(data != null){
+        if (data != null) {
             _isNewMode.value = false
             _containerArea.value = data
             //TODO PHOTOS
@@ -44,6 +49,10 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
+    fun addNewPhotos(list: List<File>) {
+        _images.value?.addAll(list.map { PhotoWrapper(it) })
+        _images.notifyObserver()
+    }
 
     //???
     fun deletePhoto(image: Int) {
@@ -85,16 +94,5 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
-    //
-    //TODO Extract?
-    private fun getAllImages(params: List<ContainerAreaParametersModel>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val result = arrayListOf<ImageModel>()
-            params.forEach {
-                result.addAll(it.photos)
-            }
-            _images.postValue(result)
-        }
-    }
 
 }

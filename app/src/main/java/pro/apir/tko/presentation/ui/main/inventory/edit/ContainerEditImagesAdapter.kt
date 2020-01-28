@@ -12,7 +12,7 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.item_image_container_edit_list.view.*
 import kotlinx.android.synthetic.main.item_image_container_list.view.imageView
 import pro.apir.tko.R
-import pro.apir.tko.domain.model.ImageModel
+import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.extension.dpToPx
 
 /**
@@ -20,10 +20,9 @@ import pro.apir.tko.presentation.extension.dpToPx
  * Date: 22.01.2020
  * Project: tko-android
  */
-class ContainerEditImagesAdapter: RecyclerView.Adapter<ContainerEditImagesAdapter.ImageHolder>() {
+class ContainerEditImagesAdapter : RecyclerView.Adapter<ContainerEditImagesAdapter.ImageHolder>() {
 
-
-    private val data = arrayListOf<ImageModel>()
+    private val data = arrayListOf<PhotoWrapper>()
 
     private var listener: OnItemClickListener? = null
 
@@ -33,15 +32,16 @@ class ContainerEditImagesAdapter: RecyclerView.Adapter<ContainerEditImagesAdapte
 
     }
 
-    fun setData(data: List<ImageModel>) {
-        val diffCallback = ContainerEditImagesDiffCallback(this.data,data)
+    fun setData(data: List<PhotoWrapper>) {
+        val diffCallback = ContainerEditImagesDiffCallback(this.data, data)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
         this.data.addAll(data)
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun setListener(listener: OnItemClickListener?){
+
+    fun setListener(listener: OnItemClickListener?) {
         this.listener = listener
     }
 
@@ -65,13 +65,21 @@ class ContainerEditImagesAdapter: RecyclerView.Adapter<ContainerEditImagesAdapte
             btnDelete = itemView.btnDelete
         }
 
-        fun bind(item: ImageModel, pos: Int) {
-            Glide.with(imageView)
-                    .load(imageView.context.getString(R.string.url_file, item.url))
-                    .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
-                    .into(imageView)
+        fun bind(item: PhotoWrapper, pos: Int) {
+            if (item.uploaded != null){
+                Glide.with(imageView)
+                        .load(imageView.context.getString(R.string.url_file, item.uploaded.url))
+                        .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
+                        .into(imageView)
+            }else if(item.new != null){
+                Glide.with(imageView)
+                        .load(item.new)
+                        .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
+                        .into(imageView)
+            }
         }
 
     }
+
 
 }

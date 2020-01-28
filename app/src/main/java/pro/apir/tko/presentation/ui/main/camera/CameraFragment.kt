@@ -14,62 +14,48 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.hardware.Camera
 import android.hardware.display.DisplayManager
-import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.KeyEvent
-import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
-import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.camera.core.AspectRatio
-import androidx.camera.core.CameraX
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageAnalysisConfig
-import androidx.camera.core.ImageCapture
+import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.CaptureMode
 import androidx.camera.core.ImageCapture.Metadata
-import androidx.camera.core.ImageCaptureConfig
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
-import androidx.camera.core.PreviewConfig
-import androidx.navigation.Navigation
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.setPadding
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.request.RequestOptions
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import pro.apir.tko.R
-import pro.apir.tko.presentation.extension.ANIMATION_FAST_MILLIS
-import pro.apir.tko.presentation.extension.ANIMATION_SLOW_MILLIS
-import pro.apir.tko.presentation.extension.dpToPx
-import pro.apir.tko.presentation.extension.simulateClick
+import pro.apir.tko.presentation.extension.*
+import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.KEY_EVENT_ACTION
 import pro.apir.tko.presentation.ui.main.KEY_EVENT_EXTRA
+import pro.apir.tko.presentation.ui.main.MainActivity
 import pro.apir.tko.presentation.utils.AutoFitPreviewBuilder
 import java.io.File
-import java.lang.Exception
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
-import java.util.ArrayDeque
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.collections.average
+import kotlin.collections.forEach
+import kotlin.collections.isNullOrEmpty
+import kotlin.collections.last
+import kotlin.collections.map
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -83,7 +69,14 @@ typealias LumaListener = (luma: Double) -> Unit
  * - Photo taking
  * - Image analysis
  */
-class CameraFragment : Fragment() {
+class CameraFragment : BaseFragment() {
+
+    private val viewModel: CameraViewModel by viewModels()
+    private val sharedViewModel: CameraSharedViewModel by activityViewModels()
+
+    override fun layoutId() = R.layout.fragment_camera
+
+    override fun handleFailure() = viewModel.failure
 
     private lateinit var container: ConstraintLayout
     private lateinit var viewFinder: TextureView
@@ -104,7 +97,7 @@ class CameraFragment : Fragment() {
                 // When the volume down button is pressed, simulate a shutter button click
                 KeyEvent.KEYCODE_VOLUME_DOWN -> {
                     val shutter = container
-                            .findViewById<ImageButton>(R.id.camera_capture_button)
+                            .findViewById<ImageButton>(R.id.btnShutter)
                     shutter.simulateClick()
                 }
             }
@@ -134,6 +127,7 @@ class CameraFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appComponent.createMainComponent().injectCameraFragment(this)
         mainExecutor = ContextCompat.getMainExecutor(requireContext())
     }
 
@@ -151,29 +145,27 @@ class CameraFragment : Fragment() {
         displayManager.unregisterDisplayListener(displayListener)
     }
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_camera, container, false)
+    private fun observeViewModel() {
 
-    private fun setGalleryThumbnail(file: File) {
-        // Reference of the view that holds the gallery thumbnail
-        val thumbnail = container.findViewById<ImageButton>(R.id.photo_view_button)
+        viewModel.photos.observe(viewLifecycleOwner, Observer {
+            val preview = container.findViewById<ImageButton>(R.id.imagePreview)
+            val textBadge = container.findViewById<TextView>(R.id.textBadge)
+            if (it.isNullOrEmpty()) {
+                textBadge.gone()
+                preview.gone()
+            } else {
+                textBadge.text = it.size.toString()
+                textBadge.visible()
+                Glide.with(preview)
+                        .load(it.last())
+                        .transform(CenterCrop(), RoundedCornersTransformation(6.dpToPx, 0))
+                        .into(preview)
+                preview.visible()
+            }
+        })
 
-        // Run the operations in the view's thread
-        thumbnail.post {
-
-            // Remove thumbnail padding
-            thumbnail.setPadding(resources.getDimension(R.dimen.stroke_small).toInt())
-
-            // Load thumbnail into circular button using Glide
-            Glide.with(thumbnail)
-                    .load(file)
-                    .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
-                    .into(thumbnail)
-        }
     }
+
 
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
     private val imageSavedListener = object : ImageCapture.OnImageSavedListener {
@@ -186,27 +178,29 @@ class CameraFragment : Fragment() {
         override fun onImageSaved(photoFile: File) {
             Log.d(TAG, "Photo capture succeeded: ${photoFile.absolutePath}")
 
+            viewModel.addImage(photoFile)
+
             // We can only change the foreground Drawable using API level 23+ API
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//
+//                // Update the gallery thumbnail with latest picture taken
+//                setGalleryThumbnail(photoFile)
+//            }
 
-                // Update the gallery thumbnail with latest picture taken
-                setGalleryThumbnail(photoFile)
-            }
-
-            // Implicit broadcasts will be ignored for devices running API
-            // level >= 24, so if you only target 24+ you can remove this statement
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                requireActivity().sendBroadcast(
-                        Intent(Camera.ACTION_NEW_PICTURE, Uri.fromFile(photoFile)))
-            }
-
-            // If the folder selected is an external media directory, this is unnecessary
-            // but otherwise other apps will not be able to access our images unless we
-            // scan them using [MediaScannerConnection]
-            val mimeType = MimeTypeMap.getSingleton()
-                    .getMimeTypeFromExtension(photoFile.extension)
-            MediaScannerConnection.scanFile(
-                    context, arrayOf(photoFile.absolutePath), arrayOf(mimeType), null)
+//            // Implicit broadcasts will be ignored for devices running API
+//            // level >= 24, so if you only target 24+ you can remove this statement
+//            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+//                requireActivity().sendBroadcast(
+//                        Intent(Camera.ACTION_NEW_PICTURE, Uri.fromFile(photoFile)))
+//            }
+//
+//            // If the folder selected is an external media directory, this is unnecessary
+//            // but otherwise other apps will not be able to access our images unless we
+//            // scan them using [MediaScannerConnection]
+//            val mimeType = MimeTypeMap.getSingleton()
+//                    .getMimeTypeFromExtension(photoFile.extension)
+//            MediaScannerConnection.scanFile(
+//                    context, arrayOf(photoFile.absolutePath), arrayOf(mimeType), null)
         }
     }
 
@@ -227,7 +221,7 @@ class CameraFragment : Fragment() {
         displayManager.registerDisplayListener(displayListener, null)
 
         // Determine the output directory
-//        outputDirectory = MainActivity.getOutputDirectory(requireContext())
+        outputDirectory = MainActivity.getOutputDirectory(requireContext())
 
         // Wait for the views to be properly laid out
         viewFinder.post {
@@ -237,13 +231,7 @@ class CameraFragment : Fragment() {
             // Build UI controls and bind all camera use cases
             updateCameraUi()
             bindCameraUseCases()
-
-            // In the background, load latest photo taken (if any) for gallery thumbnail
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                outputDirectory.listFiles { file ->
-//                    EXTENSION_WHITELIST.contains(file.extension.toUpperCase())
-//                }?.max()?.let { setGalleryThumbnail(it) }
-//            }
+            observeViewModel()
         }
     }
 
@@ -355,11 +343,12 @@ class CameraFragment : Fragment() {
         val controls = View.inflate(requireContext(), R.layout.camera_ui_container, container)
 
         // Listener for button used to capture photo
-        controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
+        controls.findViewById<ImageButton>(R.id.btnShutter).setOnClickListener {
             // Get a stable reference of the modifiable image capture use case
             imageCapture?.let { imageCapture ->
 
                 // Create output file to hold the image
+                //TODO SAVE HERE OR VIA VM???
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
 
                 // Setup image capture metadata
@@ -384,29 +373,18 @@ class CameraFragment : Fragment() {
             }
         }
 
-        // Listener for button used to switch cameras
-        controls.findViewById<TextView>(R.id.camera_switch_button).setOnClickListener {
-            lensFacing = if (CameraX.LensFacing.FRONT == lensFacing) {
-                CameraX.LensFacing.BACK
-            } else {
-                CameraX.LensFacing.FRONT
-            }
-            try {
-                // Only bind use cases if we can query a camera with this orientation
-                CameraX.getCameraWithLensFacing(lensFacing)
 
-                // Unbind all use cases and bind them again with the new lens facing configuration
-                CameraX.unbindAll()
-                bindCameraUseCases()
-            } catch (exc: Exception) {
-                // Do nothing
-            }
+        controls.findViewById<TextView>(R.id.btnAction).setOnClickListener {
+            //TODO ACTION
         }
 
         // Listener for button used to view last photo
-        controls.findViewById<ImageButton>(R.id.photo_view_button).setOnClickListener {
-//            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
-//                    CameraFragmentDirections.actionCameraToGallery(outputDirectory.absolutePath))
+        controls.findViewById<ImageButton>(R.id.imagePreview).setOnClickListener {
+            //TODO SUBMIT ACTION?
+            val data = viewModel.photos.value
+            if (data != null)
+                sharedViewModel.setImages(data)
+            findNavController().navigateUp()
         }
     }
 
@@ -494,7 +472,7 @@ class CameraFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "CameraXBasic"
+        private const val TAG = "TKO"
         private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val PHOTO_EXTENSION = ".jpg"
         private const val RATIO_4_3_VALUE = 4.0 / 3.0

@@ -1,5 +1,6 @@
 package pro.apir.tko.presentation.ui.main
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseActivity
+import java.io.File
 
 const val KEY_EVENT_ACTION = "key_event_action"
 const val KEY_EVENT_EXTRA = "key_event_extra"
@@ -45,6 +47,18 @@ class MainActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    companion object {
+
+        fun getOutputDirectory(context: Context): File {
+            val appContext = context.applicationContext
+            val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
+                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
+            return if (mediaDir != null && mediaDir.exists())
+                mediaDir else appContext.filesDir
+        }
+
     }
 
 }
