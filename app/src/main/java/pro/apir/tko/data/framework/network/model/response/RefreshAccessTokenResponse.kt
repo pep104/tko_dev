@@ -11,6 +11,7 @@ import pro.apir.tko.domain.model.AccessTokenModel
  */
 data class RefreshAccessTokenResponse(@SerializedName("access") val accessRefreshed: String) : BaseResponse() {
 
+    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = AccessTokenModel(accessRefreshed)
 
 }

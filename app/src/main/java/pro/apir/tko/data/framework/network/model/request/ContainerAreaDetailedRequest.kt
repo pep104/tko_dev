@@ -12,6 +12,5 @@ data class ContainerAreaDetailedRequest(
         val id: Int?,
         val coordinates: CoordinatesData?,
         val location: String?,
-        val registry_number: String?,
-        val parameters: List<ContainerAreaParametersData>
+        val registry_number: String?
 )

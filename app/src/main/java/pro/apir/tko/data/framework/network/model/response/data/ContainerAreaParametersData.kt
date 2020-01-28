@@ -12,5 +12,6 @@ data class ContainerAreaParametersData(
         val id: Long,
         val photos: List<ImageData>
 ) {
+    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = ContainerAreaParametersModel(id, photos.map { it.toModel() }.toMutableList())
 }

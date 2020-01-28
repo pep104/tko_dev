@@ -16,9 +16,9 @@ data class ContainerAreaShortModel(
         var coordinates: CoordinatesModel?,
         var location: String?,
         var registryNumber: String?,
-        val parameters: MutableList<ContainerAreaParametersModel>
+        var photos: String?
 ) : Parcelable {
 
-    constructor() : this(null, null, null, null,null, null, mutableListOf())
+    constructor() : this(null, null, null, null,null, null, null)
 
 }

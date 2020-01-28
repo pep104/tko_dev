@@ -29,14 +29,15 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
         val coordinatesModel = model.coordinates
         val coordinatesData = if (coordinatesModel != null) CoordinatesData(coordinatesModel.lng, coordinatesModel.lat) else null
 
-        val params = model.parameters.map { parametersModel ->
-            val photos = parametersModel.photos.map {
-                ImageData(it.side, it.image, it.url)
-            }
-            ContainerAreaParametersData(parametersModel.id, photos)
-        }
+        //TODO PHOTOS
+//        val params = model.parameters.map { parametersModel ->
+//            val photos = parametersModel.photos.map {
+//                ImageData(it.side, it.image, it.url)
+//            }
+//            ContainerAreaParametersData(parametersModel.id, photos)
+//        }
 
-        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber, params)
+        val req = ContainerAreaDetailedRequest(model.id, coordinatesData, model.location, model.registryNumber)
         return request({
             if (model.id == null) {
                 inventoryApi.createContainerArea(req)

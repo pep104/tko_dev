@@ -23,6 +23,7 @@ data class ContainerAreaListData(
         val resourceType: String?
 
 ) {
+    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel(): ContainerAreaListModel {
         return ContainerAreaListModel(
                 id,

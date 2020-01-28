@@ -11,6 +11,7 @@ data class ImageData(val side: String,
                      val image: Int,
                      val url: String) {
 
+    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = ImageModel(side, image, url)
 
 }

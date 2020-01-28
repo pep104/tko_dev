@@ -54,11 +54,11 @@ data class ContainerAreaResponse(
         @SerializedName("total_normative")
         val totalNormative: Double?,
         val width: Double?,
-        val parameters: List<ContainerAreaParametersData>
+        val photos: String?
 ) {
+    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel(): ContainerAreaShortModel {
         val coordinates = coordinates?.toModel()
-        val parameters = parameters.map { it.toModel() }
         return ContainerAreaShortModel(
                 id,
                 area,
@@ -66,6 +66,6 @@ data class ContainerAreaResponse(
                 coordinates,
                 location,
                 registryNumber,
-                parameters.toMutableList())
+                photos)
     }
 }

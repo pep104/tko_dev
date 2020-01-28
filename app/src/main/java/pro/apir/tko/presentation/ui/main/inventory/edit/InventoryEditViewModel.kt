@@ -39,7 +39,8 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         if(data != null){
             _isNewMode.value = false
             _containerArea.value = data
-            getAllImages(data.parameters)
+            //TODO PHOTOS
+//            getAllImages(data.parameters)
         }
     }
 
@@ -48,10 +49,11 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     fun deletePhoto(image: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             _containerArea.value?.let {
-                it.parameters.forEach {
-                    it.photos.removeAll { it.image == image }
-                }
-                getAllImages(it.parameters)
+                //TODO PHOTOS
+//                it.parameters.forEach {
+//                    it.photos.removeAll { it.image == image }
+//                }
+//                getAllImages(it.parameters)
             }
 
         }

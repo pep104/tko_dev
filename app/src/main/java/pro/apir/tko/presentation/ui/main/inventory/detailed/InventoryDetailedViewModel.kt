@@ -29,9 +29,15 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
     val data: LiveData<ContainerAreaShortModel>
         get() = _data
 
+    //OLD
     private val _images = handle.getLiveData<List<ImageModel>>("images")
     val images: LiveData<List<ImageModel>>
         get() = _images
+
+    //NEW
+    private val _photos = handle.getLiveData<String>("photos")
+    val photos: LiveData<String>
+        get() = _photos
 
     private val _header = handle.getLiveData<String>("header")
     val header: LiveData<String>
@@ -49,7 +55,8 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
             viewModelScope.launch(Dispatchers.IO) {
                 inventoryInteractor.getContainerDetailed(id).fold(::handleFailure) {
                     _data.postValue(it)
-                    getAllImages(it.parameters)
+                    //TODO PHOTOS
+//                    getAllImages(it.parameters)
                     loading(false)
                 }
             }

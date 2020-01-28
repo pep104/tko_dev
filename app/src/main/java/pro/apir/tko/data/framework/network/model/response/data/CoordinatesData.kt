@@ -8,5 +8,6 @@ import pro.apir.tko.domain.model.CoordinatesModel
  * Project: tko-android
  */
 class CoordinatesData(val lng: Double, val lat: Double) {
+    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = CoordinatesModel(lng, lat)
 }

@@ -119,13 +119,15 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
     override fun onResume() {
         super.onResume()
-        //TODO REMOVE?
-        viewModel.testGet()
         mapView.onResume()
         myLocationOverlay?.enableMyLocation()
 
         viewModel.zoomLevel?.let {
             mapView.controller.zoomTo(it, 0L)
+        }
+
+        viewModel.lastPosition?.let {
+            mapView.controller.setCenter(it)
         }
     }
 
@@ -161,8 +163,9 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.enableFollowLocation()
-
+       if(viewModel.lastPosition == null){
+           myLocationOverlay?.enableFollowLocation()
+       }
         mapView.overlayManager.add(myLocationOverlay)
 
         mapView.addMapListener(DelayedMapListener(object : MapListener {
@@ -171,8 +174,8 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 val box = mapView.boundingBox
                 Log.e("mapCallback", "scroll ${map.latitude}, ${map.longitude}")
                 Log.e("mapCallback", "scroll ${box.lonWest}, ${box.latSouth} : ${box.lonEast}, ${box.latNorth}")
-                //todo save to vm
-                //todo fetch data
+
+                viewModel.setLocation(mapView.mapCenter)
                 viewModel.fetch(box.lonWest, box.latSouth, box.lonEast, box.latNorth)
                 return true
             }
@@ -180,6 +183,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
             override fun onZoom(event: ZoomEvent?): Boolean {
                 val map = mapView.mapCenter
                 Log.e("mapCallback", "zoom ${map.latitude}, ${map.longitude}")
+
                 viewModel.setZoomLevel(mapView.zoomLevelDouble)
                 return false
             }
