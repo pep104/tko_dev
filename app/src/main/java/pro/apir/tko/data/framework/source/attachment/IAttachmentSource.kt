@@ -1,6 +1,6 @@
 package pro.apir.tko.data.framework.source.attachment
 
-import pro.apir.tko.data.framework.network.model.response.UploadResponse
+import pro.apir.tko.data.framework.network.model.response.UploadFileResponse
 import retrofit2.Response
 import java.io.File
 
@@ -12,6 +12,6 @@ import java.io.File
 //Прослойка для преобразования файла в Part
 interface IAttachmentSource {
 
-    suspend fun uploadFile(file: File): Response<UploadResponse>
+    suspend fun uploadFile(file: File): Response<List<UploadFileResponse>>
 
 }

@@ -25,17 +25,18 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         val uploaded = mutableListOf<UploadedFileModel>()
         newPhotos?.forEach { newPhoto ->
             attachmentRepository.uploadFile(newPhoto).fold({}, {
-                uploaded.add(it)
+                it.forEach { photo -> uploaded.add(UploadedFileModel(photo.id)) }
             })
         }
-        //Combine existing photos and uploaded to result
-        val result = mutableListOf<ImageUploadModel>()
-        if (photos != null)
-            result.addAll(photos.map { ImageUploadModel(it.image) })
-        result.addAll(uploaded.map { ImageUploadModel(0) })
 
-        //todo new photos to cont
-        val edit = ContainerAreaEditModel(model.id, model.area, model.containersCount, model.coordinates, model.location, model.registryNumber, result)
+        //Combine existing photos and uploaded to result
+        val photosCombined = mutableListOf<ImageUploadModel>()
+        if (photos != null)
+            photosCombined.addAll(photos.map { ImageUploadModel(it.image) })
+        photosCombined.addAll(uploaded.map { ImageUploadModel(it.id) })
+
+        //Create edit model
+        val edit = ContainerAreaEditModel(model.id, model.area, model.containersCount, model.coordinates, model.location, model.registryNumber, photosCombined)
         return inventoryRepository.updateContainer(edit)
     }
 

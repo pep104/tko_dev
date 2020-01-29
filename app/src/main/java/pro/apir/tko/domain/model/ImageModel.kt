@@ -9,6 +9,5 @@ import kotlinx.android.parcel.Parcelize
  * Project: tko-android
  */
 @Parcelize
-data class ImageModel(val side: String,
-                      val image: Int,
+data class ImageModel(val image: Int,
                       val url: String): Parcelable

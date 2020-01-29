@@ -4,7 +4,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import pro.apir.tko.data.framework.network.api.AttachmentApi
-import pro.apir.tko.data.framework.network.model.response.UploadResponse
+import pro.apir.tko.data.framework.network.model.response.UploadFileResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
@@ -14,7 +14,7 @@ class AttachmentSource @Inject constructor(retrofit: Retrofit) : IAttachmentSour
 
     private val api by lazy { retrofit.create(AttachmentApi::class.java) }
 
-    override suspend fun uploadFile(file: File): Response<UploadResponse> {
+    override suspend fun uploadFile(file: File): Response<List<UploadFileResponse>> {
         val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
         val filePart = MultipartBody.Part.createFormData("files", file.name, requestFile)
         return api.uploadFile(filePart)

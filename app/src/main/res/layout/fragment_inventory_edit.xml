@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/white">
 
     <include
@@ -25,10 +26,24 @@
             android:clipToPadding="false"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/textHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/black"
+                android:textSize="21sp"
+                android:visibility="gone"
+                tools:text="str. Andro" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical">
 
@@ -40,7 +55,7 @@
                     android:text="@string/text_reg_number" />
 
                 <EditText
-                    android:id="@+id/et"
+                    android:id="@+id/etRegNum"
                     style="@style/EditTextContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -48,6 +63,7 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="8dp"
                     android:background="@android:color/transparent"
+                    android:hint="@string/hint_reg_num"
                     tools:text="1234 BC" />
 
                 <View
@@ -74,8 +90,8 @@
                     android:layout_marginStart="8dp"
                     android:text="@string/text_address_hint" />
 
-                <TextView
-                    android:id="@+id/textAddress"
+                <EditText
+                    android:id="@+id/etAdress"
                     style="@style/EditTextContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -83,7 +99,7 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="8dp"
                     android:background="@android:color/transparent"
-                    tools:text="Ул. Муштари 24B" />
+                    android:hint="@string/hint_adress_edit" />
 
                 <View
                     android:layout_width="match_parent"

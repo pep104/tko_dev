@@ -7,11 +7,10 @@ import pro.apir.tko.domain.model.ImageModel
  * Date: 2020-01-20
  * Project: tko-android
  */
-data class ImageData(val side: String,
-                     val image: Int,
+data class ImageData(val image: Int,
                      val url: String) {
 
     //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
-    fun toModel() = ImageModel(side, image, url)
+    fun toModel() = ImageModel( image, url)
 
 }

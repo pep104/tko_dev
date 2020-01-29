@@ -1,12 +1,15 @@
 package pro.apir.tko.presentation.ui.main.inventory.edit
 
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
@@ -26,7 +29,7 @@ import java.io.File
  * Project: tko-android
  */
 //TODO REFACTOR FORM PROCESSING
-class InventoryEditViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
+class InventoryEditViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel(handle) {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<InventoryEditViewModel>
@@ -35,24 +38,29 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val isNewMode: LiveData<Boolean>
         get() = _isNewMode
 
+    private val _isSaved = LiveEvent<Boolean>()
+    val isSaved: LiveData<Boolean>
+        get() = _isSaved
+
     private val _containerArea = handle.getLiveData<ContainerAreaShortModel>("containerArea", ContainerAreaShortModel())
     val containerArea: LiveData<ContainerAreaShortModel>
         get() = _containerArea
+
+
+    //TODO FIELD VALUES HERE from handle (not LiveData)
+    //TODO FIELD STATE LIVEDATA
 
     private val _images = handle.getLiveData<MutableList<PhotoWrapper>>("images", mutableListOf())
     val images: LiveData<MutableList<PhotoWrapper>>
         get() = _images
 
-    //todo to viewState?
-    private val _isSaved = LiveEvent<Boolean>()
-    val isSaved: LiveData<Boolean>
-        get() = _isSaved
 
     fun setEditData(data: ContainerAreaShortModel?) {
         if (data != null) {
             _isNewMode.value = false
             _containerArea.value = data
-            _images.value = data.photos?.map { PhotoWrapper(it) }?.toMutableList()
+            if (data.photos != null)
+                _images.value = data.photos?.map { PhotoWrapper(it) }?.toMutableList()
         }
     }
 
@@ -62,8 +70,11 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     }
 
 
-    fun deletePhoto(image: Int) {
-        //TODO
+    fun deletePhoto(photoWrapper: PhotoWrapper) {
+        _images.value?.let {
+            it.remove(photoWrapper)
+            _images.notifyObserver()
+        }
     }
 
     fun updateRegNum(text: String) {
@@ -84,7 +95,15 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
 
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
-
+            loading(true)
+            delay(500)
+            _containerArea.value?.let {
+                val oldPhotos = _images.value?.filter { it.uploaded != null }?.map { it.uploaded!! }
+                val newPhotos = _images.value?.filter { it.new != null }?.map { it.new!! }
+                inventoryInteractor.updateContainer(it, oldPhotos, newPhotos).fold(::handleFailure) {
+                    _isSaved.postValue(true)
+                }
+            }
         }
     }
 

@@ -11,8 +11,8 @@ import javax.inject.Inject
 
 class AttachmentRepositoryImpl @Inject constructor(tokenManager: TokenManager, private val attachmentApi: IAttachmentSource) : AttachmentRepository, BaseRepository(tokenManager) {
 
-    override suspend fun uploadFile(file: File): Either<Failure, UploadedFileModel> {
-        return request({ attachmentApi.uploadFile(file) }, { it.toModel() })
+    override suspend fun uploadFile(file: File): Either<Failure, List<UploadedFileModel>> {
+        return request({ attachmentApi.uploadFile(file) }, { it.map { item -> item.toModel() } })
     }
 
 }

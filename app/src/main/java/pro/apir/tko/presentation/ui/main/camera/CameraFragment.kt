@@ -293,21 +293,21 @@ class CameraFragment : BaseFragment() {
             setTargetRotation(viewFinder.display.rotation)
         }.build()
 
-        imageAnalyzer = ImageAnalysis(analyzerConfig).apply {
-            setAnalyzer(mainExecutor,
-                    LuminosityAnalyzer { luma ->
-                        // Values returned from our analyzer are passed to the attached listener
-                        // We log image analysis results here --
-                        // you should do something useful instead!
-                        val fps = (analyzer as LuminosityAnalyzer).framesPerSecond
-                        Log.d(TAG, "Average luminosity: $luma. " +
-                                "Frames per second: ${"%.01f".format(fps)}")
-                    })
-        }
+//        imageAnalyzer = ImageAnalysis(analyzerConfig).apply {
+//            setAnalyzer(mainExecutor,
+//                    LuminosityAnalyzer { luma ->
+//                        // Values returned from our analyzer are passed to the attached listener
+//                        // We log image analysis results here --
+//                        // you should do something useful instead!
+//                        val fps = (analyzer as LuminosityAnalyzer).framesPerSecond
+//                        Log.d(TAG, "Average luminosity: $luma. " +
+//                                "Frames per second: ${"%.01f".format(fps)}")
+//                    })
+//        }
 
         // Apply declared configs to CameraX using the same lifecycle owner
         CameraX.bindToLifecycle(
-                viewLifecycleOwner, preview, imageCapture, imageAnalyzer)
+                viewLifecycleOwner, preview, imageCapture)
     }
 
     /**

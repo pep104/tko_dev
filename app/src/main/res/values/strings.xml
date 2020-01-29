@@ -34,6 +34,8 @@
     <string name="btn_done">Готово</string>
     <string name="btn_add_photo">Добавить фотографию</string>
     <string name="btn_camera_dismiss">ОТМЕНА</string>
+    <string name="hint_reg_num">Укажите реестровый номер</string>
+    <string name="hint_adress_edit">Улица, дом, номер</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

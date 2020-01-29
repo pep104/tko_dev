@@ -142,27 +142,23 @@ class InventoryDetailedFragment : BaseFragment() {
 
         //TODO FROM FIELDS?
         viewModel.data.observe(viewLifecycleOwner, Observer {
-            btnEdit.isEnabled = true
+            it?.let {
+                btnEdit.isEnabled = true
 
-            val pluredCount = resources.getQuantityString(
-                    R.plurals.plurals_containers,
-                    it.containersCount
-                            ?: 0, it.containersCount)
-            val area = it.area ?: 0.0
+                val pluredCount = resources.getQuantityString(
+                        R.plurals.plurals_containers,
+                        it.containersCount
+                                ?: 0, it.containersCount)
+                val area = it.area ?: 0.0
 
-            textContainerInfo.text = getString(R.string.text_container_detailed_info, pluredCount, area.toString())
+                textContainerInfo.text = getString(R.string.text_container_detailed_info, pluredCount, area.toString())
 
-//            it.coordinates?.let { coord ->
-//                setMapPoint(coord.lat, coord.lng)
-//            }
+                imageRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                it.photos?.let { photos -> adapter.setData(photos) }
 
-            loading.goneWithFade()
-            imgThrash.visible()
-        })
-
-        viewModel.images.observe(viewLifecycleOwner, Observer {
-            imageRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter.setData(it)
+                loading.goneWithFade()
+                imgThrash.visible()
+            }
         })
 
         viewModel.header.observe(viewLifecycleOwner, Observer {

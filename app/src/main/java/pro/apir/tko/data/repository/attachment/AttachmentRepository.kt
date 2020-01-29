@@ -13,7 +13,7 @@ import java.io.File
 
 interface AttachmentRepository {
 
-    suspend fun uploadFile(file: File): Either<Failure, UploadedFileModel>
+    suspend fun uploadFile(file: File): Either<Failure, List<UploadedFileModel>>
 
 
 }

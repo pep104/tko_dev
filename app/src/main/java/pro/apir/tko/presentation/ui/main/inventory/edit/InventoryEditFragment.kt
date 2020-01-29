@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.os.bundleOf
+import androidx.core.view.isInvisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -25,6 +27,8 @@ import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.presentation.entities.PhotoWrapper
+import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
@@ -52,10 +56,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     //TODO TO COMPOUND VIEW?
     private lateinit var etRegNum: EditText
-    private lateinit var textAddress: TextView
+    private lateinit var etAddress: EditText
     private lateinit var textCoordinates: TextView
 
+    private lateinit var textHeader: TextView
     private lateinit var btnAddPhoto: MaterialButton
+    private lateinit var btnSave: MaterialButton
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,10 +87,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             }
         })
 
+        textHeader = view.textHeader
+        btnSave = view.btnSave
         btnAddPhoto = view.btnAddPhoto.also { it.isEnabled = false }
+        progressBar = view.progressBar
 
-        etRegNum = view.et
-        textAddress = view.textAddress
+        etRegNum = view.etRegNum
+        etAddress = view.etAdress.apply { keyListener = null }
         textCoordinates = view.textCoordinates
 
         recyclerView = view.recyclerView
@@ -100,9 +110,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             openAddressFragment()
         }
 
+        etAddress.setOnClickListener {
+            openAddressFragment()
+        }
+
         view.btnToolbarBack.setOnClickListener(::back)
 
-        view.btnSave.setOnClickListener {
+        btnSave.setOnClickListener {
             viewModel.save()
         }
 
@@ -113,6 +127,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     private fun observeViewModel() {
 
         viewModel.containerArea.observe(viewLifecycleOwner, Observer { data ->
+            viewModel.isNewMode.value?.let {
+                if (!it) {
+                    textHeader.visible()
+                    textHeader.text = data.location ?: ""
+                }
+            }
+
             data.registryNumber?.let {
                 etRegNum.setText(it)
             }
@@ -123,13 +144,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         })
 
         viewModel.images.observe(viewLifecycleOwner, Observer { images ->
-            images.let {
+            images?.let {
                 adapter.setData(it)
             }
         })
 
         sharedAddressViewModel.address.observe(viewLifecycleOwner, Observer {
-            if (it != null){
+            if (it != null) {
                 //todo observe?
                 setLocationViews(it.value, it.lat, it.lng)
                 viewModel.updateAddress(it)
@@ -145,14 +166,20 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             }
         })
 
-        //TODO TO VIEW STATE VIEWMODEL
         viewModel.isSaved.observe(viewLifecycleOwner, Observer {
-            if(it){
+            if (it) {
                 viewModel.containerArea.value?.let { container ->
                     sharedEditViewModel.setContainer(container)
                     findNavController().navigateUp()
                 }
             }
+        })
+
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
+            progressBar.isInvisible = !it
+            etRegNum.isEnabled = !it
+            etAddress.isEnabled = !it
+            btnSave.isEnabled = !it
         })
 
     }
@@ -163,14 +190,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     }
 
     private fun setLocationViews(location: String?, lat: Double?, lng: Double?) {
-        textAddress.text = location
+        etAddress.setText(location)
         textCoordinates.text = getString(R.string.text_coordinates_placeholder, lat.toString(), lng.toString())
     }
 
-    override fun onImageDeleteClicked(image: Int) {
-        viewModel.deletePhoto(image)
+    override fun onImageDeleteClicked(item: PhotoWrapper) {
+        viewModel.deletePhoto(item)
     }
-
 
     private fun openAddressFragment() {
         //FIXME

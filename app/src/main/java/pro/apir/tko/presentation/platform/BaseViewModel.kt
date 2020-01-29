@@ -2,6 +2,7 @@ package pro.apir.tko.presentation.platform
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import pro.apir.tko.core.exception.Failure
 
@@ -10,11 +11,11 @@ import pro.apir.tko.core.exception.Failure
  * @see ViewModel
  * @see Failure
  */
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel(handle: SavedStateHandle? = null) : ViewModel() {
 
     var failure: MutableLiveData<Failure> = MutableLiveData()
 
-    private val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _loading: MutableLiveData<Boolean> = handle?.getLiveData("loading") ?: MutableLiveData()
     val loading: LiveData<Boolean>
         get() = _loading
 

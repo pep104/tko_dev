@@ -28,7 +28,7 @@ class ContainerEditImagesAdapter : RecyclerView.Adapter<ContainerEditImagesAdapt
 
     interface OnItemClickListener {
 
-        fun onImageDeleteClicked(image: Int)
+        fun onImageDeleteClicked(item: PhotoWrapper)
 
     }
 
@@ -76,6 +76,10 @@ class ContainerEditImagesAdapter : RecyclerView.Adapter<ContainerEditImagesAdapt
                         .load(item.new)
                         .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
                         .into(imageView)
+            }
+
+            btnDelete.setOnClickListener {
+                listener?.onImageDeleteClicked(item)
             }
         }
 
