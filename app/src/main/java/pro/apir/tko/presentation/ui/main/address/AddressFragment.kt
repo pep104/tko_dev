@@ -1,5 +1,6 @@
 package pro.apir.tko.presentation.ui.main.address
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
@@ -132,6 +133,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             findNavController().popBackStack()
         }
 
+        view.btnBack.setOnClickListener {
+            activity?.onBackPressed()
+        }
+
         requireActivity()
                 .onBackPressedDispatcher
                 .addCallback(this, object : OnBackPressedCallback(true) {
@@ -168,11 +173,16 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         })
 
         viewModel.address.observe(viewLifecycleOwner, Observer {
+            textAddress.isEnabled = true
             textAddress.text = it.value
             if (it.lat != null && it.lng != null) {
+                textCoordinates.isEnabled = true
                 textCoordinates.text = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
                 myLocationOverlay?.disableFollowLocation()
                 setMapPoint(it.lat, it.lng)
+            } else {
+                textCoordinates.isEnabled = false
+                textCoordinates.text = getString(R.string.text_coordinates_not_found)
             }
         })
     }
