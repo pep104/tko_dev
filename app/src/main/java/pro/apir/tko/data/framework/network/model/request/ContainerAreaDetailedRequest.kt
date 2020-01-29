@@ -15,4 +15,9 @@ data class ContainerAreaDetailedRequest(
         val location: String?,
         val registry_number: String?,
         val photos: List<ImageRequestData>?
-)
+){
+
+    val status = "ACTIVE"
+    val waste_sources = emptyList<Any>()
+
+}
