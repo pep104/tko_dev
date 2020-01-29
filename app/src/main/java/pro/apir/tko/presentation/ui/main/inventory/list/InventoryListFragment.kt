@@ -196,6 +196,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
+            Log.e("mapMarkers","job start")
             list.forEach {
                 val coordinates = it.coordinates
                 if (coordinates != null
@@ -214,6 +215,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 mapView.overlays.clear()
                 mapView.overlays.addAll(markers)
                 mapView.overlayManager.add(myLocationOverlay)
+                Log.e("mapMarkers","job end")
             }
         }
 

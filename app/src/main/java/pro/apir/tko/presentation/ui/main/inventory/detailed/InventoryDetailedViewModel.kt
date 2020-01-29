@@ -62,6 +62,10 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
         }
     }
 
+    fun setData(containerAreaShortModel: ContainerAreaShortModel){
+        _data.postValue(containerAreaShortModel)
+    }
+
 
 
     private fun setHeader(header: String) {

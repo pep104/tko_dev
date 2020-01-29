@@ -1,18 +1,14 @@
 package pro.apir.tko.presentation.ui.main.inventory.list
 
-import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
-import org.osmdroid.util.GeoPoint
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.ContainerAreaListModel
@@ -64,7 +60,7 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted handle: Saved
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500).fold(::handleFailure) {
-                _containers.postValue(it)
+                combineAreas(it)
             }
         }
     }
@@ -78,9 +74,12 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted handle: Saved
     }
 
     private fun combineAreas(newList: List<ContainerAreaListModel>) {
-        //todo combine with existing?
-
-
+       viewModelScope.launch(Dispatchers.IO) {
+           val existing = mutableListOf<ContainerAreaListModel>()
+           containers.value?.let { existing.addAll(it) }
+           val combined = existing.union(newList)
+           _containers.postValue(combined.toList())
+       }
     }
 
 

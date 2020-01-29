@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.inventory.edit
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
@@ -15,6 +16,8 @@ import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.platform.BaseViewModel
+import pro.apir.tko.presentation.platform.BaseViewModelExperimental
+import pro.apir.tko.presentation.platform.livedata.LiveEvent
 import java.io.File
 
 /**
@@ -40,12 +43,16 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val images: LiveData<MutableList<PhotoWrapper>>
         get() = _images
 
+    //todo to viewState?
+    private val _isSaved = LiveEvent<Boolean>()
+    val isSaved: LiveData<Boolean>
+        get() = _isSaved
+
     fun setEditData(data: ContainerAreaShortModel?) {
         if (data != null) {
             _isNewMode.value = false
             _containerArea.value = data
-            //TODO PHOTOS
-//            getAllImages(data.parameters)
+            _images.value = data.photos?.map { PhotoWrapper(it) }?.toMutableList()
         }
     }
 
@@ -77,13 +84,8 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
 
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
-            _containerArea.value?.let {
-//                inventoryInteractor.updateContainer(it).fold(::handleFailure) {
-//                    //TODO RESULT
-//                }
-            }
+
         }
     }
-
 
 }

@@ -41,6 +41,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     private val viewModel: InventoryEditViewModel by viewModels()
     private val sharedAddressViewModel: AddressSharedViewModel by activityViewModels()
     private val sharedCameraViewModel: CameraSharedViewModel by activityViewModels()
+    private val sharedEditViewModel: InventoryEditSharedViewModel by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_inventory_edit
 
@@ -141,6 +142,16 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
                 Log.e("edit", "camera observe callback")
                 viewModel.addNewPhotos(it)
                 sharedCameraViewModel.consume()
+            }
+        })
+
+        //TODO TO VIEW STATE VIEWMODEL
+        viewModel.isSaved.observe(viewLifecycleOwner, Observer {
+            if(it){
+                viewModel.containerArea.value?.let { container ->
+                    sharedEditViewModel.setContainer(container)
+                    findNavController().navigateUp()
+                }
             }
         })
 

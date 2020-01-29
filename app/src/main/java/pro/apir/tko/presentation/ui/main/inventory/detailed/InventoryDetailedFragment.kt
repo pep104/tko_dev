@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -35,6 +36,7 @@ import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
+import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditSharedViewModel
 
 /**
  * Created by antonsarmatin
@@ -45,6 +47,7 @@ import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
 class InventoryDetailedFragment : BaseFragment() {
 
     private val viewModel: InventoryDetailedViewModel by viewModels()
+    private val sharedEditViewModel: InventoryEditSharedViewModel by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_inventory_detailed
 
@@ -169,6 +172,11 @@ class InventoryDetailedFragment : BaseFragment() {
         viewModel.coordinates.observe(viewLifecycleOwner, Observer {
             it?.let { setMapPoint(it.lat, it.lng) }
         })
+
+        sharedEditViewModel.containerArea.observe(viewLifecycleOwner, Observer {
+            it?.let { container -> viewModel.setData(container) }
+        })
+
     }
 
     private fun setMap(mapView: MapView) {
