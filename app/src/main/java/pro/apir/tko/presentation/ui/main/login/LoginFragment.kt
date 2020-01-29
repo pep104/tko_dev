@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.toolbar_title.view.*
+import pro.apir.tko.BuildConfig
 import pro.apir.tko.R
 import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -57,8 +58,10 @@ class LoginFragment : BaseFragment() {
         btnLogin = view.btnLogin
         loading = view.loading
 
-        etMail.setText("admin@apir.pro")
-        etPass.setText("JsXkQCBv758uxWK92iRY")
+        if(BuildConfig.DEBUG){
+            etMail.setText("admin@apir.pro")
+            etPass.setText("JsXkQCBv758uxWK92iRY")
+        }
         btnLogin.setOnClickListener {
             viewModel.login(etMail.getTextValue(), etPass.getTextValue())
         }

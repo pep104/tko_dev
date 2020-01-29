@@ -43,7 +43,6 @@ import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditSharedViewM
  * Date: 2020-01-19
  * Project: tko-android
  */
-//TODO ADD EDIT BUTTON
 class InventoryDetailedFragment : BaseFragment() {
 
     private val viewModel: InventoryDetailedViewModel by viewModels()
@@ -140,7 +139,6 @@ class InventoryDetailedFragment : BaseFragment() {
 
     private fun observeViewModel() {
 
-        //TODO FROM FIELDS?
         viewModel.data.observe(viewLifecycleOwner, Observer {
             it?.let {
                 btnEdit.isEnabled = true

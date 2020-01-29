@@ -348,7 +348,6 @@ class CameraFragment : BaseFragment() {
             imageCapture?.let { imageCapture ->
 
                 // Create output file to hold the image
-                //TODO SAVE HERE OR VIA VM???
                 val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
 
                 // Setup image capture metadata
@@ -375,12 +374,11 @@ class CameraFragment : BaseFragment() {
 
 
         controls.findViewById<TextView>(R.id.btnAction).setOnClickListener {
-            //TODO ACTION
+            findNavController().navigateUp()
         }
 
         // Listener for button used to view last photo
         controls.findViewById<ImageButton>(R.id.imagePreview).setOnClickListener {
-            //TODO SUBMIT ACTION?
             val data = viewModel.photos.value
             if (data != null)
                 sharedViewModel.setImages(data)
