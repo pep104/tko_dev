@@ -23,6 +23,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="pro.apir.tko.presentation.ui.main.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

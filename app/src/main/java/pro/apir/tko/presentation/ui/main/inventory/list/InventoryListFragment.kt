@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -19,11 +22,16 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
 import kotlinx.android.synthetic.main.content_inventory_list.view.*
-import kotlinx.android.synthetic.main.fragment_address.*
 import kotlinx.android.synthetic.main.fragment_inventory_list.view.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.*
+import org.osmdroid.events.DelayedMapListener
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -33,9 +41,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaListModel
-import pro.apir.tko.presentation.extension.addViewObserver
-import pro.apir.tko.presentation.extension.dpToPx
-import pro.apir.tko.presentation.extension.goneWithFade
+import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
 
@@ -57,8 +63,12 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private lateinit var bottomSheetLayout: ConstraintLayout
     private lateinit var contentLayout: ConstraintLayout
 
+    private lateinit var layoutSearch: ConstraintLayout
+    private lateinit var etSearch: EditText
+
     private lateinit var loadingList: ProgressBar
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ContainerListAdapter
 
     private lateinit var btnAdd: MaterialButton
     private lateinit var btnMenu: ImageView
@@ -68,7 +78,6 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private var mapJob: Job? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
-    private lateinit var adapter: ContainerListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +89,9 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         bottomSheetLayout = view.bottomsheetInventory
         contentLayout = view.contentInventoryList
+
+        layoutSearch = view.layoutSearch
+        etSearch = view.etSearch
 
         recyclerView = view.recyclerView
         loadingList = view.loadingList
@@ -105,9 +117,9 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         btnAdd.setOnClickListener { findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryEditFragment) }
+        btnSearch.setOnClickListener { viewModel.switchSearchMode() }
 
         setMap(mapView)
-
         observeViewModel()
 
         bottomSheetLayout.addViewObserver {
@@ -119,6 +131,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
     override fun onResume() {
         super.onResume()
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         mapView.onResume()
         myLocationOverlay?.enableMyLocation()
 
@@ -133,6 +146,8 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
 
     override fun onPause() {
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        hideKeyboard()
         mapView.onPause()
         myLocationOverlay?.disableMyLocation()
         super.onPause()
@@ -152,6 +167,15 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 setMarkers(it)
             }
         })
+
+        viewModel.searchMode.observe(viewLifecycleOwner, Observer {
+            layoutSearch.isInvisible = !it
+            if(it){
+                etSearch.focusWithKeyboard()
+            }else{
+                hideKeyboard()
+            }
+        })
     }
 
     private fun setMap(mapView: MapView) {
@@ -163,27 +187,20 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-       if(viewModel.lastPosition == null){
-           myLocationOverlay?.enableFollowLocation()
-       }
+        if (viewModel.lastPosition == null) {
+            myLocationOverlay?.enableFollowLocation()
+        }
         mapView.overlayManager.add(myLocationOverlay)
 
         mapView.addMapListener(DelayedMapListener(object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
-                val map = mapView.mapCenter
                 val box = mapView.boundingBox
-                Log.e("mapCallback", "scroll ${map.latitude}, ${map.longitude}")
-                Log.e("mapCallback", "scroll ${box.lonWest}, ${box.latSouth} : ${box.lonEast}, ${box.latNorth}")
-
                 viewModel.setLocation(mapView.mapCenter)
                 viewModel.fetch(box.lonWest, box.latSouth, box.lonEast, box.latNorth)
                 return true
             }
 
             override fun onZoom(event: ZoomEvent?): Boolean {
-                val map = mapView.mapCenter
-                Log.e("mapCallback", "zoom ${map.latitude}, ${map.longitude}")
-
                 viewModel.setZoomLevel(mapView.zoomLevelDouble)
                 return false
             }
@@ -196,7 +213,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.e("mapMarkers","job start")
+            Log.e("mapMarkers", "job start")
             list.forEach {
                 val coordinates = it.coordinates
                 if (coordinates != null
@@ -215,7 +232,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                 mapView.overlays.clear()
                 mapView.overlays.addAll(markers)
                 mapView.overlayManager.add(myLocationOverlay)
-                Log.e("mapMarkers","job end")
+                Log.e("mapMarkers", "job end")
             }
         }
 

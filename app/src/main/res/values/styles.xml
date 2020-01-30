@@ -67,6 +67,11 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <style name="EditTextSearch" parent="EditTextMain" >
+        <item name="android:textColor">@color/selector_edittext_container</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
     <style name="TextBottomSheetPrimaryHeader">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">24sp</item>

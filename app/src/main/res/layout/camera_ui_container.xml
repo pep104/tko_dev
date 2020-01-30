@@ -38,7 +38,7 @@
         android:layout_width="@dimen/round_button_previews"
         android:layout_height="@dimen/round_button_previews"
         android:layout_marginStart="24dp"
-        android:background="@drawable/shape_rounded_white"
+        android:background="@drawable/shape_rounded_white_8"
         android:padding="@dimen/spacing_large"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/btnShutter"
