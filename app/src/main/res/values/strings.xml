@@ -15,10 +15,10 @@
     <string name="btn_routes">Маршруты</string>
     <string name="btn_add_inventory">Добавить конт. площадку</string>
 
-    <string name="text_list_container_message">%1$s • %2$s  • %3$sм³</string>
+    <string name="text_list_container_message">%1$s • %2$s  • %3$sм²</string>
     <string name="text_inventory_list_header">Контейнерные площадки</string>
 
-    <string name="text_container_detailed_info"> %1$s  • %2$sм³</string>
+    <string name="text_container_detailed_info"> %1$s  • %2$sм² </string>
     <string name="title_auth">Вход</string>
     <string name="title_menu">Главная</string>
     <string name="title_container_new">Добавить конт. площадку</string>

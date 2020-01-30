@@ -11,7 +11,6 @@ import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.domain.model.CoordinatesModel
-import pro.apir.tko.domain.model.ImageModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -50,20 +49,27 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
         }
     }
 
-    fun setData(containerAreaShortModel: ContainerAreaShortModel){
+    fun setData(containerAreaShortModel: ContainerAreaShortModel) {
         _data.postValue(containerAreaShortModel)
     }
 
+    fun setEditedData(containerAreaShortModel: ContainerAreaShortModel) {
+        setData(containerAreaShortModel)
+        val header = containerAreaShortModel.location ?: ""
+        setHeader(header, true)
+        containerAreaShortModel.coordinates?.let {
+            setCoordinates(it, true)
+        }
+    }
 
-
-    private fun setHeader(header: String) {
-        if (_header.value == null) {
+    private fun setHeader(header: String, force: Boolean = false) {
+        if (_header.value == null || force) {
             _header.postValue(header)
         }
     }
 
-    private fun setCoordinates(coordinates: CoordinatesModel) {
-        if (_data.value == null && _coordingates.value == null) {
+    private fun setCoordinates(coordinates: CoordinatesModel, force: Boolean = false) {
+        if ((_data.value == null && _coordingates.value == null) || force) {
             _coordingates.postValue(coordinates)
         }
     }

@@ -164,11 +164,15 @@ class InventoryDetailedFragment : BaseFragment() {
         })
 
         viewModel.coordinates.observe(viewLifecycleOwner, Observer {
-            it?.let { setMapPoint(it.lat, it.lng) }
+            it?.let {
+                setMapPoint(it.lat, it.lng) }
         })
 
         sharedEditViewModel.containerArea.observe(viewLifecycleOwner, Observer {
-            it?.let { container -> viewModel.setData(container) }
+            it?.let { container ->
+                viewModel.setEditedData(container)
+                sharedEditViewModel.consume()
+            }
         })
 
     }
