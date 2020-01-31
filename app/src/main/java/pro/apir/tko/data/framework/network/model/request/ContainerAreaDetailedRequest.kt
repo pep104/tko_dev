@@ -1,6 +1,9 @@
 package pro.apir.tko.data.framework.network.model.request
 
 
+import com.google.gson.annotations.SerializedName
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
 
@@ -19,5 +22,7 @@ data class ContainerAreaDetailedRequest(
 
     val status = "ACTIVE"
     val waste_sources = emptyList<Any>()
+    @SerializedName("last_update_at")
+    val lastUpdateAt: String = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
 
 }

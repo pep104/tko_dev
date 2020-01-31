@@ -29,8 +29,7 @@ class ContainerImagesAdapter : RecyclerView.Adapter<ContainerImagesAdapter.Image
     fun setData(data: List<ImageModel>) {
         this.data.clear()
         this.data.addAll(data)
-        notifyItemRangeChanged(0, data.size)
-        //todo diffutil
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
