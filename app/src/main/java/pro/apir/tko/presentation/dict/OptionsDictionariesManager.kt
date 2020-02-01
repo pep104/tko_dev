@@ -11,11 +11,7 @@ interface OptionsDictionariesManager {
 
     fun getAccessOptionDictionary(): Dictionary
 
-    fun getBasementOptionsDictionary(): Dictionary
-
     fun getFenceOptionsDictionary(): Dictionary
-
-    fun getRemotenessOptionsDictionary(): Dictionary
 
     fun getCoverageOptionsDictionary(): Dictionary
 

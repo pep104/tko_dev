@@ -13,12 +13,18 @@ data class ContainerAreaShortModel(
         val id: Int?,
         val area: Double?,
         val containersCount: Int?,
-        var coordinates: CoordinatesModel?,
-        var location: String?,
-        var registryNumber: String?,
-        var photos: List<ImageModel>?
+        val coordinates: CoordinatesModel?,
+        val location: String?,
+        val registryNumber: String?,
+        val photos: List<ImageModel>?,
+        val hasCover: Boolean?,
+        val infoPlate: Boolean?,
+        val access: String?,
+        val fence: String?,
+        val coverage: String?,
+        val kgo: String?
 ) : Parcelable {
 
-    constructor() : this(null, null, null, null,null, null, null)
+    //todo edit constructor
 
 }

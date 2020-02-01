@@ -26,7 +26,8 @@ data class ContainerAreaResponse(
         val fence: String?,
         @SerializedName("fullness_percent")
         val fullnessPercent: String?,
-        val has_cover: Boolean?,
+        @SerializedName("has_cover")
+        val hasCover: Boolean?,
         val identifier: String?,
         @SerializedName("information_plate")
         val informationPlate: Boolean?,
@@ -42,12 +43,15 @@ data class ContainerAreaResponse(
         val ownersNames: String?,
         @SerializedName("owners_waste_sources_names")
         val ownersWasteSourcesNames: String?,
-        val platform_basement: String?,
+        @SerializedName("platform_basement")
+        val basement: String?,
         @SerializedName("registry_number")
         val registryNumber: String?,
         val remoteness: String?,
 //        @SerializedName("responsible_person")
 //        val responsiblePerson: Any,
+        @SerializedName("section_for_kgo")
+        val kgo: String?,
         @SerializedName("sources_count")
         val sourcesCount: Int?,
         val status: String?,
@@ -60,12 +64,20 @@ data class ContainerAreaResponse(
     fun toModel(): ContainerAreaShortModel {
         val coordinates = coordinates?.toModel()
         return ContainerAreaShortModel(
-                id,
-                area,
-                containersCount,
-                coordinates,
-                location,
-                registryNumber,
-                photos?.map { it.toModel() })
+                id = id,
+                area = area,
+                containersCount = containersCount,
+                coordinates = coordinates,
+                location = location,
+                registryNumber = registryNumber,
+                photos = photos?.map { it.toModel() },
+                hasCover = hasCover,
+                infoPlate = informationPlate,
+                access = access,
+                fence = fence,
+                coverage = coverageType,
+                kgo = kgo
+
+        )
     }
 }

@@ -36,7 +36,22 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         photosCombined.addAll(uploaded.map { ImageUploadModel(it.id) })
 
         //Create edit model
-        val edit = ContainerAreaEditModel(model.id, model.area, model.containersCount, model.coordinates, model.location, model.registryNumber, photosCombined)
+        val edit = ContainerAreaEditModel(
+                id = model.id,
+                area = model.area,
+                containersCount = model.containersCount,
+                coordinates = model.coordinates,
+                location = model.location,
+                registryNumber = model.registryNumber,
+                photos = photosCombined,
+                hasCover = null,
+                infoPlate = null,
+                access = null,
+                fence = null,
+                coverage = null,
+                kgo = null
+        )
+
         return inventoryRepository.updateContainer(edit)
     }
 

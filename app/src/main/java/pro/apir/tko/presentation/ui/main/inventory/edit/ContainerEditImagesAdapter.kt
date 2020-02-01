@@ -12,6 +12,7 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.item_image_container_edit_list.view.*
 import kotlinx.android.synthetic.main.item_image_container_list.view.imageView
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.ImageModel
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.extension.dpToPx
 
@@ -38,6 +39,11 @@ class ContainerEditImagesAdapter : RecyclerView.Adapter<ContainerEditImagesAdapt
         this.data.clear()
         this.data.addAll(data)
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun setDataFromModel(data: List<ImageModel>){
+        val list = data.map { PhotoWrapper(it) }
+        setData(list)
     }
 
 

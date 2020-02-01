@@ -28,6 +28,8 @@ import pro.apir.tko.data.framework.source.attachment.AttachmentSource
 import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
 import pro.apir.tko.data.framework.source.auth.AuthSource
 import pro.apir.tko.data.framework.source.inventory.InventorySource
+import pro.apir.tko.presentation.dict.OptionsDictionariesManager
+import pro.apir.tko.presentation.dict.OptionsDictionariesManagerImpl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -193,5 +195,11 @@ class FrameworkModule {
     @Singleton
     @Provides
     fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
+
+    //
+
+    @Provides
+    @Singleton
+    fun provideDictManager(): OptionsDictionariesManager = OptionsDictionariesManagerImpl()
 
 }

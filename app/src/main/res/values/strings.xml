@@ -38,6 +38,8 @@
     <string name="hint_adress_edit">Улица, дом, номер</string>
     <string name="text_address_choose_placeholder">Выберите адрес</string>
     <string name="text_coordinates_not_found">Координаты не найдены</string>
+    <string name="text_container_area">Размер площадки, м²</string>
+    <string name="hint_area">Укажите размер площадки</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

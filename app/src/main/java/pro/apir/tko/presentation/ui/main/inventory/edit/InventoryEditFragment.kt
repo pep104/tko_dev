@@ -28,7 +28,6 @@ import pro.apir.tko.R
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.presentation.entities.PhotoWrapper
-import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
@@ -56,6 +55,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     //TODO TO COMPOUND VIEW?
     private lateinit var etRegNum: EditText
+    private lateinit var etArea: EditText
     private lateinit var etAddress: EditText
     private lateinit var textCoordinates: TextView
 
@@ -93,6 +93,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         progressBar = view.progressBar
 
         etRegNum = view.etRegNum
+        etArea = view.etArea
         etAddress = view.etAdress.apply { keyListener = null }
         textCoordinates = view.textCoordinates
 
@@ -103,10 +104,14 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         recyclerView.layoutManager = PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         etRegNum.doAfterTextChanged {
-            viewModel.updateRegNum(it.toString())
+            viewModel.registryNumber = it.toString()
         }
 
-        view.layoutAddress.setOnClickListener {
+        etArea.doAfterTextChanged {
+            viewModel.area = it.toString().toDouble()
+        }
+
+        view.llAddress.setOnClickListener {
             openAddressFragment()
         }
 
@@ -126,22 +131,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     private fun observeViewModel() {
 
-        viewModel.containerArea.observe(viewLifecycleOwner, Observer { data ->
-            viewModel.isNewMode.value?.let {
-                if (!it) {
-                    textHeader.visible()
-                    textHeader.text = data.location ?: ""
-                }
-            }
-
-            data.registryNumber?.let {
-                etRegNum.setText(it)
-            }
-
-            data.location?.let {
-                setLocationViews(data.location, data.coordinates?.lat, data.coordinates?.lng)
-            }
-        })
+        //EDIT
 
         viewModel.images.observe(viewLifecycleOwner, Observer { images ->
             images?.let {
@@ -149,11 +139,25 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             }
         })
 
+        viewModel.address.observe(viewLifecycleOwner, Observer { address ->
+            address?.let {
+                setLocationViews(it.value, it.lat, it.lng)
+            }
+        })
+
+        viewModel.area?.let {
+            etArea.setText(it.toString())
+        }
+
+        viewModel.registryNumber?.let {
+            etRegNum.setText(it)
+        }
+
+        //SHARED
+
         sharedAddressViewModel.address.observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                //todo observe?
-                setLocationViews(it.value, it.lat, it.lng)
-                viewModel.updateAddress(it)
+                viewModel.setAddress(it)
                 sharedAddressViewModel.consume()
             }
         })
@@ -167,11 +171,9 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         })
 
         viewModel.isSaved.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                viewModel.containerArea.value?.let { container ->
-                    sharedEditViewModel.setContainer(container)
-                    findNavController().navigateUp()
-                }
+            it?.let { result ->
+                sharedEditViewModel.setContainer(result)
+                findNavController().navigateUp()
             }
         })
 
@@ -181,6 +183,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             etAddress.isEnabled = !it
             btnSave.isEnabled = !it
         })
+
 
     }
 
@@ -199,13 +202,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     }
 
     private fun openAddressFragment() {
-        //FIXME
         //Temp
-        val container = viewModel.containerArea.value
-        val location = container?.location
-        val coordinates = container?.coordinates
-        if (location != null && coordinates != null) {
-            val address = AddressModel(location, location, coordinates.lat, coordinates.lng)
+        val address = viewModel.address.value
+        val location = address?.value
+        val lat = address?.lat
+        val lng = address?.lng
+        if (location != null) {
+            val address = AddressModel(location, location, lat, lng)
             findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment, bundleOf(AddressFragment.KEY_ADDRESS to address))
         } else {
             findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)

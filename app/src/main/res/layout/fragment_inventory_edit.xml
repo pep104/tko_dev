@@ -40,6 +40,7 @@
                 tools:text="str. Andro" />
 
             <LinearLayout
+                android:id="@+id/llRegNum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -64,6 +65,7 @@
                     android:layout_marginEnd="8dp"
                     android:background="@android:color/transparent"
                     android:hint="@string/hint_reg_num"
+                    android:imeOptions="actionNext"
                     tools:text="1234 BC" />
 
                 <View
@@ -75,7 +77,45 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layoutAddress"
+                android:id="@+id/llArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextHintContainerEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/text_container_area" />
+
+                <EditText
+                    android:id="@+id/etArea"
+                    style="@style/EditTextContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/hint_area"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    tools:text="3,75" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/blueDivider" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

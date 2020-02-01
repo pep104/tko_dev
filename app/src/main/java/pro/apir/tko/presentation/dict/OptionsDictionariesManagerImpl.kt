@@ -12,14 +12,6 @@ class OptionsDictionariesManagerImpl : OptionsDictionariesManager {
         )
     }
 
-    private val basementOptions by lazy {
-        dictOf(
-                "" to "",
-                "" to "",
-                "" to "",
-                "" to ""
-        )
-    }
 
     private val fenceOptions by lazy {
         dictOf(
@@ -29,14 +21,7 @@ class OptionsDictionariesManagerImpl : OptionsDictionariesManager {
         )
     }
 
-    private val remotenessOptions by lazy {
-        dictOf(
-                "" to "",
-                "" to "",
-                "" to "",
-                "" to ""
-        )
-    }
+
 
     private val coverageOptions by lazy {
         dictOf(
@@ -55,9 +40,7 @@ class OptionsDictionariesManagerImpl : OptionsDictionariesManager {
     }
 
     override fun getAccessOptionDictionary(): Dictionary = accessOptions
-    override fun getBasementOptionsDictionary(): Dictionary = basementOptions
     override fun getFenceOptionsDictionary(): Dictionary = fenceOptions
-    override fun getRemotenessOptionsDictionary(): Dictionary = remotenessOptions
     override fun getCoverageOptionsDictionary(): Dictionary = coverageOptions
     override fun getKGOOptionsDictionary(): Dictionary = kgoOptions
 
