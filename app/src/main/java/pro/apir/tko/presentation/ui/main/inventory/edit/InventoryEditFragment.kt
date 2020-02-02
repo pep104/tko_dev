@@ -184,7 +184,8 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         }
 
         etArea.doAfterTextChanged {
-            viewModel.area = it.toString().toDouble()
+            if (!it.toString().isNullOrBlank())
+                viewModel.area = it.toString().toDouble()
         }
 
         view.llAddress.setOnClickListener {

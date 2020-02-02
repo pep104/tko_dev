@@ -132,6 +132,30 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                 _address.value = AddressModel(it, "", data.coordinates?.lat, data.coordinates?.lng)
             }
 
+            data.access?.let {
+                accessOptions.value?.let { opt -> access = opt.getPositionByKey(it) }
+            }
+
+            data.fence?.let {
+                fenceOptions.value?.let { opt -> fence = opt.getPositionByKey(it) }
+            }
+
+            data.coverage?.let {
+                coverageOptions.value?.let { opt -> coverage = opt.getPositionByKey(it) }
+            }
+
+            data.kgo?.let {
+                kgoOptions.value?.let { opt -> kgo = opt.getPositionByKey(it) }
+            }
+
+            data.hasCover?.let {
+                hasCoverOptions.value?.let { opt -> hasCover = opt.getPositionByKey(it.toString().toUpperCase()) }
+            }
+
+            data.infoPlate?.let {
+                infoPlateOptions.value?.let { opt -> infoPlate = opt.getPositionByKey(it.toString().toUpperCase()) }
+            }
+
         }
     }
 
@@ -177,12 +201,12 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                     _address.value?.value,
                     registryNumber,
                     null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    hasCoverOptions.value?.getKey(hasCover)?.toBoolean(),
+                    infoPlateOptions.value?.getKey(infoPlate)?.toBoolean(),
+                    accessOptions.value?.getKey(access),
+                    fenceOptions.value?.getKey(fence),
+                    coverageOptions.value?.getKey(coverage),
+                    kgoOptions.value?.getKey(kgo)
             )
 
             inventoryInteractor.updateContainer(newModel, oldPhotos, newPhotos)

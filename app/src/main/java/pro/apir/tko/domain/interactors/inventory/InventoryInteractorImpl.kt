@@ -44,12 +44,12 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                 location = model.location,
                 registryNumber = model.registryNumber,
                 photos = photosCombined,
-                hasCover = null,
-                infoPlate = null,
-                access = null,
-                fence = null,
-                coverage = null,
-                kgo = null
+                hasCover = model.hasCover,
+                infoPlate = model.infoPlate,
+                access = model.access,
+                fence = model.fence,
+                coverage = model.coverage,
+                kgo = model.kgo
         )
 
         return inventoryRepository.updateContainer(edit)
