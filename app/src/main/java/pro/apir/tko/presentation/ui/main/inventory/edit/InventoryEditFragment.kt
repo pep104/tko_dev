@@ -3,9 +3,7 @@ package pro.apir.tko.presentation.ui.main.inventory.edit
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.core.widget.doAfterTextChanged
@@ -53,11 +51,82 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     private lateinit var adapter: ContainerEditImagesAdapter
     private lateinit var recyclerView: RecyclerView
 
-    //TODO TO COMPOUND VIEW?
     private lateinit var etRegNum: EditText
     private lateinit var etArea: EditText
     private lateinit var etAddress: EditText
     private lateinit var textCoordinates: TextView
+
+    private lateinit var spinnerAccess: Spinner
+    private lateinit var adapterAccess: ArrayAdapter<String>
+    private val spinnerAccessListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            viewModel.access = position
+        }
+    }
+
+    private lateinit var spinnerFence: Spinner
+    private lateinit var adapterFence: ArrayAdapter<String>
+    private val spinnerFenceListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            viewModel.fence = position
+        }
+    }
+
+    private lateinit var spinnerCoverage: Spinner
+    private lateinit var adapterCoverage: ArrayAdapter<String>
+    private val spinnerCoverageListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            viewModel.coverage = position
+        }
+    }
+
+    private lateinit var spinnerKgo: Spinner
+    private lateinit var adapterKgo: ArrayAdapter<String>
+    private val spinnerKgoListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            viewModel.kgo = position
+        }
+    }
+
+    private lateinit var spinnerHasCover: Spinner
+    private lateinit var adapterHasCover: ArrayAdapter<String>
+    private val spinnerHasCoverListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            viewModel.hasCover = position
+        }
+    }
+
+    private lateinit var spinnerInfoPlate: Spinner
+    private lateinit var adapterInfoPlate: ArrayAdapter<String>
+    private val spinnerInfoPlateListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            viewModel.infoPlate = position
+        }
+    }
 
     private lateinit var textHeader: TextView
     private lateinit var btnAddPhoto: MaterialButton
@@ -96,6 +165,13 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         etArea = view.etArea
         etAddress = view.etAdress.apply { keyListener = null }
         textCoordinates = view.textCoordinates
+
+        spinnerAccess = view.spinnerAccess.apply { onItemSelectedListener = spinnerAccessListener }
+        spinnerFence = view.spinnerFence.apply { onItemSelectedListener = spinnerFenceListener }
+        spinnerCoverage = view.spinnerCover.apply { onItemSelectedListener = spinnerCoverageListener }
+        spinnerKgo = view.spinnerKGO.apply { onItemSelectedListener = spinnerKgoListener }
+        spinnerHasCover = view.spinnerHasCover.apply { onItemSelectedListener = spinnerHasCoverListener }
+        spinnerInfoPlate = view.spinnerInfoPlate.apply { onItemSelectedListener = spinnerInfoPlateListener }
 
         recyclerView = view.recyclerView
         adapter = ContainerEditImagesAdapter()
@@ -153,6 +229,86 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             etRegNum.setText(it)
         }
 
+        viewModel.accessOptions.observe(viewLifecycleOwner, Observer {
+            adapterAccess = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+                    .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
+            with(spinnerAccess) {
+                adapter = adapterAccess
+                val current = viewModel.access
+                if (current != null && current < it.values.size)
+                    setSelection(current)
+                else
+                    setSelection(0)
+            }
+
+        })
+
+        viewModel.fenceOptions.observe(viewLifecycleOwner, Observer {
+            adapterFence = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+                    .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
+            with(spinnerFence) {
+                adapter = adapterFence
+                val current = viewModel.fence
+                if (current != null && current < it.values.size)
+                    setSelection(current)
+                else
+                    setSelection(0)
+            }
+        })
+
+        viewModel.coverageOptions.observe(viewLifecycleOwner, Observer {
+            adapterCoverage = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+                    .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
+            with(spinnerCoverage) {
+                adapter = adapterCoverage
+                val current = viewModel.coverage
+                if (current != null && current < it.values.size)
+                    setSelection(current)
+                else
+                    setSelection(0)
+            }
+        })
+
+        viewModel.kgoOptions.observe(viewLifecycleOwner, Observer {
+            adapterKgo = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+                    .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
+            with(spinnerKgo) {
+                adapter = adapterKgo
+                val current = viewModel.kgo
+                if (current != null && current < it.values.size)
+                    setSelection(current)
+                else
+                    setSelection(0)
+            }
+        })
+
+        viewModel.hasCoverOptions.observe(viewLifecycleOwner, Observer {
+            adapterHasCover = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+                    .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
+            with(spinnerHasCover) {
+                adapter = adapterHasCover
+                val current = viewModel.hasCover
+                if (current != null && current < it.values.size)
+                    setSelection(current)
+                else
+                    setSelection(0)
+            }
+        })
+
+        viewModel.infoPlateOptions.observe(viewLifecycleOwner, Observer {
+            adapterInfoPlate = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+                    .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
+            with(spinnerInfoPlate) {
+                adapter = adapterInfoPlate
+                val current = viewModel.infoPlate
+                if (current != null && current < it.values.size)
+                    setSelection(current)
+                else
+                    setSelection(0)
+            }
+        })
+
+
         //SHARED
 
         sharedAddressViewModel.address.observe(viewLifecycleOwner, Observer {
@@ -169,6 +325,8 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
                 sharedCameraViewModel.consume()
             }
         })
+
+        //STATUS
 
         viewModel.isSaved.observe(viewLifecycleOwner, Observer {
             it?.let { result ->

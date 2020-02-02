@@ -40,6 +40,12 @@
     <string name="text_coordinates_not_found">Координаты не найдены</string>
     <string name="text_container_area">Размер площадки, м²</string>
     <string name="hint_area">Укажите размер площадки</string>
+    <string name="text_option_access">Доступ к контейнерам</string>
+    <string name="text_option_fence">Ограждение</string>
+    <string name="text_option_cover">Тип покрытия</string>
+    <string name="text_option_kgo">Секции для КГО</string>
+    <string name="text_option_info_plate">Нал. информации установ. образца</string>
+    <string name="text_option_has_cover">Наличие крыши</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
@@ -49,6 +55,11 @@
         <item quantity="many">%1$d контейнеров</item>
         <item quantity="other">%1$d контейнеров</item>
     </plurals>
+
+    <string-array name="option_true_false_select">
+        <item>Нет</item>
+        <item>Есть</item>
+    </string-array>
 
 
 </resources>

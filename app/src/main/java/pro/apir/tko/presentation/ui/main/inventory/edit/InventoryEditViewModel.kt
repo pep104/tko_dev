@@ -67,22 +67,6 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             handle.set("cRegistryNumber", value)
         }
 
-    //TODO T/F HAS COVER
-    //TODO T/F INFO PLATE
-//    val basementOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getBasementOptionsDictionary())
-//    var basement = handle.get<Int>("basement")
-//        set(value) {
-//            field = value
-//            handle.set("basement", value)
-//        }
-
-    //    val remotenessOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getRemotenessOptionsDictionary())
-//    var remoteness = handle.get<Int>("remoteness")
-//        set(value) {
-//            field = value
-//            handle.set("remoteness", value)
-//        }
-
     val accessOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getAccessOptionDictionary())
     var access = handle.get<Int>("access")
         set(value) {
@@ -112,6 +96,21 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             field = value
             handle.set("kgo", value)
         }
+
+    val infoPlateOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getInfoPlateDictionary())
+    var infoPlate = handle.get<Int>("infoPlate")
+        set(value) {
+            field = value
+            handle.set("infoPlate", value)
+        }
+
+    val hasCoverOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getHasCoverOptionsDictionary())
+    var hasCover = handle.get<Int>("hasCover")
+        set(value) {
+            field = value
+            handle.set("hasCover", value)
+        }
+
 
     private val _images = handle.getLiveData<MutableList<PhotoWrapper>>("images", mutableListOf())
     val images: LiveData<MutableList<PhotoWrapper>>
