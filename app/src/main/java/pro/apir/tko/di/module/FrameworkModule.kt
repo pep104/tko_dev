@@ -200,6 +200,6 @@ class FrameworkModule {
 
     @Provides
     @Singleton
-    fun provideDictManager(): OptionsDictionariesManager = OptionsDictionariesManagerImpl()
+    fun provideDictManager(context: Context): OptionsDictionariesManager = OptionsDictionariesManagerImpl(context)
 
 }

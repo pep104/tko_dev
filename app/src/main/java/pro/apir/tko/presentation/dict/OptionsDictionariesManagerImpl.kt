@@ -1,41 +1,41 @@
 package pro.apir.tko.presentation.dict
 
+import android.content.Context
 import pro.apir.tko.core.types.Dictionary
 import pro.apir.tko.core.types.dictOf
+import javax.inject.Inject
 
-class OptionsDictionariesManagerImpl : OptionsDictionariesManager {
+//Strings to resources
+class OptionsDictionariesManagerImpl @Inject constructor(private val context: Context) : OptionsDictionariesManager {
 
     private val accessOptions by lazy {
         dictOf(
                 "FREE" to "Подъездные пути свободны",
-                "" to ""
+                "NOT_FREE" to "Подъездные пути не свободны"
         )
     }
-
 
     private val fenceOptions by lazy {
         dictOf(
-                "" to "",
-                "" to "",
-                "" to ""
+                "CORRESPONDS" to "Соответствует",
+                "NOT_CORRESPONDS" to "Не соответствуе",
+                "NEEDS_REPAIR" to "Требует ремонта"
         )
     }
 
-
-
     private val coverageOptions by lazy {
         dictOf(
-                "" to "",
-                "" to "",
-                "" to ""
+                "ASPHALT" to "Асфальт",
+                "CONCRETE" to "Бетон",
+                "SOIL" to "Грунт"
         )
     }
 
     private val kgoOptions by lazy {
         dictOf(
-                "" to "",
-                "" to "",
-                "" to ""
+                "PERSENT" to "Есть",
+                "ABSENT" to "Нет",
+                "NOT_PROVIDED" to "Не предусмотрена"
         )
     }
 
