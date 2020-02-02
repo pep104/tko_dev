@@ -17,4 +17,8 @@ interface OptionsDictionariesManager {
 
     fun getKGOOptionsDictionary(): Dictionary
 
+    fun getHasCoverOptionsDictionary(): Dictionary
+
+    fun getInfoPlateDictionary(): Dictionary
+
 }

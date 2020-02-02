@@ -39,9 +39,17 @@ class OptionsDictionariesManagerImpl @Inject constructor(private val context: Co
         )
     }
 
+    private val trueFalseOptions by lazy {
+        dictOf(
+                "TRUE" to "Есть",
+                "FALSE" to "Нет"
+        )
+    }
+
     override fun getAccessOptionDictionary(): Dictionary = accessOptions
     override fun getFenceOptionsDictionary(): Dictionary = fenceOptions
     override fun getCoverageOptionsDictionary(): Dictionary = coverageOptions
     override fun getKGOOptionsDictionary(): Dictionary = kgoOptions
-
+    override fun getHasCoverOptionsDictionary(): Dictionary = trueFalseOptions
+    override fun getInfoPlateDictionary(): Dictionary = trueFalseOptions
 }
