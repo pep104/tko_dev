@@ -46,10 +46,20 @@ class OptionsDictionariesManagerImpl @Inject constructor(private val context: Co
         )
     }
 
+    private val containerTypeOptions by lazy {
+        dictOf(
+                "STANDART" to "Стандартный",
+                "EURO" to "Евро",
+                "SEPARATE" to "Разд. сбор",
+                "BUNKER" to "Бункер"
+        )
+    }
+
     override fun getAccessOptionDictionary(): Dictionary = accessOptions
     override fun getFenceOptionsDictionary(): Dictionary = fenceOptions
     override fun getCoverageOptionsDictionary(): Dictionary = coverageOptions
     override fun getKGOOptionsDictionary(): Dictionary = kgoOptions
     override fun getHasCoverOptionsDictionary(): Dictionary = trueFalseOptions
     override fun getInfoPlateDictionary(): Dictionary = trueFalseOptions
+    override fun getContainerTypeDictionary(): Dictionary = containerTypeOptions
 }

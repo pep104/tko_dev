@@ -28,6 +28,7 @@ import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
+import pro.apir.tko.presentation.ui.dialog.addcontainer.AddContainerDialog
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
 import pro.apir.tko.presentation.ui.main.address.AddressSharedViewModel
 import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel
@@ -37,7 +38,7 @@ import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel
  * Date: 22.01.2020
  * Project: tko-android
  */
-class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemClickListener {
+class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnItemClickListener, AddContainerDialog.AddContainerListener {
 
     private val viewModel: InventoryEditViewModel by viewModels()
     private val sharedAddressViewModel: AddressSharedViewModel by activityViewModels()
@@ -48,8 +49,11 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     override fun handleFailure() = viewModel.failure
 
-    private lateinit var adapter: ContainerEditImagesAdapter
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapterImages: ContainerAreaEditImagesAdapter
+    private lateinit var recyclerViewImages: RecyclerView
+
+    private lateinit var adapterContainers: ContainersEditAdapter
+    private lateinit var recyclerViewContainers: RecyclerView
 
     private lateinit var etRegNum: EditText
     private lateinit var etArea: EditText
@@ -173,11 +177,11 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
         spinnerHasCover = view.spinnerHasCover.apply { onItemSelectedListener = spinnerHasCoverListener }
         spinnerInfoPlate = view.spinnerInfoPlate.apply { onItemSelectedListener = spinnerInfoPlateListener }
 
-        recyclerView = view.recyclerView
-        adapter = ContainerEditImagesAdapter()
-        adapter.setListener(this)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerViewImages = view.recyclerViewImages
+        adapterImages = ContainerAreaEditImagesAdapter()
+        adapterImages.setListener(this)
+        recyclerViewImages.adapter = adapterImages
+        recyclerViewImages.layoutManager = PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         etRegNum.doAfterTextChanged {
             viewModel.registryNumber = it.toString()
@@ -196,6 +200,10 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             openAddressFragment()
         }
 
+        view.btnAddContainer.setOnClickListener {
+            AddContainerDialog().show(childFragmentManager, "containerAdd")
+        }
+
         view.btnToolbarBack.setOnClickListener(::back)
 
         btnSave.setOnClickListener {
@@ -212,7 +220,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
         viewModel.images.observe(viewLifecycleOwner, Observer { images ->
             images?.let {
-                adapter.setData(it)
+                adapterImages.setData(it)
             }
         })
 
@@ -355,7 +363,7 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
     }
 
     override fun onDestroyView() {
-        adapter.setListener(null)
+        adapterImages.setListener(null)
         super.onDestroyView()
     }
 
@@ -366,6 +374,10 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
 
     override fun onImageDeleteClicked(item: PhotoWrapper) {
         viewModel.deletePhoto(item)
+    }
+
+    override fun onNewContainer() {
+
     }
 
     private fun openAddressFragment() {

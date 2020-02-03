@@ -6,4 +6,8 @@ package pro.apir.tko.presentation.entities
  * Project: tko-android
  */
 //todo
-class Container
+data class Container(
+        var type: String,
+        var count: Int,
+        var volume: Double
+)

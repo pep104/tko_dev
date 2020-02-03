@@ -67,6 +67,9 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             handle.set("cRegistryNumber", value)
         }
 
+    //TODO Containers list
+    //TODO MAP TO UI MODEL?
+
     val accessOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getAccessOptionDictionary())
     var access = handle.get<Int>("access")
         set(value) {
@@ -176,6 +179,8 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
+
+    //TODO CONVERT CONTAINER UI MODEL TO DOMAIN MODEL
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
             loading(true)
@@ -197,6 +202,7 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                     _id,
                     area,
                     null,
+                    emptyList(),
                     coordinatesModel,
                     _address.value?.value,
                     registryNumber,

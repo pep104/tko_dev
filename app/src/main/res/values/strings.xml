@@ -50,6 +50,8 @@
     <string name="text_count">Количество</string>
     <string name="text_container_volume">Объем контейнера, м³</string>
     <string name="text_container_type">Тип контейнера</string>
+    <string name="btn_add_container">Добавить контейнер</string>
+    <string name="text_count_short">Кол-во</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

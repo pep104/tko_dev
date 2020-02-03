@@ -21,4 +21,6 @@ interface OptionsDictionariesManager {
 
     fun getInfoPlateDictionary(): Dictionary
 
+    fun getContainerTypeDictionary(): Dictionary
+
 }

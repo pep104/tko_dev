@@ -13,6 +13,7 @@ data class ContainerAreaShortModel(
         val id: Int?,
         val area: Double?,
         val containersCount: Int?,
+        val containers: List<ContainerModel>?,
         val coordinates: CoordinatesModel?,
         val location: String?,
         val registryNumber: String?,

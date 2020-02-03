@@ -1,6 +1,7 @@
 package pro.apir.tko.data.framework.network.model.response
 
 import com.google.gson.annotations.SerializedName
+import pro.apir.tko.data.framework.network.model.response.data.ContainerData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
 import pro.apir.tko.data.framework.network.model.response.data.ImageData
 import pro.apir.tko.domain.model.ContainerAreaShortModel
@@ -18,6 +19,7 @@ data class ContainerAreaResponse(
         val closeAt: String?,
         @SerializedName("containers_count")
         val containersCount: Int?,
+        val containers: List<ContainerData>,
         val coordinates: CoordinatesData?,
         @SerializedName("coverage_type")
         val coverageType: String?,
@@ -67,6 +69,7 @@ data class ContainerAreaResponse(
                 id = id,
                 area = area,
                 containersCount = containersCount,
+                containers = containers.map { it.toModel() },
                 coordinates = coordinates,
                 location = location,
                 registryNumber = registryNumber,

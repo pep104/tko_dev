@@ -21,7 +21,7 @@ import pro.apir.tko.presentation.extension.dpToPx
  * Date: 22.01.2020
  * Project: tko-android
  */
-class ContainerEditImagesAdapter : RecyclerView.Adapter<ContainerEditImagesAdapter.ImageHolder>() {
+class ContainerAreaEditImagesAdapter : RecyclerView.Adapter<ContainerAreaEditImagesAdapter.ImageHolder>() {
 
     private val data = arrayListOf<PhotoWrapper>()
 
