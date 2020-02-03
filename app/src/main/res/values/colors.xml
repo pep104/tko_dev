@@ -19,10 +19,12 @@
     <color name="veryBlack">#212121</color>
     <color name="veryBlackA10">#1A212121</color>
 
+    <color name="textBlackA40">#66000000</color>
     <color name="textBlackA60">#99000000</color>
     <color name="textButtonFocused">#4C81BF</color>
 
     <color name="blueDivider">#331F5099</color>
     <color name="hint_text_coordinates_address">#4D4D4D</color>
+    <color name="chipBackgroundColor">#1F3469A8</color>
 
 </resources>

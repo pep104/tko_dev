@@ -340,6 +340,14 @@ class InventoryEditFragment : BaseFragment(), ContainerEditImagesAdapter.OnItemC
             progressBar.isInvisible = !it
             etRegNum.isEnabled = !it
             etAddress.isEnabled = !it
+
+            spinnerAccess.isEnabled = !it
+            spinnerFence.isEnabled = !it
+            spinnerCoverage.isEnabled = !it
+            spinnerKgo.isEnabled = !it
+            spinnerHasCover.isEnabled = !it
+            spinnerInfoPlate.isEnabled = !it
+
             btnSave.isEnabled = !it
         })
 

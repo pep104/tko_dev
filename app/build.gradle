@@ -119,6 +119,9 @@ dependencies {
     //Dexter
     implementation 'com.karumi:dexter:6.0.1'
 
+    //Horizontal Number Picker
+    implementation 'com.shawnlin:number-picker:2.4.8'
+
 
 }
 

@@ -46,6 +46,10 @@
     <string name="text_option_kgo">Секции для КГО</string>
     <string name="text_option_info_plate">Нал. информации установ. образца</string>
     <string name="text_option_has_cover">Наличие крыши</string>
+    <string name="dialog_header_add_container">Добавить контейнер</string>
+    <string name="text_count">Количество</string>
+    <string name="text_container_volume">Объем контейнера, м³</string>
+    <string name="text_container_type">Тип контейнера</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

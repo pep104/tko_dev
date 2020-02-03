@@ -111,7 +111,10 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-
+    <style name="TextDialogHeader">
+        <item name="android:textColor">@color/textBlackA40</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 
     <style name="AppBarIconStyle">
         <item name="android:padding">16dp</item>
@@ -135,6 +138,10 @@
         <item name="android:paddingEnd">16dp</item>
     </style>
 
+    <style name="ChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:textColor">@color/selector_chip_text</item>
+        <item name="chipBackgroundColor">@color/selector_chip_background</item>
+    </style>
 
 
 </resources>
