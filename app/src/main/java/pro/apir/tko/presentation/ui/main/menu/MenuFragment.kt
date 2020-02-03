@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.menu
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -79,7 +80,9 @@ class MenuFragment : BaseFragment() {
             }
         }).check()
 
-        activity?.window?.decorView?.systemUiVisibility =  View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity?.window?.decorView?.systemUiVisibility =  View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
     }
 
 }
