@@ -61,7 +61,7 @@ class MenuFragment : BaseFragment() {
         }
 
         btnRoutes.setOnClickListener {
-            //TODO navigate to routes list
+            findNavController().navigate(R.id.action_menuFragment_to_routeListFragment)
         }
 
 
@@ -81,7 +81,7 @@ class MenuFragment : BaseFragment() {
         }).check()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity?.window?.decorView?.systemUiVisibility =  View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            activity?.window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
     }
 

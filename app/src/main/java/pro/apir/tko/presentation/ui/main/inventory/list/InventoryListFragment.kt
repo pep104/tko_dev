@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
-import kotlinx.android.synthetic.main.content_inventory_list.view.*
+import kotlinx.android.synthetic.main.content_map.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_list.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -88,7 +88,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         super.onViewCreated(view, savedInstanceState)
 
         bottomSheetLayout = view.bottomsheetInventory
-        contentLayout = view.contentInventoryList
+        contentLayout = view.contentMap
 
         layoutSearch = view.layoutSearch
         etSearch = view.etSearch

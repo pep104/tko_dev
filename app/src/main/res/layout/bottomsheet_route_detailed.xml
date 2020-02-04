@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottomsheetInventory"
+    android:id="@+id/bottomsheetInventoryDetailed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="@dimen/bottomsheet_margin_top"
-    android:elevation="@dimen/bottomsheet_elevation"
     android:background="@drawable/shape_rounded_top_white"
+    android:elevation="@dimen/bottomsheet_elevation"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottomsheet_peek_height"
     app:layout_behavior="@string/bottom_sheet_behavior">
@@ -30,10 +30,11 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:text="@string/text_inventory_list_header"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgPick" />
+        app:layout_constraintTop_toBottomOf="@+id/imgPick"
+        tools:text="Маршрут №0943" />
+
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -44,15 +45,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textHeader">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="9dp"
-            android:paddingBottom="56dp"
-            tools:itemCount="20"
-            tools:listitem="@layout/item_container_list" />
+
 
 
     </androidx.core.widget.NestedScrollView>
@@ -65,7 +58,7 @@
         app:layout_constraintTop_toTopOf="@+id/nestedScrollView" />
 
     <ProgressBar
-        android:id="@+id/loadingList"
+        android:id="@+id/loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"

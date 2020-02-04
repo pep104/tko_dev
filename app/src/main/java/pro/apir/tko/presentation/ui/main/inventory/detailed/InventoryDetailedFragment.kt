@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_inventory_detailed.view.*
-import kotlinx.android.synthetic.main.content_inventory_detailed.view.*
+import kotlinx.android.synthetic.main.content_map_detailed.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_detailed.view.*
 import kotlinx.coroutines.Job
 import org.osmdroid.config.Configuration
@@ -94,7 +94,7 @@ class InventoryDetailedFragment : BaseFragment() {
         loading = view.loading
 
         bottomSheetLayout = view.bottomsheetInventoryDetailed
-        contentLayout = view.contentInventoryDetailed
+        contentLayout = view.contentMapDetailed
 
         textHeader = view.textHeader
         textContainerInfo = view.textContainerInfo

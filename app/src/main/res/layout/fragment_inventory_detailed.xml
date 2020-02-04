@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/content_inventory_detailed" />
+    <include layout="@layout/content_map_detailed" />
 
     <include layout="@layout/bottomsheet_inventory_detailed" />
 

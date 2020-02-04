@@ -10,18 +10,13 @@ import android.widget.Spinner
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_edit_container.view.*
 import pro.apir.tko.R
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.entities.Container
-import javax.inject.Inject
 
 class ContainersEditAdapter : RecyclerView.Adapter<ContainersEditAdapter.ContainerHolder>() {
 
-    @Inject
-    private lateinit var optionsDictionariesManager: OptionsDictionariesManager
-
     private val data = arrayListOf<Container>()
 
-    interface OnContainerChangedListener{
+    interface OnContainerChangedListener {
 
         //TODO CONTAINER ACTIONS
 
@@ -66,7 +61,8 @@ class ContainersEditAdapter : RecyclerView.Adapter<ContainersEditAdapter.Contain
             etCount = itemView.etCount
             etVolume = itemView.etVolume
             spinnerType = itemView.spinnerType
-            spinnerTypeAdapter = ArrayAdapter(spinnerType.context, R.layout.spinner_item, optionsDictionariesManager.getContainerTypeDictionary().values.toList())
+            spinnerTypeAdapter = ArrayAdapter(spinnerType.context, R.layout.spinner_item, emptyList())
+//            spinnerTypeAdapter = ArrayAdapter(spinnerType.context, R.layout.spinner_item, optionsDictionariesManager.getContainerTypeDictionary().values.toList())
         }
 
         fun bind(item: Container, pos: Int) {

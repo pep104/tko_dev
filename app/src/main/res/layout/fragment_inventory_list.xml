@@ -5,7 +5,7 @@
     android:fitsSystemWindows="false"
     android:background="@color/white">
 
-    <include layout="@layout/content_inventory_list" />
+    <include layout="@layout/content_map" />
 
     <include layout="@layout/bottomsheet_inventory_list" />
 

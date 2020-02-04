@@ -16,6 +16,8 @@ import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditViewModel
 import pro.apir.tko.presentation.ui.main.inventory.list.InventoryListViewModel
 import pro.apir.tko.presentation.ui.main.login.LoginViewModel
 import pro.apir.tko.presentation.ui.main.menu.MenuViewModel
+import pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedViewModel
+import pro.apir.tko.presentation.ui.main.route.list.RouteListViewModel
 import pro.apir.tko.presentation.ui.main.splash.SplashViewModel
 
 @AssistedModule
@@ -76,5 +78,15 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(CameraViewModel::class)
     abstract fun bindCameraViewModelFactory(f: CameraViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RouteListViewModel::class)
+    abstract fun bindRouteListViewModelFactory(f: RouteListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RouteDetailedViewModel::class)
+    abstract fun bindRouteDetailedViewModelFactory(f: RouteDetailedViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
 }

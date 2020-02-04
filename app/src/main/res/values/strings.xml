@@ -52,6 +52,7 @@
     <string name="text_container_type">Тип контейнера</string>
     <string name="btn_add_container">Добавить контейнер</string>
     <string name="text_count_short">Кол-во</string>
+    <string name="text_route_list_header">Маршруты</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
