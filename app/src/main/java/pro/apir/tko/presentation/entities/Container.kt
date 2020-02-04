@@ -7,7 +7,12 @@ package pro.apir.tko.presentation.entities
  */
 //todo
 data class Container(
-        var type: String,
         var count: Int,
+        var ids: List<Int>,
+        var type: String,
         var volume: Double
-)
+) {
+
+    //todo map to domain
+
+}

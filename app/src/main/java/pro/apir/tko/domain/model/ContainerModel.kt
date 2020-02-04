@@ -9,4 +9,4 @@ import kotlinx.android.parcel.Parcelize
  * Project: tko-android
  */
 @Parcelize
-data class ContainerModel(val type: String): Parcelable
+data class ContainerModel(val id: Int, val type: String, val volume: Double): Parcelable

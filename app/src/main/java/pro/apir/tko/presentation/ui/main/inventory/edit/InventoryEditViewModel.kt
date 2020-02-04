@@ -16,8 +16,10 @@ import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.domain.model.ContainerModel
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.presentation.dict.OptionsDictionariesManager
+import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.platform.BaseViewModel
@@ -67,8 +69,9 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             handle.set("cRegistryNumber", value)
         }
 
-    //TODO Containers list
-    //TODO MAP TO UI MODEL?
+    private val _containers = handle.getLiveData<MutableList<Container>>("containers", mutableListOf())
+    val containers: LiveData<MutableList<Container>>
+        get() = _containers
 
     val accessOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getAccessOptionDictionary())
     var access = handle.get<Int>("access")
@@ -221,6 +224,21 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                     }
         }
     }
+
+
+    private fun mapContainersTemp(cdl: List<ContainerModel>): List<Container> {
+        val grouped = cdl.groupingBy { Pair(it.type, it.volume) }.aggregate { key, accumulator: MutableList<Int>?, element, first ->
+            val list = accumulator ?: mutableListOf()
+            list.add(element.id)
+            list
+        }
+        val result = mutableListOf<Container>()
+        for ((p, c) in grouped) {
+            result.add(Container(c.size, c, p.first, p.second))
+        }
+        return result
+    }
+
 
     sealed class FieldState() {
         @Parcelize

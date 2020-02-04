@@ -9,9 +9,10 @@ import pro.apir.tko.domain.model.ContainerModel
  * Project: tko-android
  */
 class ContainerData(
+        val id: Int,
         @SerializedName("container_type")
-        val type: String
-//todo volume
+        val type: String,
+        val volume: Double?
 ) {
-    fun toModel() = ContainerModel(type)
+    fun toModel() = ContainerModel(id, type, volume ?: 0.0)
 }
