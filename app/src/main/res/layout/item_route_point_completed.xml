@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="8dp">
+
+
+    <FrameLayout
+        android:id="@+id/frameBadgeCompleted"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/shape_oval_green"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textBadgeCompleted"
+            style="@style/TextRouteBadgeCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            tools:text="5" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/textRouteNameCompleted"
+        style="@style/TextRoutePointNameCompleted"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/frameBadgeCompleted"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/frameBadgeCompleted"
+        app:layout_constraintTop_toTopOf="@id/frameBadgeCompleted"
+        tools:text="Ул. Муштари 24 • 1.6  км от вас" />
+
+    <TextView
+        android:id="@+id/textRouteInfoCompleted"
+        style="@style/TextRoutePointInfoCompleted"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/textRouteNameCompleted"
+        app:layout_constraintTop_toBottomOf="@id/textRouteNameCompleted"
+        tools:text="6 контейнеров • 3,75 м³" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
