@@ -9,7 +9,7 @@ import pro.apir.tko.domain.model.ContainerModel
  * Project: tko-android
  */
 class ContainerData(
-        val id: Int,
+        val id: Int?,
         @SerializedName("container_type")
         val type: String,
         val volume: Double?

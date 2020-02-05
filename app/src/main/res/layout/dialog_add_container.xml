@@ -51,7 +51,7 @@
         app:np_dividerDistance="32dp"
         app:np_fadingEdgeEnabled="true"
         app:np_max="9"
-        app:np_min="0"
+        app:np_min="1"
         app:np_orientation="horizontal"
         app:np_selectedTextColor="@color/black"
         app:np_selectedTextSize="22dp"

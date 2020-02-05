@@ -40,6 +40,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                 id = model.id,
                 area = model.area,
                 containersCount = model.containersCount,
+                containers = model.containers,
                 coordinates = model.coordinates,
                 location = model.location,
                 registryNumber = model.registryNumber,

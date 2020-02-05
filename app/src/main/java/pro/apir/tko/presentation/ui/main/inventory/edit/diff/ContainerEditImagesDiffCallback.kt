@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.inventory.edit
+package pro.apir.tko.presentation.ui.main.inventory.edit.diff
 
 import androidx.recyclerview.widget.DiffUtil
 import pro.apir.tko.presentation.entities.PhotoWrapper

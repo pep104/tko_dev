@@ -48,7 +48,7 @@ class OptionsDictionariesManagerImpl @Inject constructor(private val context: Co
 
     private val containerTypeOptions by lazy {
         dictOf(
-                "STANDART" to "Стандартный",
+                "STANDARD" to "Стандартный",
                 "EURO" to "Евро",
                 "SEPARATE" to "Разд. сбор",
                 "BUNKER" to "Бункер"

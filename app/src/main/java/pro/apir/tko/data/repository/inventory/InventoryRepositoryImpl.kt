@@ -6,6 +6,7 @@ import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.model.request.ContainerAreaDetailedRequest
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
+import pro.apir.tko.data.framework.network.model.response.data.ContainerData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
 import pro.apir.tko.data.repository.BaseRepository
 import pro.apir.tko.domain.model.ContainerAreaEditModel
@@ -33,6 +34,7 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
                 model.id,
                 model.area,
                 coordinatesData,
+                model.containers?.map { ContainerData(it.id, it.type, it.volume) },
                 model.location,
                 model.registryNumber,
                 model.photos?.map { ImageRequestData(it.image) },

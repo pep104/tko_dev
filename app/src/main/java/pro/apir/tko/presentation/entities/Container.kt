@@ -1,18 +1,36 @@
 package pro.apir.tko.presentation.entities
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+import pro.apir.tko.domain.model.ContainerModel
+import kotlin.random.Random
+
 /**
- * Created by antonsarmatin
- * Date: 2020-02-03
+ * Created by Антон Сарматин
+ * Date: 05.02.2020
  * Project: tko-android
  */
-//todo
+@Parcelize
 data class Container(
-        var count: Int,
-        var ids: List<Int>,
+        val id: Int?,
+        val isNew: Boolean = false,
         var type: String,
-        var volume: Double
-) {
+        var volume: Double?
+) : Parcelable {
 
-    //todo map to domain
+    //Maps from domain model
+    constructor(model: ContainerModel) : this(model.id, false, model.type, model.volume)
+
+    //Create new container
+    constructor(type: String, volume: Double?) : this(Random.nextInt(1000, 9999), true, type, volume)
+
+    //Maps to domain model
+    fun toModel(): ContainerModel {
+        return if (isNew) {
+            ContainerModel(null, type, volume)
+        } else {
+            ContainerModel(id, type, volume)
+        }
+    }
 
 }

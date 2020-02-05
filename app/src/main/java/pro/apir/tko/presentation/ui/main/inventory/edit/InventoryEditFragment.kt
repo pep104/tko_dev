@@ -25,6 +25,8 @@ import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.presentation.dict.OptionsDictionariesManager
+import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
@@ -32,13 +34,17 @@ import pro.apir.tko.presentation.ui.dialog.addcontainer.AddContainerDialog
 import pro.apir.tko.presentation.ui.main.address.AddressFragment
 import pro.apir.tko.presentation.ui.main.address.AddressSharedViewModel
 import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel
+import javax.inject.Inject
 
 /**
  * Created by Антон Сарматин
  * Date: 22.01.2020
  * Project: tko-android
  */
-class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnItemClickListener, AddContainerDialog.AddContainerListener {
+class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnItemClickListener, AddContainerDialog.AddContainerListener, ContainersEditAdapter.OnContainerChangedListener {
+
+    @Inject
+    lateinit var optionsDictionariesManager: OptionsDictionariesManager
 
     private val viewModel: InventoryEditViewModel by viewModels()
     private val sharedAddressViewModel: AddressSharedViewModel by activityViewModels()
@@ -183,6 +189,14 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         recyclerViewImages.adapter = adapterImages
         recyclerViewImages.layoutManager = PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
+        recyclerViewContainers = view.recycerViewContainers
+        adapterContainers = ContainersEditAdapter(optionsDictionariesManager)
+        adapterContainers.setListner(this)
+        with(recyclerViewContainers) {
+            adapter = adapterContainers
+            layoutManager = LinearLayoutManager(context)
+        }
+
         etRegNum.doAfterTextChanged {
             viewModel.registryNumber = it.toString()
         }
@@ -201,7 +215,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         }
 
         view.btnAddContainer.setOnClickListener {
-            AddContainerDialog().show(childFragmentManager, "containerAdd")
+            AddContainerDialog(this).show(childFragmentManager, "containerAdd")
         }
 
         view.btnToolbarBack.setOnClickListener(::back)
@@ -237,6 +251,12 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         viewModel.registryNumber?.let {
             etRegNum.setText(it)
         }
+
+        viewModel.containers.observe(viewLifecycleOwner, Observer { containers ->
+            containers?.let {
+                adapterContainers.setData(it)
+            }
+        })
 
         viewModel.accessOptions.observe(viewLifecycleOwner, Observer {
             adapterAccess = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
@@ -376,8 +396,12 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         viewModel.deletePhoto(item)
     }
 
-    override fun onNewContainer() {
+    override fun onNewContainerAdded(list: List<Container>) {
+        viewModel.addContainers(list)
+    }
 
+    override fun onContainerDataChanged(id: Int?, type: String, volume: Double?) {
+        viewModel.updateContainer(id, type, volume)
     }
 
     private fun openAddressFragment() {

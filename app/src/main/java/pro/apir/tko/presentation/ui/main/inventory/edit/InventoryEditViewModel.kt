@@ -16,7 +16,6 @@ import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
-import pro.apir.tko.domain.model.ContainerModel
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.entities.Container
@@ -162,6 +161,10 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                 infoPlateOptions.value?.let { opt -> infoPlate = opt.getPositionByKey(it.toString().toUpperCase()) }
             }
 
+            data.containers?.let {
+                _containers.value = it.map { item -> Container(item) }.toMutableList()
+            }
+
         }
     }
 
@@ -182,8 +185,20 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
+    fun addContainers(containers: List<Container>) {
+        _containers.value?.let {
+            it.addAll(containers)
+            _containers.notifyObserver()
+        }
+    }
 
-    //TODO CONVERT CONTAINER UI MODEL TO DOMAIN MODEL
+    fun updateContainer(id: Int?, type: String, volume: Double?) {
+        _containers.value?.let { list ->
+            list.find { it.id == id }.apply { this?.type = type; this?.volume = volume }
+        }
+    }
+
+
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
             loading(true)
@@ -205,7 +220,7 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                     _id,
                     area,
                     null,
-                    emptyList(),
+                    _containers.value?.map { item -> item.toModel() },
                     coordinatesModel,
                     _address.value?.value,
                     registryNumber,
@@ -223,20 +238,6 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                         _isSaved.postValue(it)
                     }
         }
-    }
-
-
-    private fun mapContainersTemp(cdl: List<ContainerModel>): List<Container> {
-        val grouped = cdl.groupingBy { Pair(it.type, it.volume) }.aggregate { key, accumulator: MutableList<Int>?, element, first ->
-            val list = accumulator ?: mutableListOf()
-            list.add(element.id)
-            list
-        }
-        val result = mutableListOf<Container>()
-        for ((p, c) in grouped) {
-            result.add(Container(c.size, c, p.first, p.second))
-        }
-        return result
     }
 
 

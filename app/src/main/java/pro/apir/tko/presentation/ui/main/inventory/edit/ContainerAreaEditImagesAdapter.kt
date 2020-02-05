@@ -15,6 +15,7 @@ import pro.apir.tko.R
 import pro.apir.tko.domain.model.ImageModel
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.extension.dpToPx
+import pro.apir.tko.presentation.ui.main.inventory.edit.diff.ContainerEditImagesDiffCallback
 
 /**
  * Created by Антон Сарматин

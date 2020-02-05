@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
+import pro.apir.tko.data.framework.network.model.response.data.ContainerData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
 
 /**
@@ -16,6 +17,7 @@ data class ContainerAreaDetailedRequest(
         val id: Int?,
         val area: Double?,
         val coordinates: CoordinatesData?,
+        val containers: List<ContainerData>?,
         val location: String?,
         @SerializedName("registry_number")
         val registryNumber: String?,
