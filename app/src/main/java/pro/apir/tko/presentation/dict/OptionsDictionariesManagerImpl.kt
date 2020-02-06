@@ -33,7 +33,7 @@ class OptionsDictionariesManagerImpl @Inject constructor(private val context: Co
 
     private val kgoOptions by lazy {
         dictOf(
-                "PERSENT" to "Есть",
+                "PRESENT" to "Есть",
                 "ABSENT" to "Нет",
                 "NOT_PROVIDED" to "Не предусмотрена"
         )
