@@ -1,8 +1,11 @@
 package pro.apir.tko.presentation.ui.main.inventory.detailed
 
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -21,6 +24,10 @@ import kotlinx.android.synthetic.main.content_map_detailed.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_detailed.view.*
 import kotlinx.coroutines.Job
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.DelayedMapListener
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -75,6 +82,10 @@ class InventoryDetailedFragment : BaseFragment() {
     private var mapJob: Job? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
+    private lateinit var btnZoomIn: ImageButton
+    private lateinit var btnZoomOut: ImageButton
+    private lateinit var btnGeoSwitch: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectInventoryDetailedFragment(this)
@@ -106,6 +117,9 @@ class InventoryDetailedFragment : BaseFragment() {
         btnEdit = view.btnEdit
 
         mapView = view.map
+        btnZoomIn = view.btnZoomIn
+        btnZoomOut = view.btnZoomOut
+        btnGeoSwitch = view.btnGeoSwitch
 
         imageRecyclerView = view.imageRecyclerView
         adapter = ContainerImagesAdapter()
@@ -114,6 +128,10 @@ class InventoryDetailedFragment : BaseFragment() {
         imgClose.setOnClickListener(::back)
         btnBack.setOnClickListener(::back)
         btnEdit.setOnClickListener { findNavController().navigate(R.id.action_inventoryDetailedFragment_to_inventoryEditFragment, bundleOf(InventoryEditFragment.KEY_CONTAINER to viewModel.data.value)) }
+
+        btnGeoSwitch.setOnClickListener {
+            viewModel.switchFollow()
+        }
 
         setMap(mapView)
 
@@ -165,7 +183,22 @@ class InventoryDetailedFragment : BaseFragment() {
 
         viewModel.coordinates.observe(viewLifecycleOwner, Observer {
             it?.let {
-                setMapPoint(it.lat, it.lng) }
+                setMapPoint(it.lat, it.lng)
+            }
+        })
+
+        viewModel.isFollowEnabled.observe(viewLifecycleOwner, Observer {
+            it?.let { enabled ->
+
+                if (enabled) {
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(context!!, R.color.blueMain), PorterDuff.Mode.SRC_IN)
+                    myLocationOverlay?.enableFollowLocation()
+                } else {
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(context!!, R.color.black), PorterDuff.Mode.SRC_IN)
+                    myLocationOverlay?.disableFollowLocation()
+                }
+
+            }
         })
 
         sharedEditViewModel.containerArea.observe(viewLifecycleOwner, Observer {
@@ -186,8 +219,34 @@ class InventoryDetailedFragment : BaseFragment() {
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
+//         myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_user_location)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_user_location)?.toBitmap())
+
 
         mapView.overlayManager.add(myLocationOverlay)
+
+        btnZoomIn.setOnClickListener {
+            mapView.controller.zoomIn(200)
+        }
+        btnZoomOut.setOnClickListener {
+            mapView.controller.zoomOut(150)
+        }
+
+        mapView.addMapListener(DelayedMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                Log.d("map", "follow: ${myLocationOverlay?.isFollowLocationEnabled}")
+                if (myLocationOverlay?.isFollowLocationEnabled == false) {
+                    viewModel.disableFollow()
+                }
+                return true
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+
+                return false
+            }
+        }))
+
+
     }
 
     private fun setMapPoint(lat: Double, lng: Double) {

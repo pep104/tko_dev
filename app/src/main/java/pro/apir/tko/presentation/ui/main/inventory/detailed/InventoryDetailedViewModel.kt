@@ -35,6 +35,10 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
     val coordinates: LiveData<CoordinatesModel>
         get() = _coordingates
 
+    private val _isFollowEnabled = handle.getLiveData<Boolean>("isFollowEnabled", false)
+    val isFollowEnabled: LiveData<Boolean>
+        get() = _isFollowEnabled
+
     fun fetchInfo(id: Long, header: String, coordinates: CoordinatesModel) {
         setHeader(header)
         setCoordinates(coordinates)
@@ -59,6 +63,19 @@ class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: S
         setHeader(header, true)
         containerAreaShortModel.coordinates?.let {
             setCoordinates(it, true)
+        }
+    }
+
+    //On some situations MapView disables follow, so we need to disable it in VM
+    fun disableFollow() {
+        if (_isFollowEnabled.value == true) {
+            _isFollowEnabled.value = false
+        }
+    }
+
+    fun switchFollow() {
+        _isFollowEnabled.value?.let {
+            _isFollowEnabled.value = !it
         }
     }
 

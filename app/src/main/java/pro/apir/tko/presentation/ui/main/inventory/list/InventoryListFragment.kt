@@ -187,6 +187,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
+//        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_user_location)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_user_location)?.toBitmap())
         if (viewModel.lastPosition == null) {
             myLocationOverlay?.enableFollowLocation()
         }
