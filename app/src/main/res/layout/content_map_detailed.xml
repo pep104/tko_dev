@@ -34,7 +34,7 @@
     <LinearLayout
         android:id="@+id/layoutControls"
         android:layout_width="48dp"
-        android:layout_height="144dp"
+        android:layout_height="150dp"
         android:layout_marginEnd="16dp"
         android:clipToPadding="false"
         android:orientation="vertical"
@@ -100,6 +100,7 @@
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/shape_oval_white"
+            android:clipToPadding="false"
             android:elevation="4dp">
 
             <ImageButton
