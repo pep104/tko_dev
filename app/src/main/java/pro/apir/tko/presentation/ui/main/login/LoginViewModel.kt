@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.auth.AuthInteractor
@@ -26,9 +28,9 @@ class LoginViewModel @AssistedInject constructor(@Assisted private val handle: S
         get() = _requestState
 
     fun login(email: String, pass: String) {
-        //TODO LOADING HANDLING
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             loading(true)
+            delay(300)
             authInteractor.auth(email, pass).fold(::handleFailure) {
                 loading(false)
                 _requestState.postValue(true)

@@ -24,7 +24,6 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 17.01.2020
  * Project: tko-android
  */
-//TODO LOADING HANDLING
 class LoginFragment : BaseFragment() {
 
     private val viewModel: LoginViewModel by viewModels()
@@ -57,7 +56,7 @@ class LoginFragment : BaseFragment() {
         etMail = view.etLogin
         etPass = view.etPass
         btnLogin = view.btnLogin
-        loading = view.loading
+        loading = view.progressBar
 
         if(BuildConfig.DEBUG){
             etMail.setText("admin@apir.pro")
