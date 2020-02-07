@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.inventory.list
+package pro.apir.tko.presentation.ui.main.list
 
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -8,8 +8,10 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.core.view.isInvisible
 import androidx.fragment.app.viewModels
@@ -20,9 +22,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
-import kotlinx.android.synthetic.main.bottomsheet_inventory_list.view.*
+import kotlinx.android.synthetic.main.bottomsheet_list_map.view.*
 import kotlinx.android.synthetic.main.content_map.view.*
-import kotlinx.android.synthetic.main.fragment_inventory_list.view.*
+import kotlinx.android.synthetic.main.fragment_main_map_list.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -44,17 +46,18 @@ import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
+import pro.apir.tko.presentation.ui.main.list.container.ContainerListAdapter
 
 /**
  * Created by Антон Сарматин
  * Date: 18.01.2020
  * Project: tko-android
  */
-class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickListener {
+class MainListMapFragment : BaseFragment(), ContainerListAdapter.OnItemClickListener {
 
-    private val viewModel: InventoryListViewModel by viewModels()
+    private val viewModel: MainListMapViewModel by viewModels()
 
-    override fun layoutId() = R.layout.fragment_inventory_list
+    override fun layoutId() = R.layout.fragment_main_map_list
 
     override fun handleFailure() = viewModel.failure
 
@@ -68,9 +71,11 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
     private lateinit var loadingList: ProgressBar
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ContainerListAdapter
+    private lateinit var containerListAdapter: ContainerListAdapter
 
-    private lateinit var btnAdd: MaterialButton
+    private lateinit var textBottomHeader: TextView
+    private lateinit var btnAction: MaterialButton
+
     private lateinit var btnMenu: ImageView
     private lateinit var btnSearch: ImageView
 
@@ -78,16 +83,29 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     private var mapJob: Job? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
+    private val containersListObserver = Observer<List<ContainerAreaListModel>> {
+        it?.let { list ->
+            containerListAdapter.setList(list)
+            loadingList.goneWithFade()
+        }
+    }
+
+    private val routesListObserver = Observer<List<Any>> {
+        it?.let { list ->
+            loadingList.goneWithFade()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectInventoryListFragment(this)
+        arguments?.let { viewModel.init(it.getString(KEY_TYPE, TYPE_INVENTORY)) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bottomSheetLayout = view.bottomsheetInventory
+        bottomSheetLayout = view.bottomsheetListMap
         contentLayout = view.contentMap
 
         layoutSearch = view.layoutSearch
@@ -96,7 +114,9 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
         recyclerView = view.recyclerView
         loadingList = view.loadingList
 
-        btnAdd = view.btnAdd
+        textBottomHeader = view.textHeader
+
+        btnAction = view.btnAdd
         btnMenu = view.btnMenu
         btnSearch = view.btnSearch
 
@@ -112,11 +132,12 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
             }
         })
-        adapter = ContainerListAdapter().apply { setListener(this@InventoryListFragment) }
-        recyclerView.adapter = adapter
+
+        containerListAdapter = ContainerListAdapter().apply { setListener(this@MainListMapFragment) }
+        recyclerView.adapter = containerListAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        btnAdd.setOnClickListener { findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryEditFragment) }
+
         btnSearch.setOnClickListener { viewModel.switchSearchMode() }
 
         setMap(mapView)
@@ -154,25 +175,35 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
     }
 
     override fun onDestroyView() {
-        adapter.setListener(null)
+        containerListAdapter.setListener(null)
         super.onDestroyView()
     }
 
     private fun observeViewModel() {
+
+        viewModel.type.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                TYPE_INVENTORY -> {
+                    setInventoryType()
+                }
+                TYPE_ROUTE -> {
+                    setRouteType()
+                }
+            }
+
+        })
+
         viewModel.containers.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrEmpty()) {
-                adapter.setList(it)
-                loadingList.goneWithFade()
-
                 setMarkers(it)
             }
         })
 
         viewModel.searchMode.observe(viewLifecycleOwner, Observer {
             layoutSearch.isInvisible = !it
-            if(it){
+            if (it) {
                 etSearch.focusWithKeyboard()
-            }else{
+            } else {
                 hideKeyboard()
             }
         })
@@ -187,7 +218,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-//        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_user_location)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_user_location)?.toBitmap())
+        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_arrow)?.toBitmap())
         if (viewModel.lastPosition == null) {
             myLocationOverlay?.enableFollowLocation()
         }
@@ -197,7 +228,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
             override fun onScroll(event: ScrollEvent?): Boolean {
                 val box = mapView.boundingBox
                 viewModel.setLocation(mapView.mapCenter)
-                viewModel.fetch(box.lonWest, box.latSouth, box.lonEast, box.latNorth)
+                viewModel.fetchContainerAreas(box.lonWest, box.latSouth, box.lonEast, box.latNorth)
                 return true
             }
 
@@ -207,6 +238,22 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
             }
         }))
 
+    }
+
+    fun setInventoryType() {
+        textBottomHeader.text = getString(R.string.text_inventory_list_header)
+        btnAction.text = getString(R.string.btn_add_container)
+        btnAction.setOnClickListener { findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryEditFragment) }
+        viewModel.containers.observe(viewLifecycleOwner, containersListObserver)
+    }
+
+    fun setRouteType() {
+        textBottomHeader.text = getString(R.string.text_route_list_header)
+        btnAction.text = getString(R.string.btn_choose_route)
+        btnAction.setOnClickListener {
+            //todo to route
+        }
+        viewModel.containers.observe(viewLifecycleOwner, routesListObserver)
     }
 
     //TODO to vm and background task
@@ -239,7 +286,7 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
 
     }
 
-    override fun onItemClicked(item: ContainerAreaListModel) {
+    override fun onContainerItemClicked(item: ContainerAreaListModel) {
         findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryDetailedFragment,
                 bundleOf(
                         InventoryDetailedFragment.KEY_ID to item.id,
@@ -247,4 +294,13 @@ class InventoryListFragment : BaseFragment(), ContainerListAdapter.OnItemClickLi
                         InventoryDetailedFragment.KEY_COORDINATES to item.coordinates
                 ))
     }
+
+    companion object {
+
+        const val KEY_TYPE = "type"
+        const val TYPE_INVENTORY = "inventory"
+        const val TYPE_ROUTE = "route"
+
+    }
+
 }

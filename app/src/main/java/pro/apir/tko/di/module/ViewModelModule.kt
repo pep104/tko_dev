@@ -13,11 +13,10 @@ import pro.apir.tko.presentation.ui.main.address.AddressViewModel
 import pro.apir.tko.presentation.ui.main.camera.CameraViewModel
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedViewModel
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditViewModel
-import pro.apir.tko.presentation.ui.main.inventory.list.InventoryListViewModel
+import pro.apir.tko.presentation.ui.main.list.MainListMapViewModel
 import pro.apir.tko.presentation.ui.main.login.LoginViewModel
 import pro.apir.tko.presentation.ui.main.menu.MenuViewModel
 import pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedViewModel
-import pro.apir.tko.presentation.ui.main.route.list.RouteListViewModel
 import pro.apir.tko.presentation.ui.main.splash.SplashViewModel
 
 @AssistedModule
@@ -56,8 +55,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(InventoryListViewModel::class)
-    abstract fun bindInventoryListViewModelFactory(f: InventoryListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+    @ViewModelKey(MainListMapViewModel::class)
+    abstract fun bindMainListMapViewModelFactory(f: MainListMapViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
     @IntoMap
@@ -78,11 +77,6 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(CameraViewModel::class)
     abstract fun bindCameraViewModelFactory(f: CameraViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(RouteListViewModel::class)
-    abstract fun bindRouteListViewModelFactory(f: RouteListViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
     @Binds
     @IntoMap

@@ -7,7 +7,7 @@
 
     <include layout="@layout/content_map" />
 
-    <include layout="@layout/bottomsheet_inventory_list" />
+    <include layout="@layout/bottomsheet_list_map" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAdd"

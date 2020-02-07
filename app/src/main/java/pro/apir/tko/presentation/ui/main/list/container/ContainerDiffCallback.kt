@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.inventory.list
+package pro.apir.tko.presentation.ui.main.list.container
 
 import androidx.recyclerview.widget.DiffUtil
 import pro.apir.tko.domain.model.ContainerAreaListModel

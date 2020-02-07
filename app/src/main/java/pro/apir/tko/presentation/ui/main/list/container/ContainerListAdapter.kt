@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.inventory.list
+package pro.apir.tko.presentation.ui.main.list.container
 
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +23,7 @@ class ContainerListAdapter : RecyclerView.Adapter<ContainerListAdapter.Container
 
     interface OnItemClickListener {
 
-        fun onItemClicked(item: ContainerAreaListModel)
+        fun onContainerItemClicked(item: ContainerAreaListModel)
 
     }
 
@@ -68,7 +68,7 @@ class ContainerListAdapter : RecyclerView.Adapter<ContainerListAdapter.Container
             textMessage.text = textMessage.context.getString(R.string.text_list_container_message, item.registryNumber, pluredCount, area.toInt().toString())
 
             itemView.setOnClickListener {
-                listener?.onItemClicked(item)
+                listener?.onContainerItemClicked(item)
             }
 
         }
