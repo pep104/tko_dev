@@ -6,12 +6,15 @@ import pro.apir.tko.data.repository.address.AddressRepository
 import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.auth.AuthRepository
 import pro.apir.tko.data.repository.inventory.InventoryRepository
+import pro.apir.tko.data.repository.route.RouteRepository
 import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.address.AddressInteractorImpl
 import pro.apir.tko.domain.interactors.auth.AuthInteractor
 import pro.apir.tko.domain.interactors.auth.AuthInteractorImpl
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractorImpl
+import pro.apir.tko.domain.interactors.route.RouteInteractor
+import pro.apir.tko.domain.interactors.route.RouteInteractorImpl
 import javax.inject.Singleton
 
 @Module
@@ -25,6 +28,10 @@ class InteractorsModule {
     @Provides
     @Singleton
     fun inventoryInteractor(inventoryRepository: InventoryRepository, attachmentRepository: AttachmentRepository): InventoryInteractor = InventoryInteractorImpl(inventoryRepository, attachmentRepository)
+
+    @Provides
+    @Singleton
+    fun routeInteractor(routeRepository: RouteRepository): RouteInteractor = RouteInteractorImpl(routeRepository)
 
     @Provides
     @Singleton
