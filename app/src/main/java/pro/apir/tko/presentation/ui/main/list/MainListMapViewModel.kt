@@ -14,7 +14,7 @@ import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.model.ContainerAreaListModel
-import pro.apir.tko.domain.model.RouteListModel
+import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 class MainListMapViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
@@ -26,6 +26,8 @@ class MainListMapViewModel @AssistedInject constructor(@Assisted private val han
 
     private var fetchJob: Job? = null
     private var searchJob: Job? = null
+
+    private var routeJob: Job? = null
 
     private val _type = handle.getLiveData<String>("type")
     val type: LiveData<String>
@@ -40,8 +42,8 @@ class MainListMapViewModel @AssistedInject constructor(@Assisted private val han
     //TODO MARKERS
 
 
-    private val _routes = handle.getLiveData<List<RouteListModel>>("routes")
-    val routes: LiveData<List<RouteListModel>>
+    private val _routes = handle.getLiveData<List<RouteModel>>("routes")
+    val routes: LiveData<List<RouteModel>>
         get() = _routes
 
 
@@ -81,7 +83,8 @@ class MainListMapViewModel @AssistedInject constructor(@Assisted private val han
     }
 
     fun fetchRoutes(){
-        //TODO
+        //TODO PAGING
+        routeJob
     }
 
     fun switchSearchMode() {

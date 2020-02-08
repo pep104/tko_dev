@@ -2,7 +2,7 @@ package pro.apir.tko.data.repository.route
 
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.domain.model.RouteListModel
+import pro.apir.tko.domain.model.RouteModel
 
 /**
  * Created by Антон Сарматин
@@ -11,6 +11,6 @@ import pro.apir.tko.domain.model.RouteListModel
  */
 interface RouteRepository {
 
-    suspend fun getRoutesList(page: Int, pageSize: Int): Either<Failure, List<RouteListModel>>
+    suspend fun getRoutesList(page: Int, pageSize: Int): Either<Failure, List<RouteModel>>
 
 }

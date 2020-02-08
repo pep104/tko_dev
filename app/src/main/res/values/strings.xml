@@ -55,6 +55,8 @@
     <string name="text_route_list_header">Маршруты</string>
     <string name="btn_choose_route">Выбрать маршрут</string>
 
+    <string name="text_route_list_info">%1$s — %2$s</string>
+
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
         <item quantity="one">%1$d контейнер</item>
