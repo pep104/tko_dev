@@ -45,15 +45,18 @@
         android:label="MenuFragment">
         <action
             android:id="@+id/action_menuFragment_to_inventoryListFragment"
-            app:destination="@id/mainListMapFragment"
+            app:destination="@id/inventoryListFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_menuFragment_to_routeListFragment"
+            app:destination="@id/routeListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/mainListMapFragment"
-        android:name="pro.apir.tko.presentation.ui.main.list.MainListMapFragment"
+        android:id="@+id/inventoryListFragment"
+        android:name="pro.apir.tko.presentation.ui.main.list.inventory.InventoryListFragment"
         android:label="InventoryListFragment">
         <action
             android:id="@+id/action_inventoryListFragment_to_inventoryDetailedFragment"
@@ -61,9 +64,6 @@
         <action
             android:id="@+id/action_inventoryListFragment_to_inventoryEditFragment"
             app:destination="@id/inventoryEditFragment" />
-        <action
-            android:id="@+id/action_mainListMapFragment_to_routeDetailedFragment"
-            app:destination="@id/routeDetailedFragment" />
     </fragment>
     <fragment
         android:id="@+id/inventoryDetailedFragment"
@@ -96,4 +96,12 @@
         android:id="@+id/routeDetailedFragment"
         android:name="pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment"
         android:label="RouteDetailedFragment" />
+    <fragment
+        android:id="@+id/routeListFragment"
+        android:name="pro.apir.tko.presentation.ui.main.list.route.RouteListFragment"
+        android:label="RouteListFragment" >
+        <action
+            android:id="@+id/action_routeListFragment_to_routeDetailedFragment"
+            app:destination="@id/routeDetailedFragment" />
+    </fragment>
 </navigation>

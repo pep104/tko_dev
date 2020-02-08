@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.list.container
+package pro.apir.tko.presentation.ui.main.list.inventory
 
 import android.view.LayoutInflater
 import android.view.View

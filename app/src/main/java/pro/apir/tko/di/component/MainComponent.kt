@@ -6,7 +6,8 @@ import pro.apir.tko.presentation.ui.main.address.AddressFragment
 import pro.apir.tko.presentation.ui.main.camera.CameraFragment
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
-import pro.apir.tko.presentation.ui.main.list.MainListMapFragment
+import pro.apir.tko.presentation.ui.main.list.inventory.InventoryListFragment
+import pro.apir.tko.presentation.ui.main.list.route.RouteListFragment
 import pro.apir.tko.presentation.ui.main.login.LoginFragment
 import pro.apir.tko.presentation.ui.main.menu.MenuFragment
 import pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment
@@ -21,7 +22,7 @@ interface MainComponent {
 
     fun injectMenuFragment(fragment: MenuFragment)
 
-    fun injectInventoryListFragment(fragment: MainListMapFragment)
+    fun injectInventoryListFragment(fragment: InventoryListFragment)
 
     fun injectInventoryDetailedFragment(fragment: InventoryDetailedFragment)
 
@@ -30,6 +31,8 @@ interface MainComponent {
     fun injectAddressFragment(fragment: AddressFragment)
 
     fun injectCameraFragment(fragment: CameraFragment)
+
+    fun injectRouteListFragment(fragment: RouteListFragment)
 
     fun injectRouteDetailedFragment(fragment: RouteDetailedFragment)
 

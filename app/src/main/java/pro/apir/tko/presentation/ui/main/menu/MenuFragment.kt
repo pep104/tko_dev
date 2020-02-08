@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -18,7 +17,6 @@ import kotlinx.android.synthetic.main.fragment_menu.view.*
 import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseFragment
-import pro.apir.tko.presentation.ui.main.list.MainListMapFragment
 
 /**
  * Created by Антон Сарматин
@@ -59,11 +57,11 @@ class MenuFragment : BaseFragment() {
         btnRoutes = view.btnRoutes.apply { this.isEnabled = false }
 
         btnInventory.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_inventoryListFragment, bundleOf(MainListMapFragment.KEY_TYPE to MainListMapFragment.TYPE_INVENTORY))
+            findNavController().navigate(R.id.action_menuFragment_to_inventoryListFragment)
         }
 
         btnRoutes.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_inventoryListFragment, bundleOf(MainListMapFragment.KEY_TYPE to MainListMapFragment.TYPE_ROUTE))
+            findNavController().navigate(R.id.action_menuFragment_to_routeListFragment)
         }
 
 
