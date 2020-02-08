@@ -62,8 +62,10 @@ class RouteListAdapter : RecyclerView.Adapter<RouteListAdapter.RouteHolder>() {
 
         fun bind(item: RouteModel, position: Int) {
 
-            radio.text = item.name
+            val distance = (item.distance.toDouble() / 1000).toString()
 
+            radio.text = item.name
+            textRouteInfo.text = textRouteInfo.context.getString(R.string.text_route_list_info, item.periodicity, distance)
 
             //TODO SET choosen
 

@@ -25,8 +25,9 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
 
     private lateinit var listAdapter: RouteListAdapter
 
-    private val routesListObserver = Observer<List<Any>> {
+    private val routesListObserver = Observer<List<RouteModel>> {
         it?.let { list ->
+            listAdapter.setList(list)
             loadingList.goneWithFade()
         }
     }
@@ -58,7 +59,7 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
         btnAction.setOnClickListener {
             //todo to route
         }
-//        viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
+        viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
     }
 
     override fun onRouteChosen(item: RouteModel) {

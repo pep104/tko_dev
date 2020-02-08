@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.ContainerAreaListModel
-import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -27,11 +26,6 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
     protected val _containers = handle.getLiveData<List<ContainerAreaListModel>>("containers")
     val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
-
-    private val _routes = handle.getLiveData<List<RouteModel>>("routes")
-    val routes: LiveData<List<RouteModel>>
-        get() = _routes
-
 
     protected var _lastPosition = handle.get<IGeoPoint>("bbox")
     val lastPosition: IGeoPoint?
