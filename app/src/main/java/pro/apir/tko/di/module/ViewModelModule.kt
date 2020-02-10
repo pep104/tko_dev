@@ -18,6 +18,7 @@ import pro.apir.tko.presentation.ui.main.list.route.RouteListViewModel
 import pro.apir.tko.presentation.ui.main.login.LoginViewModel
 import pro.apir.tko.presentation.ui.main.menu.MenuViewModel
 import pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedViewModel
+import pro.apir.tko.presentation.ui.main.route.navigation.RouteNavigationViewModel
 import pro.apir.tko.presentation.ui.main.splash.SplashViewModel
 
 @AssistedModule
@@ -88,5 +89,10 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(RouteDetailedViewModel::class)
     abstract fun bindRouteDetailedViewModelFactory(f: RouteDetailedViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RouteNavigationViewModel::class)
+    abstract fun bindRouteNavigationViewModelFactory(f: RouteNavigationViewModel.Factory): ViewModelAssistedFactory<out ViewModel>
 
 }

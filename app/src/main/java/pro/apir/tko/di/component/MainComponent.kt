@@ -11,6 +11,7 @@ import pro.apir.tko.presentation.ui.main.list.route.RouteListFragment
 import pro.apir.tko.presentation.ui.main.login.LoginFragment
 import pro.apir.tko.presentation.ui.main.menu.MenuFragment
 import pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment
+import pro.apir.tko.presentation.ui.main.route.navigation.RouteNavigationFragment
 import pro.apir.tko.presentation.ui.main.splash.SplashFragment
 
 @Subcomponent(modules = [PresentationModule::class])
@@ -35,5 +36,7 @@ interface MainComponent {
     fun injectRouteListFragment(fragment: RouteListFragment)
 
     fun injectRouteDetailedFragment(fragment: RouteDetailedFragment)
+
+    fun injectRouteNavigationFragment(fragment: RouteNavigationFragment)
 
 }
