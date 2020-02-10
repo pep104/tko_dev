@@ -3,6 +3,7 @@ package pro.apir.tko.presentation.ui.main.list.route
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -23,13 +24,16 @@ class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : Recycl
 
     interface RouteChooseListener {
 
-        fun onRouteChosen(item: RouteModel)
+        fun onRouteChosen(itemID: Int?)
 
     }
 
     private var listener: RouteChooseListener? = null
 
     private val data = arrayListOf<RouteModel>()
+
+    private var choosenID: Int? = null
+    private var lastChoosen: RadioButton? = null
 
     fun setList(data: List<RouteModel>) {
         val diffCallback = RouteDiffCallback(this.data, data)
@@ -39,13 +43,13 @@ class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : Recycl
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun setListener(litener: RouteChooseListener?) {
+    fun setListener(listener: RouteChooseListener?) {
         this.listener = listener
     }
 
-    //todo
-    fun setChosen(){
 
+    fun setChosen(id: Int?) {
+        choosenID = id
     }
 
     override fun getItemCount() = data.size
@@ -70,8 +74,27 @@ class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : Recycl
             radio.text = item.name
             textRouteInfo.text = textRouteInfo.context.getString(R.string.text_route_list_info, peridicityOptions[item.periodicity], distance)
 
-            //TODO SET choosen
+            if (item.id == choosenID) {
+                radio.isChecked = true
+                lastChoosen = radio
+            } else {
+                radio.isChecked = false
+            }
 
+
+
+            radio.setOnCheckedChangeListener { buttonView, isChecked ->
+
+                if (isChecked) {
+                    lastChoosen?.isChecked = false
+
+                    choosenID = item.id
+                    lastChoosen = radio
+
+                    listener?.onRouteChosen(item.id)
+                }
+
+            }
 
         }
 

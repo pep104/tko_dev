@@ -1,5 +1,6 @@
 package pro.apir.tko.presentation.ui.main.list.route
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
@@ -29,7 +30,6 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
 
     private var pagingJob: Job? = null
 
-
     private var page = handle.get<Int>("page")
         set(value) {
             field = value
@@ -52,6 +52,9 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
     val routes: LiveData<List<RouteModel>>
         get() = Transformations.map(_routes) { it.toList() }
 
+    private val _choosenRoute = handle.getLiveData<RouteModel?>("choosenRoute", null)
+    val choosenRoute: LiveData<RouteModel?>
+        get() = _choosenRoute
 
     init {
         loading(true)
@@ -61,6 +64,14 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
     //???
     fun fetchMore() {
         loadMore()
+    }
+
+    fun setChosenRoute(id: Int?){
+        Log.e("choose","id: $id")
+        _routes.value?.let { list ->
+            val item = list.find { model -> model.id == id }
+            _choosenRoute.postValue(item)
+        }
     }
 
     private fun loadMore() {

@@ -3,6 +3,7 @@ package pro.apir.tko.presentation.ui.main.route.detailed
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -21,6 +22,18 @@ class RouteDetailedFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectRouteDetailedFragment(this)
+
+        arguments?.let {
+            val route : RouteModel? = it.getParcelable(KEY_ROUTE)
+            //TODO PROCESS
+        }
+
+    }
+
+    companion object {
+
+        const val KEY_ROUTE = "route"
+
     }
 
 }
