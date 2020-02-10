@@ -55,6 +55,17 @@ class OptionsDictionariesManagerImpl @Inject constructor(private val context: Co
         )
     }
 
+    private val periodicityOptions by lazy {
+        dictOf(
+                "DAILY" to "Ежедневно",
+                "EVERY_OTHER_DAY" to "Через день",
+                "PER_THREE_DAYS" to "Раз в три дня",
+                "ON_WEEKDAYS" to "Дни недели",
+                "ON_DATES" to "Даты",
+                "BY_REQUEST" to "По заявке"
+        )
+    }
+
     override fun getAccessOptionDictionary(): Dictionary = accessOptions
     override fun getFenceOptionsDictionary(): Dictionary = fenceOptions
     override fun getCoverageOptionsDictionary(): Dictionary = coverageOptions
@@ -62,4 +73,5 @@ class OptionsDictionariesManagerImpl @Inject constructor(private val context: Co
     override fun getHasCoverOptionsDictionary(): Dictionary = trueFalseOptions
     override fun getInfoPlateDictionary(): Dictionary = trueFalseOptions
     override fun getContainerTypeDictionary(): Dictionary = containerTypeOptions
+    override fun getPeriodicityDictionary(): Dictionary = periodicityOptions
 }

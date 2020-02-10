@@ -23,4 +23,6 @@ interface OptionsDictionariesManager {
 
     fun getContainerTypeDictionary(): Dictionary
 
+    fun getPeriodicityDictionary(): Dictionary
+
 }
