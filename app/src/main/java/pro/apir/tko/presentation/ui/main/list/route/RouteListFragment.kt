@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.extension.goneWithFade
+import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.ui.main.list.BaseListFragment
+import pro.apir.tko.presentation.utils.PaginationScrollListener
 
 /**
  * Created by Антон Сарматин
@@ -28,7 +30,6 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
     private val routesListObserver = Observer<List<RouteModel>> {
         it?.let { list ->
             listAdapter.setList(list)
-            loadingList.goneWithFade()
         }
     }
 
@@ -41,15 +42,29 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
         super.onViewCreated(view, savedInstanceState)
 
         setRouteType()
-        observeViewModel()
+
+        val layoutManager = LinearLayoutManager(context)
         listAdapter = RouteListAdapter().apply { setListener(this@RouteListFragment) }
         recyclerView.adapter = listAdapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = layoutManager
+        recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager, viewModel.pageSize) {
+            override fun loadMoreItems() = viewModel.fetchMore()
+            override fun isLastPage() = viewModel.isLastPage
+            override fun isPageLoading() = viewModel.isPageLoading
+        })
 
+        observeViewModel()
     }
 
-    private fun observeViewModel(){
-
+    private fun observeViewModel() {
+        viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
+        viewModel.loading.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                loadingList.visible()
+            } else {
+                loadingList.goneWithFade()
+            }
+        })
     }
 
 
@@ -59,7 +74,7 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
         btnAction.setOnClickListener {
             //todo to route
         }
-        viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
+
     }
 
     override fun onRouteChosen(item: RouteModel) {

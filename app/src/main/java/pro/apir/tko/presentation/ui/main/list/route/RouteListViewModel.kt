@@ -2,16 +2,17 @@ package pro.apir.tko.presentation.ui.main.list.route
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.model.RouteModel
+import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
 
 /**
@@ -28,35 +29,54 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
 
     private var pagingJob: Job? = null
 
-    //TODO PAGING
+
     private var page = handle.get<Int>("page")
         set(value) {
-            handle.set("page", value)
             field = value
+            handle.set("page", value)
         }
 
-    private val pageSize = 100
+    val pageSize = 20
 
-    private val _routes = handle.getLiveData<List<RouteModel>>("routes")
+    val isPageLoading: Boolean
+        get() {
+            return pagingJob?.isActive == true
+        }
+
+    private var _isLastPage = false
+    val isLastPage: Boolean
+        get() = _isLastPage
+
+
+    private val _routes = handle.getLiveData<MutableList<RouteModel>>("routes", mutableListOf())
     val routes: LiveData<List<RouteModel>>
-        get() = _routes
+        get() = Transformations.map(_routes) { it.toList() }
 
 
     init {
-        pagingJob = viewModelScope.launch(Dispatchers.IO) {
-            loadMore()
-        }
+        loading(true)
+        loadMore()
     }
 
+    //???
     fun fetchMore() {
-        //TODO PAGING
-
+        loadMore()
     }
 
-    private suspend fun loadMore() {
-        //TODO PAGING
-        routeInteractor.getRoutesList(page ?: 1, pageSize).fold(::handleFailure) {
-            _routes.postValue(it)
+    private fun loadMore() {
+        pagingJob = viewModelScope.launch {
+            routeInteractor.getRoutesList(page ?: 1, pageSize).fold(::handleFailure) {
+                loading(false)
+                if (it.isNotEmpty()) {
+                    _routes.value?.addAll(it.toMutableList())
+                    _routes.notifyObserver()
+                    page = page?.plus(1)
+                    if (it.size > pageSize) {
+                        _isLastPage = true
+                    }
+                }
+
+            }
         }
 
     }
