@@ -7,10 +7,12 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.RouteModel
+import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.ui.main.list.BaseListFragment
 import pro.apir.tko.presentation.utils.PaginationScrollListener
+import javax.inject.Inject
 
 /**
  * Created by Антон Сарматин
@@ -18,6 +20,9 @@ import pro.apir.tko.presentation.utils.PaginationScrollListener
  * Project: tko-android
 + */
 class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListener {
+
+    @Inject
+    lateinit var optionsDictionariesManager: OptionsDictionariesManager
 
     private val viewModel: RouteListViewModel by viewModels()
 
@@ -44,7 +49,7 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
         setRouteType()
 
         val layoutManager = LinearLayoutManager(context)
-        listAdapter = RouteListAdapter().apply { setListener(this@RouteListFragment) }
+        listAdapter = RouteListAdapter(optionsDictionariesManager).apply { setListener(this@RouteListFragment) }
         recyclerView.adapter = listAdapter
         recyclerView.layoutManager = layoutManager
         recyclerView.addOnScrollListener(object : PaginationScrollListener(layoutManager, viewModel.pageSize) {

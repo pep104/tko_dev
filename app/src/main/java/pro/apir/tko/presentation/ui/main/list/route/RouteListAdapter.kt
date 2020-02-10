@@ -10,13 +10,16 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import kotlinx.android.synthetic.main.item_route_list.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.RouteModel
+import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 
 /**
  * Created by Антон Сарматин
  * Date: 07.02.2020
  * Project: tko-android
  */
-class RouteListAdapter : RecyclerView.Adapter<RouteListAdapter.RouteHolder>() {
+class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : RecyclerView.Adapter<RouteListAdapter.RouteHolder>() {
+
+    private val peridicityOptions = dictionariesManager.getPeriodicityDictionary()
 
     interface RouteChooseListener {
 
@@ -65,7 +68,7 @@ class RouteListAdapter : RecyclerView.Adapter<RouteListAdapter.RouteHolder>() {
             val distance = (item.distance.toDouble() / 1000).toString()
 
             radio.text = item.name
-            textRouteInfo.text = textRouteInfo.context.getString(R.string.text_route_list_info, item.periodicity, distance)
+            textRouteInfo.text = textRouteInfo.context.getString(R.string.text_route_list_info, peridicityOptions[item.periodicity], distance)
 
             //TODO SET choosen
 
