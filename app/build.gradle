@@ -77,6 +77,11 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
 
+    //Room
+    implementation "androidx.room:room-runtime:2.2.3"
+    annotationProcessor "androidx.room:room-compiler:2.2.3"
+    implementation "androidx.room:room-ktx:2.2.3"
+
     //Firebase
     implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.google.firebase:firebase-messaging:20.0.1'

@@ -1,5 +1,6 @@
 package pro.apir.tko.di.module
 
+import android.app.Application
 import android.content.Context
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -19,6 +20,7 @@ import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
 import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
+import pro.apir.tko.data.framework.room.AppDatabase
 import pro.apir.tko.data.framework.source.address.SuggestionDetailedSource
 import pro.apir.tko.data.framework.source.address.SuggestionSource
 import pro.apir.tko.data.framework.source.attachment.AttachmentSource
@@ -35,7 +37,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-class FrameworkModule {
+class FrameworkModule(private val application: Application) {
 
 
     //    @Named("main")
@@ -197,6 +199,16 @@ class FrameworkModule {
     @Singleton
     @Provides
     fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
+
+
+    //Room
+
+    @Singleton
+    @Provides
+    fun appDatabase(): AppDatabase {
+        return AppDatabase.getDatabase(application)
+    }
+
 
     //
 
