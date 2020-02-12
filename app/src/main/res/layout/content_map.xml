@@ -15,7 +15,7 @@
 
     <ImageView
         android:id="@+id/btnMenu"
-        android:visibility="gone"
+        android:visibility="visible"
         style="@style/AppBarIconStyle"
         android:src="@drawable/ic_menu_black"
         app:layout_constraintStart_toStartOf="parent"

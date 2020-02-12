@@ -9,4 +9,6 @@
     <dimen name="round_button_previews">56dp</dimen>
     <dimen name="spacing_large">2dp</dimen>
     <dimen name="stroke_small">2dp</dimen>
+
+    <dimen name="activity_menu_height">164dp</dimen>
 </resources>

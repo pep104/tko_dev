@@ -23,9 +23,23 @@ class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle
     val userState: LiveData<UserState>
         get() = _userState
 
+    private val _menuState = handle.getLiveData<Boolean>("menuState", false)
+    val menuState: LiveData<Boolean>
+        get() = _menuState
+
     fun setUserState(state: UserState) {
         _userState.postValue(state)
     }
+
+    fun toggleMenu() {
+        val current = _menuState.value
+        if(current == false){
+            _menuState.postValue(true)
+        }else{
+            _menuState.postValue(false)
+        }
+    }
+
 
     sealed class UserState() {
         @Parcelize
@@ -35,7 +49,7 @@ class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle
         object LoginNeeded : UserState(), Parcelable
 
         @Parcelize
-        object TokenExpired: UserState(), Parcelable
+        object TokenExpired : UserState(), Parcelable
     }
 
 }

@@ -39,10 +39,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaListModel
-import pro.apir.tko.presentation.extension.addViewObserver
-import pro.apir.tko.presentation.extension.dpToPx
-import pro.apir.tko.presentation.extension.focusWithKeyboard
-import pro.apir.tko.presentation.extension.hideKeyboard
+import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -50,7 +47,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 08.02.2020
  * Project: tko-android
  */
-abstract class BaseListFragment : BaseFragment(){
+abstract class BaseListFragment : BaseFragment() {
 
     override fun layoutId() = R.layout.fragment_main_map_list
 
@@ -142,6 +139,8 @@ abstract class BaseListFragment : BaseFragment(){
 
         btnSearch.setOnClickListener { viewModel().switchSearchMode() }
 
+        btnMenu.setOnClickListener { globalState.toggleMenu() }
+
         setMap(mapView)
 
         bottomSheetLayout.addViewObserver {
@@ -164,6 +163,16 @@ abstract class BaseListFragment : BaseFragment(){
             } else {
                 hideKeyboard()
             }
+        })
+
+        globalState.menuState.observe(viewLifecycleOwner, Observer {
+
+            if (it == true) {
+                btnMenu.gone()
+            } else {
+                btnMenu.visible()
+            }
+
         })
 
     }

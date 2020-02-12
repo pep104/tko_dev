@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import kotlinx.android.synthetic.main.activity_main.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseActivity
 import java.io.File
@@ -26,6 +27,7 @@ class MainActivity : BaseActivity() {
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         observeGlobalState()
+        setActivityMenuButtons()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -39,14 +41,70 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun observeGlobalState(){
+    private fun observeGlobalState() {
         globalState.userState.observe(this, Observer {
-            when(it){
+            when (it) {
                 GlobalState.UserState.TokenExpired -> {
                     this.recreate()
                 }
             }
         })
+
+        globalState.menuState.observe(this, Observer {
+            val foregroundView = nav_host_fragment.view
+            val yTrans = resources.getDimension(R.dimen.activity_menu_height)
+            //FIXME CLICK NOT WORKING
+            //TODO ObjectAnimator?
+//            if (it == true) {
+//                val translationAnimation = TranslateAnimation(0f, 0f, 0f, yTrans)
+//                with(translationAnimation) {
+//                    duration = 300
+//                    fillAfter = true
+//                    interpolator = AccelerateDecelerateInterpolator()
+//                }
+//                foregroundView?.startAnimation(translationAnimation)
+//            } else {
+//                val translationAnimation = TranslateAnimation(0f, 0f, yTrans, 0f)
+//                with(translationAnimation) {
+//                    duration = 200
+//                    fillAfter = true
+//                    interpolator = AccelerateDecelerateInterpolator()
+//                }
+//                foregroundView?.startAnimation(translationAnimation)
+//            }
+
+            if(it == true){
+                foregroundView?.translationY = yTrans
+            }else{
+                foregroundView?.translationY = 0f
+            }
+
+
+        })
+
+    }
+
+    private fun setActivityMenuButtons() {
+        //Кнопки из верхнего меню-слайдера
+        btnActivityMenuClose.setOnClickListener {
+            globalState.toggleMenu()
+        }
+        btnActivityMenuInventory.setOnClickListener {
+            navController.navigate(R.id.inventoryListFragment)
+            globalState.toggleMenu()
+        }
+        btnActivityMenuRoutes.setOnClickListener {
+            navController.navigate(R.id.routeListFragment)
+            globalState.toggleMenu()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (globalState.menuState.value == true) {
+            globalState.toggleMenu()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     companion object {
@@ -54,7 +112,8 @@ class MainActivity : BaseActivity() {
         fun getOutputDirectory(context: Context): File {
             val appContext = context.applicationContext
             val mediaDir = context.externalMediaDirs.firstOrNull()?.let {
-                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() } }
+                File(it, appContext.resources.getString(R.string.app_name)).apply { mkdirs() }
+            }
             return if (mediaDir != null && mediaDir.exists())
                 mediaDir else appContext.filesDir
         }
