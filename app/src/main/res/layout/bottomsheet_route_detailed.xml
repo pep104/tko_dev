@@ -36,26 +36,26 @@
         tools:text="Маршрут №0943" />
 
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
+    <!--    <androidx.core.widget.NestedScrollView-->
+    <!--        android:id="@+id/nestedScrollView"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_marginTop="8dp"-->
+    <!--        android:clipToPadding="false"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/textHeader">-->
+
+
+    <!--    </androidx.core.widget.NestedScrollView>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textHeader">
+        app:layout_constraintTop_toBottomOf="@id/textHeader" />
 
-
-
-
-    </androidx.core.widget.NestedScrollView>
-
-    <View
-        android:id="@+id/fade"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="@drawable/gradient_white_fading"
-        app:layout_constraintTop_toTopOf="@+id/nestedScrollView" />
 
     <ProgressBar
         android:id="@+id/loading"
@@ -64,7 +64,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fade" />
+        app:layout_constraintTop_toTopOf="@id/recyclerView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

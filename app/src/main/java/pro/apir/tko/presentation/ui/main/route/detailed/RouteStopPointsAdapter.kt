@@ -12,18 +12,23 @@ import kotlinx.android.synthetic.main.item_route_point_pending.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.entities.ROUTE_TYPE_COMPLETED
 import pro.apir.tko.presentation.entities.ROUTE_TYPE_PENDING
-import pro.apir.tko.presentation.entities.RoutePoint
+import pro.apir.tko.presentation.entities.RouteStop
 
 /**
  * Created by antonsarmatin
  * Date: 2020-02-05
  * Project: tko-android
  */
-class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val data = arrayListOf<RoutePoint>()
+    private val data = arrayListOf<RouteStop>()
 
-    //todo methods
+    fun setList(data: List<RouteStop>) {
+        //TODO DIFFUTIL
+        this.data.clear()
+        this.data.addAll(data)
+        notifyDataSetChanged()
+    }
 
     //todo listener
 
@@ -61,39 +66,26 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class DefaultHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val frameBadge: FrameLayout
-        private val textBadge: TextView
-        private val textName: TextView
-        private val textInfo: TextView
+        private val frameBadge: FrameLayout = itemView.frameBadgeDefault
+        private val textBadge: TextView = itemView.textBadgeDefault
+        private val textName: TextView = itemView.textRouteNameDefault
+        private val textInfo: TextView = itemView.textRouteInfoDefault
 
-        init {
-            frameBadge = itemView.frameBadgeDefault
-            textBadge = itemView.textBadgeDefault
-            textName = itemView.textRouteNameDefault
-            textInfo = itemView.textRouteInfoDefault
-        }
-
-        fun bind(item: RoutePoint, pos: Int) {
-
+        fun bind(item: RouteStop, pos: Int) {
+            textName.text = item.stop.location
+            textBadge.text = pos.toString()
         }
 
     }
 
     inner class PendingtHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val frameBadge: FrameLayout
-        private val textBadge: TextView
-        private val textName: TextView
-        private val textInfo: TextView
+        private val frameBadge: FrameLayout = itemView.frameBadgePending
+        private val textBadge: TextView = itemView.textBadgePending
+        private val textName: TextView = itemView.textRouteNamePending
+        private val textInfo: TextView = itemView.textRouteInfoPending
 
-        init {
-            frameBadge = itemView.frameBadgePending
-            textBadge = itemView.textBadgePending
-            textName = itemView.textRouteNamePending
-            textInfo = itemView.textRouteInfoPending
-        }
-
-        fun bind(item: RoutePoint, pos: Int) {
+        fun bind(item: RouteStop, pos: Int) {
 
         }
 
@@ -101,19 +93,12 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class CompletedHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private val frameBadge: FrameLayout
-        private val textBadge: TextView
-        private val textName: TextView
-        private val textInfo: TextView
+        private val frameBadge: FrameLayout = itemView.frameBadgeCompleted
+        private val textBadge: TextView = itemView.textBadgeCompleted
+        private val textName: TextView = itemView.textRouteNameCompleted
+        private val textInfo: TextView = itemView.textRouteInfoCompleted
 
-        init {
-            frameBadge = itemView.frameBadgeCompleted
-            textBadge = itemView.textBadgeCompleted
-            textName = itemView.textRouteNameCompleted
-            textInfo = itemView.textRouteInfoCompleted
-        }
-
-        fun bind(item: RoutePoint, pos: Int) {
+        fun bind(item: RouteStop, pos: Int) {
 
         }
 

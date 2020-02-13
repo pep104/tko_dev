@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
@@ -56,7 +57,9 @@ class MainActivity : BaseActivity() {
             val dimenY = resources.getDimension(R.dimen.activity_menu_height)
 
             nav_host_fragment.view?.let {
+
                 if (state == true) {
+                    layoutActivityMenu.isVisible = state
                     ViewCompat.animate(it)
                             .translationY(dimenY)
                             .setDuration(300)
@@ -67,6 +70,9 @@ class MainActivity : BaseActivity() {
                             .translationY(0f)
                             .setDuration(200)
                             .setInterpolator(AccelerateDecelerateInterpolator())
+                            .withEndAction {
+                                layoutActivityMenu.isVisible = state
+                            }
                     it.setOnTouchListener(null)
                 }
             }
