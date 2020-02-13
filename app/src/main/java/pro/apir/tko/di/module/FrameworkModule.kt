@@ -10,6 +10,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import pro.apir.tko.core.constant.BASE_URL
 import pro.apir.tko.core.constant.SUGGESTION_DETAILED_URL
 import pro.apir.tko.core.constant.SUGGESTION_URL
+import pro.apir.tko.data.framework.manager.location.LocationManager
+import pro.apir.tko.data.framework.manager.location.LocationManagerImpl
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManagerImpl
 import pro.apir.tko.data.framework.manager.token.TokenManager
@@ -149,6 +151,10 @@ class FrameworkModule(private val application: Application) {
     @Singleton
     @Provides
     fun tokenManager(preferencesManager: PreferencesManager): TokenManager = TokenManagerImpl(preferencesManager)
+
+    @Singleton
+    @Provides
+    fun locationManager(context: Context): LocationManager = LocationManagerImpl(context)
 
     //Interceptors and etc.
 
