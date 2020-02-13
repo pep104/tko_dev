@@ -9,6 +9,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
@@ -23,7 +24,8 @@ import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
  */
 class RouteListViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
                                                      inventoryInteractor: InventoryInteractor,
-                                                     private val routeInteractor: RouteInteractor) : BaseListViewModel(handle, inventoryInteractor) {
+                                                     private val routeInteractor: RouteInteractor,
+                                                     private val locationManager: LocationManager) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<RouteListViewModel>
@@ -66,8 +68,8 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
         loadMore()
     }
 
-    fun setChosenRoute(id: Int?){
-        Log.e("choose","id: $id")
+    fun setChosenRoute(id: Int?) {
+        Log.e("choose", "id: $id")
         _routes.value?.let { list ->
             val item = list.find { model -> model.id == id }
             _choosenRoute.postValue(item)

@@ -6,8 +6,12 @@ import javax.inject.Inject
 
 class PreferencesManagerImpl @Inject constructor(context: Context) : PreferencesManager {
 
-    private val sp : android.content.SharedPreferences by lazy(mode = LazyThreadSafetyMode.NONE) {
+    private val sp: android.content.SharedPreferences by lazy(mode = LazyThreadSafetyMode.NONE) {
         PreferenceManager.getDefaultSharedPreferences(context)
+    }
+
+    override fun isExists(key: String): Boolean {
+        return sp.contains(key)
     }
 
     override fun saveString(key: String, value: String) {
@@ -23,14 +27,20 @@ class PreferencesManagerImpl @Inject constructor(context: Context) : Preferences
     override fun getInt(key: String): Int = sp.getInt(key, -1)
 
     override fun saveLong(key: String, value: Long) {
-        sp.edit().putLong(key,value).apply()
+        sp.edit().putLong(key, value).apply()
     }
 
     override fun getLong(key: String) = sp.getLong(key, 0L)
 
     override fun saveBool(key: String, value: Boolean) {
-        sp.edit().putBoolean(key,value).apply()
+        sp.edit().putBoolean(key, value).apply()
     }
 
     override fun getBool(key: String) = sp.getBoolean(key, false)
+
+    override fun saveDouble(key: String, value: Double) {
+        sp.edit().putFloat(key, value.toFloat()).apply()
+    }
+
+    override fun getDouble(key: String): Double = sp.getFloat(key, 0.0f).toDouble()
 }

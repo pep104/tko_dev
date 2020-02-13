@@ -10,6 +10,10 @@ import pro.apir.tko.domain.model.LocationModel
  */
 interface LocationManager {
 
+    fun saveLastLocation(model: LocationModel)
+
+    fun getLastLocation(): LocationModel?
+
     suspend fun getCurrentLocation(): LocationModel
 
     fun getLocationFlow(): Flow<LocationModel>

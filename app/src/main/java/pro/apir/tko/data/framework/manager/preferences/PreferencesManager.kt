@@ -2,6 +2,8 @@ package pro.apir.tko.data.framework.manager.preferences
 
 interface PreferencesManager {
 
+    fun isExists(key: String): Boolean
+
     fun saveString(key: String, value: String)
 
     fun getString(key: String): String
@@ -17,5 +19,9 @@ interface PreferencesManager {
     fun saveBool(key: String, value: Boolean)
 
     fun getBool(key: String): Boolean
+
+    fun saveDouble(key: String, value: Double)
+
+    fun getDouble(key: String): Double
 
 }

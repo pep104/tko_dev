@@ -165,6 +165,10 @@ abstract class BaseListFragment : BaseFragment() {
             }
         })
 
+        viewModel().lastPosition?.let {
+            mapView.controller.setCenter(it)
+        }
+
         globalState.menuState.observe(viewLifecycleOwner, Observer {
 
             if (it == true) {

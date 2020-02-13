@@ -8,8 +8,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
+import org.osmdroid.util.GeoPoint
+import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.ContainerAreaListModel
+import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -18,7 +21,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Project: tko-android
  */
 abstract class BaseListViewModel(private val handle: SavedStateHandle,
-                                 private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
+                                 private val inventoryInteractor: InventoryInteractor,
+                                 private val locationManager: LocationManager) : BaseViewModel() {
 
     protected var fetchJob: Job? = null
     protected var searchJob: Job? = null
@@ -28,10 +32,23 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         get() = _containers
 
     protected var _lastPosition = handle.get<IGeoPoint>("bbox")
+    set(value) {
+        handle.set("bbox", value)
+        if (value != null) {
+            locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+        }
+        field = value
+    }
+
     val lastPosition: IGeoPoint?
         get() = _lastPosition
 
     protected var _zoomLevel = handle.get<Double>("zoomLevel")
+    set(value) {
+        handle.set("zoomLevel", value)
+        field = value
+    }
+
     val zoomLevel: Double?
         get() = _zoomLevel
 
@@ -43,8 +60,13 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
     val searchQuery: String?
         get() = _searchQuery
 
-
-
+    init {
+        if (lastPosition == null) {
+            locationManager.getLastLocation()?.let {
+                _lastPosition = GeoPoint(it.lat, it.lon)
+            }
+        }
+    }
 
     fun fetchContainerAreas(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double) {
         fetchJob?.cancel()
@@ -78,12 +100,11 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
 
     fun setZoomLevel(zoomLevel: Double) {
         _zoomLevel = zoomLevel
-        handle.set("zoomLevel", zoomLevel)
+
     }
 
     fun setLocation(geoPoint: IGeoPoint?) {
         _lastPosition = geoPoint
-        handle.set("bbox", geoPoint)
     }
 
     protected fun combineAreas(newList: List<ContainerAreaListModel>) {

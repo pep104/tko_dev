@@ -154,7 +154,7 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun locationManager(context: Context): LocationManager = LocationManagerImpl(context)
+    fun locationManager(context: Context, preferencesManager: PreferencesManager): LocationManager = LocationManagerImpl(context, preferencesManager)
 
     //Interceptors and etc.
 
