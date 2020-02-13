@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
@@ -50,35 +52,24 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        globalState.menuState.observe(this, Observer {
-            val foregroundView = nav_host_fragment.view
-            val yTrans = resources.getDimension(R.dimen.activity_menu_height)
-            //FIXME CLICK NOT WORKING
-            //TODO ObjectAnimator?
-//            if (it == true) {
-//                val translationAnimation = TranslateAnimation(0f, 0f, 0f, yTrans)
-//                with(translationAnimation) {
-//                    duration = 300
-//                    fillAfter = true
-//                    interpolator = AccelerateDecelerateInterpolator()
-//                }
-//                foregroundView?.startAnimation(translationAnimation)
-//            } else {
-//                val translationAnimation = TranslateAnimation(0f, 0f, yTrans, 0f)
-//                with(translationAnimation) {
-//                    duration = 200
-//                    fillAfter = true
-//                    interpolator = AccelerateDecelerateInterpolator()
-//                }
-//                foregroundView?.startAnimation(translationAnimation)
-//            }
+        globalState.menuState.observe(this, Observer { state ->
+            val dimenY = resources.getDimension(R.dimen.activity_menu_height)
 
-            if(it == true){
-                foregroundView?.translationY = yTrans
-            }else{
-                foregroundView?.translationY = 0f
+            nav_host_fragment.view?.let {
+                if (state == true) {
+                    ViewCompat.animate(it)
+                            .translationY(dimenY)
+                            .setDuration(300)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .setStartDelay(35)
+                } else {
+                    ViewCompat.animate(it)
+                            .translationY(0f)
+                            .setDuration(200)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                    it.setOnTouchListener(null)
+                }
             }
-
 
         })
 
@@ -87,21 +78,21 @@ class MainActivity : BaseActivity() {
     private fun setActivityMenuButtons() {
         //Кнопки из верхнего меню-слайдера
         btnActivityMenuClose.setOnClickListener {
-            globalState.toggleMenu()
+            globalState.closeMenu()
         }
         btnActivityMenuInventory.setOnClickListener {
             navController.navigate(R.id.inventoryListFragment)
-            globalState.toggleMenu()
+            globalState.closeMenu()
         }
         btnActivityMenuRoutes.setOnClickListener {
             navController.navigate(R.id.routeListFragment)
-            globalState.toggleMenu()
+            globalState.closeMenu()
         }
     }
 
     override fun onBackPressed() {
         if (globalState.menuState.value == true) {
-            globalState.toggleMenu()
+            globalState.closeMenu()
         } else {
             super.onBackPressed()
         }

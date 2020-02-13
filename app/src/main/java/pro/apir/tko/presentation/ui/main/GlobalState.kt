@@ -40,6 +40,14 @@ class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle
         }
     }
 
+    fun closeMenu(){
+        _menuState.postValue(false)
+    }
+
+    fun openMenu(){
+        _menuState.postValue(true)
+    }
+
 
     sealed class UserState() {
         @Parcelize

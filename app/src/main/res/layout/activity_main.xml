@@ -30,7 +30,8 @@
             android:text="@string/title_activity_menu"
             android:textColor="@color/white"
             android:textSize="20sp"
-            app:layout_constraintStart_toEndOf="@+id/btnActivityMenuClose" />
+            app:layout_constraintStart_toEndOf="@+id/btnActivityMenuClose"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnActivityMenuInventory"
@@ -73,6 +74,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/nav_graph_main" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
