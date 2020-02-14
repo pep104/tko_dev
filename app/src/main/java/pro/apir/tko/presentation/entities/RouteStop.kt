@@ -1,5 +1,7 @@
 package pro.apir.tko.presentation.entities
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import pro.apir.tko.domain.model.ContainerAreaStopModel
 
 /**
@@ -12,4 +14,5 @@ const val ROUTE_TYPE_DEFAULT = 0
 const val ROUTE_TYPE_PENDING = 1
 const val ROUTE_TYPE_COMPLETED = 2
 
-data class RouteStop(val stop: ContainerAreaStopModel, var type: Int = ROUTE_TYPE_DEFAULT)
+@Parcelize
+data class RouteStop(val stop: ContainerAreaStopModel, var type: Int = ROUTE_TYPE_DEFAULT): Parcelable

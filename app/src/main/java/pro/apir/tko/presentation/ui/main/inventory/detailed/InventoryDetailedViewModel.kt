@@ -18,6 +18,7 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Date: 2020-01-19
  * Project: tko-android
  */
+//TODO EXTRACT CONTROLS etc TO BASE DETAILED VM
 class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
 
     @AssistedInject.Factory

@@ -51,6 +51,7 @@ import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditSharedViewM
  * Date: 2020-01-19
  * Project: tko-android
  */
+//TODO EXTRACT CONTROLS etc TO BASE DETAILED FRAGMENT
 class InventoryDetailedFragment : BaseFragment() {
 
     private val viewModel: InventoryDetailedViewModel by viewModels()

@@ -72,7 +72,14 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoDefault
 
         fun bind(item: RouteStop, pos: Int) {
-            textName.text = item.stop.location
+            textName.text = textName.context.getString(R.string.text_route_stop_title, item.stop.location, "0")
+
+            val pluredCount = textInfo.resources.getQuantityString(
+                    R.plurals.plurals_containers,
+                    item.stop.containersCount
+                            ?: 0, item.stop.containersCount)
+
+            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.stop.containersVolume.toString())
             textBadge.text = pos.toString()
         }
 
