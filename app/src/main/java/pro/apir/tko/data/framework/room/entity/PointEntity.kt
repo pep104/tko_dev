@@ -12,4 +12,9 @@ import androidx.room.PrimaryKey
 data class PointEntity(
         @PrimaryKey(autoGenerate = true)
         val id: Long?
+
+        //id контейнерной площадки
+
+        //статус
+
 )

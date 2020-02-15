@@ -13,6 +13,8 @@ import androidx.room.PrimaryKey
 //???
 @Entity(tableName = "route_session_table")
 data class RouteSessionEntity(
+
         @PrimaryKey(autoGenerate = true)
         val id: Long?
+
 )
