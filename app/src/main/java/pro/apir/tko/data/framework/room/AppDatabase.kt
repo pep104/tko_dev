@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import pro.apir.tko.BuildConfig
 import pro.apir.tko.data.framework.room.dao.PointDao
-import pro.apir.tko.data.framework.room.dao.RouteDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
@@ -20,8 +19,6 @@ import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun routeSessionDao(): RouteSessionDao
-
-    abstract fun routeDao(): RouteDao
 
     abstract fun pointDao(): PointDao
 

@@ -1,5 +1,6 @@
 package pro.apir.tko.data.framework.room.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -15,6 +16,17 @@ import androidx.room.PrimaryKey
 data class RouteSessionEntity(
 
         @PrimaryKey(autoGenerate = true)
-        val id: Long?
+        val id: Long?,
+
+        @ColumnInfo(name = "user_id")
+        val userId: Int,
+
+        @ColumnInfo(name = "route_id")
+        val routeId: Int,
+
+        val date: String,
+
+        @ColumnInfo(name = "is_completed")
+        val isCompleted: Boolean
 
 )

@@ -1,5 +1,6 @@
 package pro.apir.tko.data.framework.room.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,10 +12,15 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "point_table")
 data class PointEntity(
         @PrimaryKey(autoGenerate = true)
-        val id: Long?
+        val id: Long?,
 
-        //id контейнерной площадки
+        @ColumnInfo(name = "container_id")
+        val containerId: Int,
 
-        //статус
+        val status: Int,
+
+        //Relation
+        @ColumnInfo(name = "session_id")
+        val sessionId: Long
 
 )
