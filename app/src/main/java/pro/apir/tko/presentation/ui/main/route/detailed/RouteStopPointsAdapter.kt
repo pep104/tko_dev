@@ -10,8 +10,7 @@ import kotlinx.android.synthetic.main.item_route_point_completed.view.*
 import kotlinx.android.synthetic.main.item_route_point_default.view.*
 import kotlinx.android.synthetic.main.item_route_point_pending.view.*
 import pro.apir.tko.R
-import pro.apir.tko.presentation.entities.ROUTE_TYPE_COMPLETED
-import pro.apir.tko.presentation.entities.ROUTE_TYPE_PENDING
+import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_COMPLETED
 import pro.apir.tko.presentation.entities.RouteStop
 
 /**
@@ -48,10 +47,10 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ROUTE_TYPE_COMPLETED -> {
+            POINT_TYPE_COMPLETED -> {
                 CompletedHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_completed, parent, false))
             }
-            ROUTE_TYPE_PENDING -> {
+            POINT_TYPE_COMPLETED -> {
                 PendingtHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_pending, parent, false))
             }
             else -> {

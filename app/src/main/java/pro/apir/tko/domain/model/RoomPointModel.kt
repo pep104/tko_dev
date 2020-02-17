@@ -5,4 +5,4 @@ package pro.apir.tko.domain.model
  * Date: 15.02.2020
  * Project: tko-android
  */
-data class PointRoomModel(val id: Long, val containerId: Int, val status: Int, val sessionId: Long)
+data class RoomPointModel(val id: Long, val containerId: Int, val status: Int, val sessionId: Long)

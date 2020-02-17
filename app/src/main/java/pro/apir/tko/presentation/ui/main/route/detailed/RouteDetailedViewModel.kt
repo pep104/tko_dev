@@ -8,6 +8,7 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import pro.apir.tko.di.ViewModelAssistedFactory
+import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.entities.RouteStop
 import pro.apir.tko.presentation.platform.BaseViewModel
@@ -18,7 +19,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Project: tko-android
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED VM
-class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle) : BaseViewModel() {
+class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
+                                                         private val routeSessionInteractor: RouteSessionInteractor) : BaseViewModel() {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<RouteDetailedViewModel>
