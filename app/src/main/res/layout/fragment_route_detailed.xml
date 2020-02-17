@@ -7,4 +7,16 @@
 
     <include layout="@layout/bottomsheet_route_detailed" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStart"
+        style="@style/ButtonPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="4dp"
+        android:text="@string/btn_route_start"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

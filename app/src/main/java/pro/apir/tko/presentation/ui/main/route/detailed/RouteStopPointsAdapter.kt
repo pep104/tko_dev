@@ -23,6 +23,14 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val data = arrayListOf<RouteStop>()
 
+    private var listener: OnRoutePointClickedListener? = null
+
+    interface OnRoutePointClickedListener {
+
+        fun onRoutePointClicked(item: RouteStop, pos: Int)
+
+    }
+
     fun setList(data: List<RouteStop>) {
         //TODO DIFFUTIL
         this.data.clear()
@@ -30,7 +38,9 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    //todo listener
+    fun setListener(listener: OnRoutePointClickedListener?) {
+        this.listener = listener
+    }
 
     override fun getItemCount() = data.size
 
@@ -61,6 +71,10 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             is PendingtHolder -> {
                 holder.bind(data[position], position)
             }
+        }
+
+        holder.itemView.setOnClickListener {
+            listener?.onRoutePointClicked(data[position], position)
         }
     }
 

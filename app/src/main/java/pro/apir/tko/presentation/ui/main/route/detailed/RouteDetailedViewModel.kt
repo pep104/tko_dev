@@ -1,10 +1,12 @@
 package pro.apir.tko.presentation.ui.main.route.detailed
 
+import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
+import kotlinx.android.parcel.Parcelize
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.entities.RouteStop
@@ -35,6 +37,10 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         get() = _zoomLevel
 
 
+    private val _state = handle.getLiveData<RouteState>("state")
+    val state: LiveData<RouteState>
+        get()  = _state
+
     //data
 
     private val _route = handle.getLiveData<RouteModel>("route")
@@ -47,7 +53,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val routeStops: LiveData<List<RouteStop>>
         get() = _routeStops
 
-    //TODO ROUTE SESSION
 
     fun init(route: RouteModel) {
         Log.e("route", "${_route.value?.name}")
@@ -59,7 +64,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
 
     }
-
 
     //controls
 
@@ -78,6 +82,19 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     fun setZoomLevel(zoomLevel: Double) {
         _zoomLevel = zoomLevel
+
+    }
+
+    sealed class RouteState() {
+
+        @Parcelize
+        object Default: RouteState(), Parcelable
+
+        @Parcelize
+        object Pending: RouteState(), Parcelable
+
+        @Parcelize
+        object InProgress: RouteState(), Parcelable
 
     }
 

@@ -16,8 +16,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_route_detailed.view.*
 import kotlinx.android.synthetic.main.content_map_detailed.view.*
+import kotlinx.android.synthetic.main.fragment_route_detailed.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -41,6 +43,8 @@ import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.entities.RouteStop
 import pro.apir.tko.presentation.extension.addViewObserver
 import pro.apir.tko.presentation.extension.dpToPx
+import pro.apir.tko.presentation.extension.gone
+import pro.apir.tko.presentation.extension.toast
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -49,7 +53,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Project: tko-android
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED FRAGMENT
-class RouteDetailedFragment : BaseFragment() {
+class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePointClickedListener {
 
     private val viewModel: RouteDetailedViewModel by viewModels()
 
@@ -73,6 +77,8 @@ class RouteDetailedFragment : BaseFragment() {
     private lateinit var btnZoomOut: ImageButton
     private lateinit var btnGeoSwitch: ImageButton
 
+    private lateinit var btnStart: MaterialButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectRouteDetailedFragment(this)
@@ -94,12 +100,14 @@ class RouteDetailedFragment : BaseFragment() {
         textHeader = view.textHeader
 
         recyclerView = view.recyclerView
-        stopAdapter = RouteStopPointsAdapter()
+        stopAdapter = RouteStopPointsAdapter().apply { setListener(this@RouteDetailedFragment) }
 
         mapView = view.map
         btnZoomIn = view.btnZoomIn
         btnZoomOut = view.btnZoomOut
         btnGeoSwitch = view.btnGeoSwitch
+
+        btnStart = view.btnStart
 
         with(recyclerView) {
             adapter = stopAdapter
@@ -123,6 +131,21 @@ class RouteDetailedFragment : BaseFragment() {
     }
 
     private fun observeViewModel() {
+
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is RouteDetailedViewModel.RouteState.Default -> {
+                    btnStart.text = getString(R.string.btn_route_start)
+                }
+                is RouteDetailedViewModel.RouteState.Pending -> {
+                    btnStart.text = getString(R.string.btn_route_continue)
+                }
+                is RouteDetailedViewModel.RouteState.InProgress -> {
+                    btnStart.gone()
+                }
+            }
+        })
+
 
         viewModel.route.observe(viewLifecycleOwner, Observer {
             textHeader.text = it.name
@@ -197,6 +220,11 @@ class RouteDetailedFragment : BaseFragment() {
 
     }
 
+
+    override fun onRoutePointClicked(item: RouteStop, pos: Int) {
+        //TODO
+        toast("clicked: ${item.stop.location}")
+    }
 
     //TEMP fixme ???
     //todo попробовать предзагрузку тайлов по маршруту?

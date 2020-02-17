@@ -6,6 +6,10 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: "kotlin-kapt"
 
+androidExtensions {
+    experimental = true
+}
+
 android {
 
     compileOptions {
@@ -129,6 +133,9 @@ dependencies {
 
     //Horizontal Number Picker
     implementation 'com.shawnlin:number-picker:2.4.8'
+
+    //Mobble
+    implementation 'ru.sarmatin.mobble:consumable-livedata:1.0.1'
 
 
 
