@@ -41,10 +41,7 @@ import pro.apir.tko.R
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.entities.RouteStop
-import pro.apir.tko.presentation.extension.addViewObserver
-import pro.apir.tko.presentation.extension.dpToPx
-import pro.apir.tko.presentation.extension.gone
-import pro.apir.tko.presentation.extension.toast
+import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -136,11 +133,16 @@ class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePoin
             when (it) {
                 is RouteDetailedViewModel.RouteState.Default -> {
                     btnStart.text = getString(R.string.btn_route_start)
+                    btnStart.visible()
                 }
                 is RouteDetailedViewModel.RouteState.Pending -> {
                     btnStart.text = getString(R.string.btn_route_continue)
+                    btnStart.visible()
                 }
                 is RouteDetailedViewModel.RouteState.InProgress -> {
+                    btnStart.gone()
+                }
+                else -> {
                     btnStart.gone()
                 }
             }
