@@ -39,17 +39,19 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         get() = _zoomLevel
 
 
+
+    //TODO REPLACE WITH ROUTE SESSION MODEL!!!
     private val _state = handle.getLiveData<RouteState>("state")
     val state: LiveData<RouteState>
         get()  = _state
 
+    //TODO REPLACE WITH ROUTE SESSION MODEL!!!
     //data
-
     private val _route = handle.getLiveData<RouteModel>("route")
     val route: LiveData<RouteModel>
         get() = _route
 
-
+    //TODO REPLACE WITH ROUTE SESSION MODEL!!!
     //TEMP?
     private val _routeStops = handle.getLiveData<List<RouteStop>>("routeStops")
     val routeStops: LiveData<List<RouteStop>>
@@ -58,6 +60,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     fun init(route: RouteModel) {
         Log.e("route", "${_route.value?.name}")
+        //TODO REPLACE WITH ROUTE SESSION MODEL!!!
         if (_route.value == null) {
             //TO MAP FUN?
             _route.postValue(route)
