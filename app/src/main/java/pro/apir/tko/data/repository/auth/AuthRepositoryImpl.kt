@@ -12,10 +12,7 @@ class AuthRepositoryImpl @Inject constructor(private val authApi: AuthApi, priva
 
     override suspend fun auth(email: String, password: String): Either<Failure, AuthTokenModel> {
         val result = request({ authApi.auth(email, password) }, { it.toModel() })
-        if (result is Either.Right) {
-            tokenManager.saveRefreshToken(result.b.refresh)
-            tokenManager.saveAccessToken(result.b.access)
-        }
+
         return result
     }
 

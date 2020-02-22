@@ -2,6 +2,8 @@ package pro.apir.tko.di.module
 
 import dagger.Module
 import dagger.Provides
+import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
+import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.repository.address.AddressRepository
 import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.auth.AuthRepository
@@ -29,7 +31,7 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun authInteractor(authRepository: AuthRepository): AuthInteractor = AuthInteractorImpl(authRepository)
+    fun authInteractor(authRepository: AuthRepository, userRepository: UserRepository, tokenManager: TokenManager, preferencesManager: PreferencesManager): AuthInteractor = AuthInteractorImpl(authRepository, userRepository, tokenManager, preferencesManager)
 
     @Provides
     @Singleton
