@@ -18,6 +18,8 @@ import pro.apir.tko.data.repository.route.RouteRepository
 import pro.apir.tko.data.repository.route.RouteRepositoryImpl
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepositoryImpl
+import pro.apir.tko.data.repository.user.UserRepository
+import pro.apir.tko.data.repository.user.UserRepositoryImpl
 import javax.inject.Singleton
 
 @Module
@@ -46,5 +48,9 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun routeSessionRepository(routeDao: RouteSessionDao): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao)
+
+    @Provides
+    @Singleton
+    fun userRepository(tokenManager: TokenManager, userApi: UserApi): UserRepository = UserRepositoryImpl(tokenManager, userApi)
 
 }

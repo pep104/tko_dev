@@ -30,6 +30,7 @@ import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
 import pro.apir.tko.data.framework.source.auth.AuthSource
 import pro.apir.tko.data.framework.source.inventory.InventorySource
 import pro.apir.tko.data.framework.source.route.RouteSource
+import pro.apir.tko.data.framework.source.user.UserSource
 import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.dict.OptionsDictionariesManagerImpl
 import retrofit2.Retrofit
@@ -206,6 +207,9 @@ class FrameworkModule(private val application: Application) {
     @Provides
     fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
 
+    @Singleton
+    @Provides
+    fun userApi(retrofit: Retrofit): UserApi = UserSource(retrofit)
 
     //Room
 
