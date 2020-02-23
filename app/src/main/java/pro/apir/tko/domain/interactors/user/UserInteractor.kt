@@ -13,4 +13,6 @@ interface UserInteractor {
 
     suspend fun getCurrentUser(): Either<Failure, UserModel>
 
+    suspend fun getCurrentUserId(): Either<Failure, Int>
+
 }
