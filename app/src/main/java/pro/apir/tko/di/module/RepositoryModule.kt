@@ -2,6 +2,7 @@ package pro.apir.tko.di.module
 
 import dagger.Module
 import dagger.Provides
+import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
@@ -51,6 +52,6 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun userRepository(tokenManager: TokenManager, userApi: UserApi): UserRepository = UserRepositoryImpl(tokenManager, userApi)
+    fun userRepository(tokenManager: TokenManager, userApi: UserApi, preferencesManager: PreferencesManager): UserRepository = UserRepositoryImpl(tokenManager, userApi, preferencesManager)
 
 }
