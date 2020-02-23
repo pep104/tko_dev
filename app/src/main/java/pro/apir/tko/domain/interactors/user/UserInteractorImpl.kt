@@ -10,4 +10,8 @@ class UserInteractorImpl @Inject constructor(private val userRepository: UserRep
     override suspend fun getCurrentUser(): Either<Failure, UserModel> {
         return userRepository.getUser()
     }
+
+    override suspend fun getCurrentUserId(): Either<Failure, Int> {
+        return userRepository.getUserId()
+    }
 }
