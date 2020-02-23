@@ -13,9 +13,9 @@ import pro.apir.tko.domain.model.RouteSessionModel
 interface RouteSessionInteractor {
 
 
-    suspend fun getSession(routeModel: RouteModel): Either<Failure, RouteSessionModel>
+    suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel>
 
-//    suspend fun startOrResumeSession()
+    suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
 
 
 

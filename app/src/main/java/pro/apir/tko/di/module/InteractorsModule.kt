@@ -47,7 +47,7 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun routeSessionInteractor(routeSessionRepository: RouteSessionRepository): RouteSessionInteractor = RouteSessionInteractorImpl(routeSessionRepository)
+    fun routeSessionInteractor(routeSessionRepository: RouteSessionRepository, userRepository: UserRepository): RouteSessionInteractor = RouteSessionInteractorImpl(routeSessionRepository, userRepository)
 
     @Provides
     @Singleton
