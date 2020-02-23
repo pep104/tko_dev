@@ -28,6 +28,26 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
     }
 
     override suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return test(routeSessionModel)
+
+        //todo
+    }
+
+
+    //Test return
+    private fun test(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
+        var lastCompleted = 0
+        routeSessionModel.points.forEachIndexed { index, routePointModel ->
+            if (index != 0 && index != routeSessionModel.points.size - 1 && index < 5) {
+                routePointModel.type = RouteStateConstants.POINT_TYPE_COMPLETED
+                lastCompleted = index
+            }
+        }
+
+        if (lastCompleted + 1 < routeSessionModel.points.size - 1) {
+            routeSessionModel.points[lastCompleted + 1].type = RouteStateConstants.POINT_TYPE_PENDING
+        }
+
+        return Either.Right(routeSessionModel.apply { state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS })
     }
 }

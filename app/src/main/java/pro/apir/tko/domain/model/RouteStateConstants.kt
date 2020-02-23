@@ -13,7 +13,8 @@ object RouteStateConstants {
 
     const val ROUTE_TYPE_DEFAULT = 0
     const val ROUTE_TYPE_PENDING = 1
-    const val ROUTE_TYPE_COMPLETED = 2
+    const val ROUTE_TYPE_IN_PROGRESS = 2
+    const val ROUTE_TYPE_COMPLETED = 3
 
 
 }

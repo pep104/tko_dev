@@ -11,7 +11,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class RouteSessionModel(
         val sessionId: Long?,
-        val state: Int,
+        var state: Int,
         val routeId: Int,
         val name: String,
         val status: String,

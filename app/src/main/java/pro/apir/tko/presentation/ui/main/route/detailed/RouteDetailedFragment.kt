@@ -116,6 +116,10 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
             viewModel.switchFollow()
         }
 
+        btnStart.setOnClickListener {
+            viewModel.start()
+        }
+
         view.btnBack.setOnClickListener(::back)
 
         setMap(mapView)

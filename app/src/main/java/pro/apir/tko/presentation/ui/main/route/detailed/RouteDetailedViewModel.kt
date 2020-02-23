@@ -66,12 +66,23 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     fun init(route: RouteModel) {
         viewModelScope.launch(Dispatchers.IO) {
             if (_routeSession.value == null) {
-                routeSessionInteractor.getInitialSessionFromRoute(route).fold(::handleFailure, ::initSession)
+                routeSessionInteractor.getInitialSessionFromRoute(route).fold(::handleFailure, ::setData)
             }
         }
     }
 
-    private fun initSession(sessionModel: RouteSessionModel) {
+    //Btn Start/Resume
+    fun start() {
+        if (_state.value == RouteState.Default || _state.value == RouteState.Pending)
+            viewModelScope.launch(Dispatchers.IO) {
+                _routeSession.value?.let {
+                    routeSessionInteractor.startSession(it).fold(::handleFailure, ::setData)
+                }
+            }
+
+    }
+
+    private fun setData(sessionModel: RouteSessionModel) {
         _routeSession.postValue(sessionModel)
         _routeStops.postValue(sessionModel.points)
 
@@ -82,14 +93,10 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
             RouteStateConstants.ROUTE_TYPE_PENDING -> {
                 _state.postValue(RouteState.Pending)
             }
+            RouteStateConstants.ROUTE_TYPE_IN_PROGRESS -> {
+                _state.postValue(RouteState.InProgress)
+            }
         }
-
-    }
-
-    //Btn Start/Resume
-    fun start(){
-
-
 
     }
 
@@ -112,6 +119,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         _zoomLevel = zoomLevel
 
     }
+
+    //Screen Route State
 
     sealed class RouteState() {
 
