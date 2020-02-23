@@ -1,16 +1,20 @@
 package pro.apir.tko.presentation.ui.main.route.detailed
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
 import pro.apir.tko.domain.model.RouteModel
-import pro.apir.tko.presentation.entities.RouteStop
+import pro.apir.tko.domain.model.RoutePointModel
+import pro.apir.tko.domain.model.RouteSessionModel
+import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -24,6 +28,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<RouteDetailedViewModel>
+
+
+    //Map
 
     private val _isFollowEnabled = handle.getLiveData<Boolean>("isFollowEnabled", false)
     val isFollowEnabled: LiveData<Boolean>
@@ -39,33 +46,49 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         get() = _zoomLevel
 
 
+    //Route
 
-    //TODO REPLACE WITH ROUTE SESSION MODEL!!!
+    private val _routeSession = handle.getLiveData<RouteSessionModel>("routeSession")
+    val routeSession: LiveData<RouteSessionModel>
+        get() = _routeSession
+
+
     private val _state = handle.getLiveData<RouteState>("state")
     val state: LiveData<RouteState>
-        get()  = _state
+        get() = _state
 
-    //TODO REPLACE WITH ROUTE SESSION MODEL!!!
-    //data
-    private val _route = handle.getLiveData<RouteModel>("route")
-    val route: LiveData<RouteModel>
-        get() = _route
 
-    //TODO REPLACE WITH ROUTE SESSION MODEL!!!
-    //TEMP?
-    private val _routeStops = handle.getLiveData<List<RouteStop>>("routeStops")
-    val routeStops: LiveData<List<RouteStop>>
+    private val _routeStops = handle.getLiveData<List<RoutePointModel>>("routeStops")
+    val routeStops: LiveData<List<RoutePointModel>>
         get() = _routeStops
 
 
     fun init(route: RouteModel) {
-        Log.e("route", "${_route.value?.name}")
-        //TODO REPLACE WITH ROUTE SESSION MODEL!!!
-        if (_route.value == null) {
-            //TO MAP FUN?
-            _route.postValue(route)
-            _routeStops.postValue(route.stops.map { RouteStop(it) }.filter { it.stop.location != null })
+        viewModelScope.launch(Dispatchers.IO) {
+            if (_routeSession.value == null) {
+                routeSessionInteractor.getInitialSessionFromRoute(route).fold(::handleFailure, ::initSession)
+            }
         }
+    }
+
+    private fun initSession(sessionModel: RouteSessionModel) {
+        _routeSession.postValue(sessionModel)
+        _routeStops.postValue(sessionModel.points)
+
+        when (sessionModel.state) {
+            RouteStateConstants.ROUTE_TYPE_DEFAULT -> {
+                _state.postValue(RouteState.Default)
+            }
+            RouteStateConstants.ROUTE_TYPE_PENDING -> {
+                _state.postValue(RouteState.Pending)
+            }
+        }
+
+    }
+
+    //Btn Start/Resume
+    fun start(){
+
 
 
     }
@@ -93,13 +116,13 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     sealed class RouteState() {
 
         @Parcelize
-        object Default: RouteState(), Parcelable
+        object Default : RouteState(), Parcelable
 
         @Parcelize
-        object Pending: RouteState(), Parcelable
+        object Pending : RouteState(), Parcelable
 
         @Parcelize
-        object InProgress: RouteState(), Parcelable
+        object InProgress : RouteState(), Parcelable
 
     }
 

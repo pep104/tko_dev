@@ -40,6 +40,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.RouteModel
+import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.presentation.entities.RouteStop
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -50,7 +51,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Project: tko-android
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED FRAGMENT
-class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePointClickedListener {
+class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointClickedListener {
 
     private val viewModel: RouteDetailedViewModel by viewModels()
 
@@ -64,7 +65,7 @@ class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePoin
     private lateinit var textHeader: TextView
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var stopAdapter: RouteStopPointsAdapter
+    private lateinit var stopAdapter: RoutePointsAdapter
 
     private lateinit var mapView: MapView
     private var mapJob: Job? = null
@@ -97,7 +98,7 @@ class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePoin
         textHeader = view.textHeader
 
         recyclerView = view.recyclerView
-        stopAdapter = RouteStopPointsAdapter().apply { setListener(this@RouteDetailedFragment) }
+        stopAdapter = RoutePointsAdapter().apply { setListener(this@RouteDetailedFragment) }
 
         mapView = view.map
         btnZoomIn = view.btnZoomIn
@@ -149,7 +150,7 @@ class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePoin
         })
 
 
-        viewModel.route.observe(viewLifecycleOwner, Observer {
+        viewModel.routeSession.observe(viewLifecycleOwner, Observer {
             textHeader.text = it.name
 
             setPath(it.path)
@@ -223,9 +224,9 @@ class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePoin
     }
 
 
-    override fun onRoutePointClicked(item: RouteStop, pos: Int) {
+    override fun onRoutePointClicked(item: RoutePointModel, pos: Int) {
         //TODO
-        toast("clicked: ${item.stop.location}")
+        toast("clicked: ${item.location}")
     }
 
     //TEMP fixme ???
@@ -251,13 +252,13 @@ class RouteDetailedFragment : BaseFragment(), RouteStopPointsAdapter.OnRoutePoin
     }
 
     //TODO to base vm and background task
-    private fun setMarkers(list: List<RouteStop>) {
+    private fun setMarkers(list: List<RoutePointModel>) {
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.e("mapMarkers", "job start")
             list.forEach {
-                val coordinates = it.stop.coordinates
+                val coordinates = it.coordinates
                 if (coordinates != null
                         && coordinates.lat != 0.0 && coordinates.lng != 0.0
                         && coordinates.lat in -85.05..85.05) {

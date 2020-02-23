@@ -5,36 +5,40 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_route_point_completed.view.*
 import kotlinx.android.synthetic.main.item_route_point_default.view.*
 import kotlinx.android.synthetic.main.item_route_point_pending.view.*
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_COMPLETED
-import pro.apir.tko.presentation.entities.RouteStop
+import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT
+import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_PENDING
 
 /**
  * Created by antonsarmatin
  * Date: 2020-02-05
  * Project: tko-android
  */
-class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val data = arrayListOf<RouteStop>()
+    private val data = arrayListOf<RoutePointModel>()
 
     private var listener: OnRoutePointClickedListener? = null
 
     interface OnRoutePointClickedListener {
 
-        fun onRoutePointClicked(item: RouteStop, pos: Int)
+        fun onRoutePointClicked(item: RoutePointModel, pos: Int)
 
     }
 
-    fun setList(data: List<RouteStop>) {
-        //TODO DIFFUTIL
+    fun setList(data: List<RoutePointModel>) {
+        val diffCallback = RoutePointDiffCallback(this.data, data)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
         this.data.addAll(data)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun setListener(listener: OnRoutePointClickedListener?) {
@@ -43,14 +47,14 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount() = data.size
 
-    override fun getItemViewType(position: Int) = data[position].type
+    override fun getItemViewType(position: Int) = data[position].type ?: POINT_TYPE_DEFAULT
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             POINT_TYPE_COMPLETED -> {
                 CompletedHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_completed, parent, false))
             }
-            POINT_TYPE_COMPLETED -> {
+            POINT_TYPE_PENDING -> {
                 PendingtHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_pending, parent, false))
             }
             else -> {
@@ -84,15 +88,15 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textName: TextView = itemView.textRouteNameDefault
         private val textInfo: TextView = itemView.textRouteInfoDefault
 
-        fun bind(item: RouteStop, pos: Int) {
-            textName.text = textName.context.getString(R.string.text_route_stop_title, item.stop.location, "0")
+        fun bind(item: RoutePointModel, pos: Int) {
+            textName.text = textName.context.getString(R.string.text_route_stop_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
-                    item.stop.containersCount
-                            ?: 0, item.stop.containersCount)
+                    item.containersCount
+                            ?: 0, item.containersCount)
 
-            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.stop.containersVolume.toString())
+            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.containersVolume.toString())
             textBadge.text = pos.toString()
         }
 
@@ -105,8 +109,16 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textName: TextView = itemView.textRouteNamePending
         private val textInfo: TextView = itemView.textRouteInfoPending
 
-        fun bind(item: RouteStop, pos: Int) {
+        fun bind(item: RoutePointModel, pos: Int) {
+            textName.text = textName.context.getString(R.string.text_route_stop_title, item.location, "0")
 
+            val pluredCount = textInfo.resources.getQuantityString(
+                    R.plurals.plurals_containers,
+                    item.containersCount
+                            ?: 0, item.containersCount)
+
+            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.containersVolume.toString())
+            textBadge.text = pos.toString()
         }
 
     }
@@ -118,8 +130,16 @@ class RouteStopPointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textName: TextView = itemView.textRouteNameCompleted
         private val textInfo: TextView = itemView.textRouteInfoCompleted
 
-        fun bind(item: RouteStop, pos: Int) {
+        fun bind(item: RoutePointModel, pos: Int) {
+            textName.text = textName.context.getString(R.string.text_route_stop_title, item.location, "0")
 
+            val pluredCount = textInfo.resources.getQuantityString(
+                    R.plurals.plurals_containers,
+                    item.containersCount
+                            ?: 0, item.containersCount)
+
+            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.containersVolume.toString())
+            textBadge.text = pos.toString()
         }
 
     }
