@@ -26,6 +26,6 @@ data class RouteSessionModel(
         val periodicity: String
 ) : Parcelable {
 
-    constructor(model: RouteModel, state: Int) : this(null, state, model.id, model.name, model.status, model.startLocation, model.startCoordinates, model.endLocation, model.endCoordinates, model.stops.map { RoutePointModel(it) }, model.path, model.distance, model.duration, model.periodicity)
+    constructor(model: RouteModel, state: Int) : this(null, state, model.id, model.name, model.status, model.startLocation, model.startCoordinates, model.endLocation, model.endCoordinates, model.stops.map { RoutePointModel(it) }.filter { it.location != null }, model.path, model.distance, model.duration, model.periodicity)
 
 }
