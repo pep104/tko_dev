@@ -13,7 +13,8 @@ import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT
 
 @Parcelize
 data class RoutePointModel(
-        val id: Int,
+        val id: Long?,
+        val containerId: Int,
         val resourceType: String,
         val location: String?,
         val coordinates: CoordinatesModel?,
@@ -23,6 +24,8 @@ data class RoutePointModel(
         var type: Int?
 ): Parcelable {
 
-    constructor(stop: ContainerAreaStopModel) : this(stop.id, stop.resourceType, stop.location, stop.coordinates, stop.registryNumber, stop.containersCount, stop.containersVolume, POINT_TYPE_DEFAULT)
+    constructor(stop: ContainerAreaStopModel) : this(null,stop.id, stop.resourceType, stop.location, stop.coordinates, stop.registryNumber, stop.containersCount, stop.containersVolume, POINT_TYPE_DEFAULT)
+
+    constructor(id: Long, model: RoutePointModel) : this(id, model.containerId, model.resourceType, model.location, model.coordinates, model.registryNumber, model.containersCount, model.containersVolume, model.type)
 
 }

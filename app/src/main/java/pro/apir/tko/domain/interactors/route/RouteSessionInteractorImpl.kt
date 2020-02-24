@@ -28,9 +28,22 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
     }
 
     override suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
-        return test(routeSessionModel)
+//        return test(routeSessionModel)
 
-        //todo
+        //TODO SET PENDING?
+        return when (val userIdResult = userRepository.getUserId()) {
+            is Either.Right -> {
+                //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
+                val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeSessionModel.routeId, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+                if (isSessionExists) {
+                    Either.Right(sessionRepository.resumeSession(userIdResult.b, routeSessionModel))
+                } else {
+                    Either.Right(sessionRepository.createSession(userIdResult.b, routeSessionModel))
+                }
+            }
+            is Either.Left -> userIdResult
+        }
+
     }
 
 

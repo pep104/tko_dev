@@ -76,6 +76,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         if (_state.value == RouteState.Default || _state.value == RouteState.Pending)
             viewModelScope.launch(Dispatchers.IO) {
                 _routeSession.value?.let {
+                    //TODO PROCEED STATE CHANGING
                     routeSessionInteractor.startSession(it).fold(::handleFailure, ::setData)
                 }
             }

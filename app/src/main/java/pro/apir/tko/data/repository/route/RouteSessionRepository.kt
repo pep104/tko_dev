@@ -1,5 +1,7 @@
 package pro.apir.tko.data.repository.route
 
+import pro.apir.tko.domain.model.RouteSessionModel
+
 /**
  * Created by Антон Сарматин
  * Date: 15.02.2020
@@ -11,7 +13,9 @@ interface RouteSessionRepository {
     suspend fun checkSessionExists(userId: Int, routeId: Int, date: String): Boolean
 
     //get (start or resume) session
+    suspend fun createSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel
 
+    suspend fun resumeSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel
     //update point
 
 }

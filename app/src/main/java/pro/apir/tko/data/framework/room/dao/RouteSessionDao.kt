@@ -19,6 +19,12 @@ interface RouteSessionDao {
     suspend fun getSession(userId: Int, routeId: Int, date: String): List<RouteSessionWithPoints>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSessionAndPoint(session: RouteSessionEntity, points: List<PointEntity>)
+    fun insertSession(session: RouteSessionEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPoint(point: PointEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPoints(points: List<PointEntity>): List<Long>
 
 }

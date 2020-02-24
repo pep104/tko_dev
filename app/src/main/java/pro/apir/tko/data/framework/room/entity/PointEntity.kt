@@ -17,7 +17,7 @@ data class PointEntity(
         @ColumnInfo(name = "container_id")
         val containerId: Int,
 
-        val status: Int,
+        val type: Int,
 
         //Relation
         @ColumnInfo(name = "session_id")
