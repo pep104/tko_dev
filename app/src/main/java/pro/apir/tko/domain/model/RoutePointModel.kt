@@ -26,6 +26,8 @@ data class RoutePointModel(
 
     constructor(stop: ContainerAreaStopModel) : this(null,stop.id, stop.resourceType, stop.location, stop.coordinates, stop.registryNumber, stop.containersCount, stop.containersVolume, POINT_TYPE_DEFAULT)
 
-    constructor(id: Long, model: RoutePointModel) : this(id, model.containerId, model.resourceType, model.location, model.coordinates, model.registryNumber, model.containersCount, model.containersVolume, model.type)
+    constructor(id: Long?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, oldModel.type)
+
+    constructor(id: Long?, type: Int?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, type)
 
 }

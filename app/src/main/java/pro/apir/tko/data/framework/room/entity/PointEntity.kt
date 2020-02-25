@@ -9,6 +9,12 @@ import androidx.room.PrimaryKey
  * Date: 2020-02-11
  * Project: tko-android
  */
+
+/**
+ *
+ *  Entity for saving RouteSession's Point state to local database
+ *
+ */
 @Entity(tableName = "point_table")
 data class PointEntity(
         @PrimaryKey(autoGenerate = true)

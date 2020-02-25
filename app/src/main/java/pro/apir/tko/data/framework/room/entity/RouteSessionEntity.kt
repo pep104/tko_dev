@@ -9,9 +9,13 @@ import androidx.room.PrimaryKey
  * Date: 2020-02-11
  * Project: tko-android
  */
-//Route or points
-//Completed points by session?
-//???
+
+
+/**
+ *
+ *  Entity for saving RouteSession state to local database
+ *
+ */
 @Entity(tableName = "route_session_table")
 data class RouteSessionEntity(
 

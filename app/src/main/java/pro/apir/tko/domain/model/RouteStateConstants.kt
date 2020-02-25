@@ -11,9 +11,27 @@ object RouteStateConstants {
     const val POINT_TYPE_PENDING = 1
     const val POINT_TYPE_COMPLETED = 2
 
+    /**
+     * Default (Initial) state of RouteSessionModel
+     * This RouteSessionModel in default state and can be started from scratch
+     */
     const val ROUTE_TYPE_DEFAULT = 0
+
+    /**
+     * Pending state of RouteSessionModel
+     * This RouteSessionModel has saved progress and can be resumed
+     */
     const val ROUTE_TYPE_PENDING = 1
+
+    /**
+     * RouteSessionModel already in progress
+     */
     const val ROUTE_TYPE_IN_PROGRESS = 2
+
+    /**
+     * RouteSessionModel completed
+     * This route completed
+     */
     const val ROUTE_TYPE_COMPLETED = 3
 
 
