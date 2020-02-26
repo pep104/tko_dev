@@ -29,4 +29,7 @@
 
     <color name="green">#92BD34</color>
 
+    <color name="textPointHeaderGrey">#4D4D4D</color>
+    <color name="textPointHeaderWhite">#FFFFFF</color>
+
 </resources>

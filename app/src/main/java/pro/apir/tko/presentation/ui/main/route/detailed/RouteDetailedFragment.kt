@@ -14,6 +14,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -231,6 +232,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
     override fun onRoutePointClicked(item: RoutePointModel, pos: Int) {
         //TODO
         toast("clicked: ${item.location}")
+        findNavController().navigate(R.id.action_routeDetailedFragment_to_routeNavigationFragment)
     }
 
     //TEMP fixme ???
@@ -262,14 +264,19 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.e("mapMarkers", "job start")
             list.forEach {
+
                 val coordinates = it.coordinates
                 if (coordinates != null
                         && coordinates.lat != 0.0 && coordinates.lng != 0.0
                         && coordinates.lat in -85.05..85.05) {
                     val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
+
+                    //TODO Set pending marker
                     marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                    //
+
                     marker.position = location
                     markers.add(marker)
 
