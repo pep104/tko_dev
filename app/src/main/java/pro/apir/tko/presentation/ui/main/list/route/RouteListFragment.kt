@@ -82,7 +82,7 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
             if (model != null) {
                 btnAction.visible()
                 btnAction.setOnClickListener { _ ->
-                    findNavController().navigate(R.id.action_routeListFragment_to_routeDetailedFragment, bundleOf(RouteDetailedFragment.KEY_ROUTE to model))
+                    findNavController().navigate(R.id.action_routeListFragment_to_graphRoute, bundleOf(RouteDetailedFragment.KEY_ROUTE to model))
                 }
             } else {
                 btnAction.gone()

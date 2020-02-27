@@ -93,23 +93,35 @@
         android:name="pro.apir.tko.presentation.ui.main.camera.CameraFragment"
         android:label="CameraFragment" />
     <fragment
-        android:id="@+id/routeDetailedFragment"
-        android:name="pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment"
-        android:label="RouteDetailedFragment" >
-        <action
-            android:id="@+id/action_routeDetailedFragment_to_routeNavigationFragment"
-            app:destination="@id/routeNavigationFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/routeListFragment"
         android:name="pro.apir.tko.presentation.ui.main.list.route.RouteListFragment"
         android:label="RouteListFragment" >
         <action
-            android:id="@+id/action_routeListFragment_to_routeDetailedFragment"
-            app:destination="@id/routeDetailedFragment" />
+            android:id="@+id/action_routeListFragment_to_graphRoute"
+            app:destination="@id/graphRoute" />
     </fragment>
-    <fragment
-        android:id="@+id/routeNavigationFragment"
-        android:name="pro.apir.tko.presentation.ui.main.route.navigation.RouteNavigationFragment"
-        android:label="RouteNavigationFragment" />
+    <navigation
+        android:id="@+id/graphRoute"
+        app:startDestination="@id/routeDetailedFragment" >
+        <fragment
+            android:id="@+id/routeNavigationFragment"
+            android:name="pro.apir.tko.presentation.ui.main.route.navigation.RouteNavigationFragment"
+            android:label="RouteNavigationFragment" >
+            <action
+                android:id="@+id/action_routeNavigationFragment_to_cameraFragment2"
+                app:destination="@id/cameraFragment2" />
+        </fragment>
+        <fragment
+            android:id="@+id/routeDetailedFragment"
+            android:name="pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment"
+            android:label="RouteDetailedFragment">
+            <action
+                android:id="@+id/action_routeDetailedFragment_to_routeNavigationFragment"
+                app:destination="@id/routeNavigationFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/cameraFragment2"
+            android:name="pro.apir.tko.presentation.ui.main.camera.CameraFragment"
+            android:label="CameraFragment" />
+    </navigation>
 </navigation>
