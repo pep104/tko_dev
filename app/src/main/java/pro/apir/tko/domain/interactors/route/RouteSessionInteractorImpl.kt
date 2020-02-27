@@ -1,5 +1,7 @@
 package pro.apir.tko.domain.interactors.route
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import pro.apir.tko.core.exception.Failure
@@ -21,15 +23,17 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      *
      */
     override suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel> {
-        return when (val userIdResult = userRepository.getUserId()) {
-            is Either.Right -> {
-                //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
-                val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeModel.id, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
-                val state = if (isSessionExists) RouteStateConstants.ROUTE_TYPE_PENDING else RouteStateConstants.ROUTE_TYPE_DEFAULT
+        return withContext(Dispatchers.IO){
+            when (val userIdResult = userRepository.getUserId()) {
+                is Either.Right -> {
+                    //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
+                    val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeModel.id, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+                    val state = if (isSessionExists) RouteStateConstants.ROUTE_TYPE_PENDING else RouteStateConstants.ROUTE_TYPE_DEFAULT
 
-                Either.Right(RouteSessionModel(routeModel, state))
+                    Either.Right(RouteSessionModel(routeModel, state))
+                }
+                is Either.Left -> userIdResult
             }
-            is Either.Left -> userIdResult
         }
     }
 
@@ -39,24 +43,23 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      *
      */
     override suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
-//        return test(routeSessionModel)
-
-
-        return when (val userIdResult = userRepository.getUserId()) {
-            is Either.Right -> {
-                //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
-                val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeSessionModel.routeId, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
-                if (isSessionExists) {
-                    val session = sessionRepository.resumeSession(userIdResult.b, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                    setPendingPoint(session.points)
-                    Either.Right(session)
-                } else {
-                    val session = sessionRepository.createSession(userIdResult.b, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                    setPendingPoint(session.points)
-                    Either.Right(session)
+        return withContext(Dispatchers.IO) {
+            when (val userIdResult = userRepository.getUserId()) {
+                is Either.Right -> {
+                    //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
+                    val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeSessionModel.routeId, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+                    if (isSessionExists) {
+                        val session = sessionRepository.resumeSession(userIdResult.b, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                        setPendingPoint(session.points)
+                        Either.Right(session)
+                    } else {
+                        val session = sessionRepository.createSession(userIdResult.b, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                        setPendingPoint(session.points)
+                        Either.Right(session)
+                    }
                 }
+                is Either.Left -> userIdResult
             }
-            is Either.Left -> userIdResult
         }
 
     }

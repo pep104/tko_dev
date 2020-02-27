@@ -1,6 +1,8 @@
 package pro.apir.tko.domain.interactors.auth
 
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pro.apir.tko.core.constant.KEY_USER_ID
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
@@ -17,7 +19,7 @@ class AuthInteractorImpl @Inject constructor(private val authRepository: AuthRep
                                              private val tokenManager: TokenManager,
                                              private val preferencesManager: PreferencesManager) : AuthInteractor {
 
-    override suspend fun auth(email: String, password: String): Either<Failure, AuthTokenModel> {
+    override suspend fun auth(email: String, password: String): Either<Failure, AuthTokenModel> = withContext(Dispatchers.IO) {
         val result = authRepository.auth(email, password)
         if (result is Either.Right) {
             tokenManager.saveRefreshToken(result.b.refresh)
@@ -28,7 +30,8 @@ class AuthInteractorImpl @Inject constructor(private val authRepository: AuthRep
                 preferencesManager.saveInt(KEY_USER_ID, it.id)
             }
         }
-        return result
+
+        result
     }
 
 }
