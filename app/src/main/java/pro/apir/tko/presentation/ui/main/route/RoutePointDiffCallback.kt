@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.route.detailed
+package pro.apir.tko.presentation.ui.main.route
 
 import androidx.recyclerview.widget.DiffUtil
 import pro.apir.tko.domain.model.RoutePointModel

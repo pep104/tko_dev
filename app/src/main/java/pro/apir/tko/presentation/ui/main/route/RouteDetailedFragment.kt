@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.route.detailed
+package pro.apir.tko.presentation.ui.main.route
 
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -11,10 +11,10 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -51,10 +51,11 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 2020-02-05
  * Project: tko-android
  */
-//TODO EXTRACT CONTROLS etc TO BASE DETAILED FRAGMENT
+
 class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointClickedListener {
 
-    private val viewModel: RouteDetailedViewModel by viewModels()
+    //FIXME Not injecting? May be ok with default viewmodel provider factory????
+    private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute, { defaultViewModelProviderFactory })
 
     override fun layoutId() = R.layout.fragment_route_detailed
 
@@ -176,10 +177,10 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
             it?.let { enabled ->
 
                 if (enabled) {
-                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(context!!, R.color.blueMain), PorterDuff.Mode.SRC_IN)
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.blueMain), PorterDuff.Mode.SRC_IN)
                     myLocationOverlay?.enableFollowLocation()
                 } else {
-                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(context!!, R.color.black), PorterDuff.Mode.SRC_IN)
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black), PorterDuff.Mode.SRC_IN)
                     myLocationOverlay?.disableFollowLocation()
                 }
 
@@ -198,7 +199,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_arrow)?.toBitmap())
+        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
 
 
         mapView.overlayManager.add(myLocationOverlay)
@@ -273,7 +274,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
                     val marker = Marker(mapView)
 
                     //TODO Set pending marker
-                    marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+                    marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                     //
 

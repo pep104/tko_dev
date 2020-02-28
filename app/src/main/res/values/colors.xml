@@ -32,4 +32,7 @@
     <color name="textPointHeaderGrey">#4D4D4D</color>
     <color name="textPointHeaderWhite">#FFFFFF</color>
 
+    <color name="defaultRouteDivider">#333469A8</color>
+    <color name="stateRouteDivider">#33FFFFFF</color>
+
 </resources>

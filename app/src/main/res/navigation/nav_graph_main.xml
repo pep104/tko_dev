@@ -113,7 +113,7 @@
         </fragment>
         <fragment
             android:id="@+id/routeDetailedFragment"
-            android:name="pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment"
+            android:name="pro.apir.tko.presentation.ui.main.route.RouteDetailedFragment"
             android:label="RouteDetailedFragment">
             <action
                 android:id="@+id/action_routeDetailedFragment_to_routeNavigationFragment"

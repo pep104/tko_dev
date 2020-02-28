@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.ui.main.route.detailed
+package pro.apir.tko.presentation.ui.main.route
 
 import android.view.LayoutInflater
 import android.view.View
@@ -89,14 +89,14 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoDefault
 
         fun bind(item: RoutePointModel, pos: Int) {
-            textName.text = textName.context.getString(R.string.text_route_stop_title, item.location, "0")
+            textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
                     item.containersCount
                             ?: 0, item.containersCount)
 
-            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.containersVolume.toString())
+            textInfo.text = textInfo.context.getString(R.string.text_route_point_info, pluredCount, item.containersVolume.toString())
             textBadge.text = pos.toString()
         }
 
@@ -110,14 +110,14 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoPending
 
         fun bind(item: RoutePointModel, pos: Int) {
-            textName.text = textName.context.getString(R.string.text_route_stop_title, item.location, "0")
+            textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
                     item.containersCount
                             ?: 0, item.containersCount)
 
-            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.containersVolume.toString())
+            textInfo.text = textInfo.context.getString(R.string.text_route_point_info, pluredCount, item.containersVolume.toString())
             textBadge.text = pos.toString()
         }
 
@@ -131,14 +131,14 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoCompleted
 
         fun bind(item: RoutePointModel, pos: Int) {
-            textName.text = textName.context.getString(R.string.text_route_stop_title, item.location, "0")
+            textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
                     item.containersCount
                             ?: 0, item.containersCount)
 
-            textInfo.text = textInfo.context.getString(R.string.text_route_stop_info, pluredCount, item.containersVolume.toString())
+            textInfo.text = textInfo.context.getString(R.string.text_route_point_info, pluredCount, item.containersVolume.toString())
             textBadge.text = pos.toString()
         }
 

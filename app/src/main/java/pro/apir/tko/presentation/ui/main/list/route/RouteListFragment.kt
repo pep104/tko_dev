@@ -14,7 +14,7 @@ import pro.apir.tko.presentation.extension.gone
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.ui.main.list.BaseListFragment
-import pro.apir.tko.presentation.ui.main.route.detailed.RouteDetailedFragment
+import pro.apir.tko.presentation.ui.main.route.RouteDetailedFragment
 import pro.apir.tko.presentation.utils.PaginationScrollListener
 import javax.inject.Inject
 

@@ -1,7 +1,8 @@
-package pro.apir.tko.presentation.ui.main.route.detailed
+package pro.apir.tko.presentation.ui.main.route
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
@@ -62,6 +63,27 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val routeStops: LiveData<List<RoutePointModel>>
         get() = _routeStops
 
+    //Navigation
+
+    //TODO CURRENT
+
+    private var _currentStopPos = handle.get<Int>("currentStop")
+        set(value) {
+            field = value
+            val stopsCount = _routeStops.value?.size ?: 0
+            if (value != null && value in 0 until stopsCount) {
+                _currentStop.postValue(_routeStops.value?.get(value))
+            } else {
+                _currentStop.postValue(null)
+            }
+        }
+    val currentStopPos: Int?
+        get() = _currentStopPos
+
+    private val _currentStop = MutableLiveData<RoutePointModel>()
+    val currentStop: LiveData<RoutePointModel>
+        get() = _currentStop
+
 
     fun init(route: RouteModel) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -96,6 +118,38 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
             }
             RouteStateConstants.ROUTE_TYPE_IN_PROGRESS -> {
                 _state.postValue(RouteState.InProgress)
+            }
+        }
+
+        //todo set pending to current if current null
+
+    }
+    //Route Navigation
+
+    fun nextStop() {
+        val currentPos = _currentStopPos
+        val pointCount = _routeStops.value?.size
+        if (pointCount != null && currentPos != null) {
+
+            _currentStopPos = if (currentPos + 1 < pointCount) {
+                currentPos + 1
+            } else {
+                0
+            }
+
+        }
+
+    }
+
+    fun previousStop() {
+        val currentPos = _currentStopPos
+        val pointCount = _routeStops.value?.size
+        if (pointCount != null && currentPos != null) {
+
+            _currentStopPos = if (currentPos - 1 > 0) {
+                currentPos - 1
+            } else {
+                pointCount - 1
             }
         }
 

@@ -57,9 +57,10 @@
 
     <string name="text_route_list_info">%1$s — %2$s км</string>
 
-    <string name="text_route_stop_title">%1$s  • %2$sм от вас</string>
-    <string name="text_route_stop_info">%1$s  • %2$sм³</string>
+    <string name="text_route_point_title">%1$s  • %2$sм от вас</string>
+    <string name="text_route_point_info">%1$s  • %2$sм³</string>
 
+    <string name="text_route_point_distance">%1$sм от вас</string>
 
     <string name="btn_route_start">Начать</string>
     <string name="btn_route_continue">Продолжить</string>
