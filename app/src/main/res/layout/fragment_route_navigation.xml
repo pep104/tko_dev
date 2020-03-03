@@ -128,10 +128,9 @@
 
             <ImageButton
                 android:id="@+id/btnPrevious"
-                android:layout_width="32dp"
+                android:layout_width="@dimen/width_navigation_pos"
                 android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/ripple_nav_icon_light"
                 android:src="@drawable/ic_arrow_left_blue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -139,10 +138,8 @@
 
             <ImageButton
                 android:id="@+id/btnNext"
-                android:layout_width="32dp"
+                android:layout_width="@dimen/width_navigation_pos"
                 android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_right_blue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -152,7 +149,6 @@
                 android:id="@+id/dividerPrevious"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
                 android:background="@color/blueDivider"
                 app:layout_constraintStart_toEndOf="@id/btnPrevious" />
 
@@ -160,14 +156,13 @@
                 android:id="@+id/dividerNext"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="8dp"
                 android:background="@color/blueDivider"
                 app:layout_constraintEnd_toStartOf="@id/btnNext" />
 
             <TextView
                 android:id="@+id/textLocationHeader"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="36dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
@@ -175,6 +170,10 @@
                 android:maxLines="1"
                 android:textColor="@color/textPointHeaderGrey"
                 android:textSize="24sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 app:layout_constraintEnd_toStartOf="@+id/dividerNext"
                 app:layout_constraintStart_toEndOf="@+id/dividerPrevious"
                 app:layout_constraintTop_toTopOf="parent"
@@ -187,7 +186,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/ic_trash"
-                android:visibility="invisible"
+                android:visibility="visible"
                 app:layout_constraintStart_toEndOf="@+id/dividerPrevious"
                 app:layout_constraintTop_toBottomOf="@+id/textLocationHeader"
                 tools:visibility="visible" />
@@ -247,6 +246,7 @@
         android:layout_width="match_parent"
         android:layout_height="62dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/btnAction" />
 
     <com.google.android.material.button.MaterialButton

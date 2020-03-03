@@ -26,8 +26,8 @@ import pro.apir.tko.presentation.ui.main.route.RouteDetailedViewModel
  */
 class RouteNavigationFragment : BaseFragment() {
 
-    //FIXME Not injecting? May be ok with default viewmodel provider factory????
-    private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute)
+
+    private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute, { defaultViewModelProviderFactory })
 
     override fun layoutId() = R.layout.fragment_route_navigation
 
@@ -78,6 +78,11 @@ class RouteNavigationFragment : BaseFragment() {
 
         btnAction = view.btnAction
 
+        observeViewModel()
+
+        btnNext.setOnClickListener { viewModel.nextStop() }
+        btnPrevious.setOnClickListener { viewModel.previousStop() }
+
     }
 
     private fun observeViewModel() {
@@ -85,10 +90,9 @@ class RouteNavigationFragment : BaseFragment() {
         viewModel.currentStop.observe(viewLifecycleOwner, Observer {
             it?.let {
                 setCardviewData(it)
-                setState(it)
+                setPointState(it)
             }
         })
-
 
     }
 
@@ -108,13 +112,9 @@ class RouteNavigationFragment : BaseFragment() {
         textDistance.text = getString(R.string.text_route_point_distance, 0.toString())
     }
 
-    private fun setState(point: RoutePointModel) {
-        //SET CARD BACK COLOR
-        //SET TEXT COLOR
-        //SET ICON COLOR
-        //SET BTN ARROW COLOR
-        //SET DIVIDER COLOR
-        //SET BTN ACTION COLOR
+
+    private fun setPointState(point: RoutePointModel) {
+
         when (point.type) {
             RouteStateConstants.POINT_TYPE_DEFAULT -> {
                 btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_default)
@@ -129,22 +129,69 @@ class RouteNavigationFragment : BaseFragment() {
                 dividerPrevious.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.defaultRouteDivider))
                 dividerNext.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.defaultRouteDivider))
 
-                //TODO ICONS
+                imgLocation.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_geolocation))
+                imgThrash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash))
 
-                btnNext.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right_blue))
-                btnPrevious.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_left_blue))
+                btnNext.apply {
+                    setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right_blue))
+                    background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_blue)
+                }
+                btnPrevious.apply {
+                    setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_left_blue))
+                    background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_blue)
+                }
+
             }
             RouteStateConstants.POINT_TYPE_PENDING -> {
                 btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_pending)
 
-                //TODO
+                cardPoint.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blueMain))
+
+                textLocationHeader.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                textContainerInfo.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                textContainerNumber.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                textDistance.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+
+                dividerPrevious.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.stateRouteDivider))
+                dividerNext.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.stateRouteDivider))
+
+                imgLocation.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_geolocation_white))
+                imgThrash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash_white))
+
+                btnNext.apply {
+                    setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right))
+                    background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_light)
+                }
+                btnPrevious.apply {
+                    setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_left))
+                    background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_light)
+                }
 
             }
             RouteStateConstants.POINT_TYPE_COMPLETED -> {
                 btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_completed)
 
-                //TODO
+                cardPoint.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blueMain))
 
+                textLocationHeader.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                textContainerInfo.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                textContainerNumber.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                textDistance.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+
+                dividerPrevious.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.stateRouteDivider))
+                dividerNext.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.stateRouteDivider))
+
+                imgLocation.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_geolocation_white))
+                imgThrash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash_white))
+
+                btnNext.apply {
+                    setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right))
+                    background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_light)
+                }
+                btnPrevious.apply {
+                    setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_left))
+                    background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_light)
+                }
             }
         }
     }
@@ -154,10 +201,5 @@ class RouteNavigationFragment : BaseFragment() {
         //TODO ?
     }
 
-    private fun test() {
-
-        // btnAction.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.selector_button_light_colors )
-
-    }
 
 }

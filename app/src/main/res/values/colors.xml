@@ -35,4 +35,6 @@
     <color name="defaultRouteDivider">#333469A8</color>
     <color name="stateRouteDivider">#33FFFFFF</color>
 
+    <color name="greyRipple">#AEAEAE</color>
+
 </resources>

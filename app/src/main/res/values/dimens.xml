@@ -13,4 +13,5 @@
     <dimen name="card_point_round">8dp</dimen>
 
     <dimen name="activity_menu_height">164dp</dimen>
+    <dimen name="width_navigation_pos">48dp</dimen>
 </resources>

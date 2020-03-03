@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.route
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -69,10 +70,11 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     private var _currentStopPos = handle.get<Int>("currentStop")
         set(value) {
+            Log.d("route","current point pos: $value")
             field = value
             val stopsCount = _routeStops.value?.size ?: 0
             if (value != null && value in 0 until stopsCount) {
-                _currentStop.postValue(_routeStops.value?.get(value))
+                setStopData(value)
             } else {
                 _currentStop.postValue(null)
             }
@@ -106,23 +108,29 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     }
 
     private fun setData(sessionModel: RouteSessionModel) {
-        _routeSession.postValue(sessionModel)
-        _routeStops.postValue(sessionModel.points)
+        viewModelScope.launch(Dispatchers.Main) {
+            _routeSession.value = sessionModel
+            _routeStops.value = sessionModel.points
 
-        when (sessionModel.state) {
-            RouteStateConstants.ROUTE_TYPE_DEFAULT -> {
-                _state.postValue(RouteState.Default)
+            if (_currentStopPos == null) {
+                _currentStopPos = 0
             }
-            RouteStateConstants.ROUTE_TYPE_PENDING -> {
-                _state.postValue(RouteState.Pending)
+
+            when (sessionModel.state) {
+                RouteStateConstants.ROUTE_TYPE_DEFAULT -> {
+                    _state.value = RouteState.Default
+
+                }
+                RouteStateConstants.ROUTE_TYPE_PENDING -> {
+                    _state.value = RouteState.Pending
+                }
+                RouteStateConstants.ROUTE_TYPE_IN_PROGRESS -> {
+                    _state.value = RouteState.InProgress
+                }
             }
-            RouteStateConstants.ROUTE_TYPE_IN_PROGRESS -> {
-                _state.postValue(RouteState.InProgress)
-            }
+
+            //todo set pending to current if current null
         }
-
-        //todo set pending to current if current null
-
     }
     //Route Navigation
 
@@ -146,13 +154,22 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         val pointCount = _routeStops.value?.size
         if (pointCount != null && currentPos != null) {
 
-            _currentStopPos = if (currentPos - 1 > 0) {
+            _currentStopPos = if (currentPos - 1 >= 0) {
                 currentPos - 1
             } else {
                 pointCount - 1
             }
         }
 
+    }
+
+    fun setStopPos(pos : Int){
+        _currentStopPos = pos
+    }
+
+    private fun setStopData(pos: Int){
+        _currentStop.postValue(_routeStops.value?.get(pos))
+        //todo photo?
     }
 
     //controls

@@ -43,7 +43,10 @@ import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.presentation.entities.RouteStop
-import pro.apir.tko.presentation.extension.*
+import pro.apir.tko.presentation.extension.addViewObserver
+import pro.apir.tko.presentation.extension.dpToPx
+import pro.apir.tko.presentation.extension.gone
+import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -54,7 +57,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
 
 class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointClickedListener {
 
-    //FIXME Not injecting? May be ok with default viewmodel provider factory????
+
     private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute, { defaultViewModelProviderFactory })
 
     override fun layoutId() = R.layout.fragment_route_detailed
@@ -231,8 +234,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
 
     override fun onRoutePointClicked(item: RoutePointModel, pos: Int) {
-        //TODO
-        toast("clicked: ${item.location}")
+        viewModel.setStopPos(pos)
         findNavController().navigate(R.id.action_routeDetailedFragment_to_routeNavigationFragment)
     }
 
