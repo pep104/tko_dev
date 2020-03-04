@@ -22,6 +22,7 @@ class RoutePointDiffCallback(
                 && (oldList[oldItemPosition].type == newList[newItemPosition].type)
                 && (oldList[oldItemPosition].containersCount == newList[newItemPosition].containersCount)
                 && (oldList[oldItemPosition].containersVolume == newList[newItemPosition].containersVolume)
+                && (oldList[oldItemPosition].distance == newList[newItemPosition].distance)
     }
 
     override fun getOldListSize() = oldList.size

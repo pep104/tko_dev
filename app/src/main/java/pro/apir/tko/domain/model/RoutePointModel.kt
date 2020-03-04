@@ -21,13 +21,17 @@ data class RoutePointModel(
         val registryNumber: String?,
         val containersCount: Int?,
         val containersVolume: Double?,
+        val distance: Double?,
         var type: Int?
-): Parcelable {
+) : Parcelable {
 
-    constructor(stop: ContainerAreaStopModel) : this(null,stop.id, stop.resourceType, stop.location, stop.coordinates, stop.registryNumber, stop.containersCount, stop.containersVolume, POINT_TYPE_DEFAULT)
+    constructor(stop: ContainerAreaStopModel) : this(null, stop.id, stop.resourceType, stop.location, stop.coordinates, stop.registryNumber, stop.containersCount, stop.containersVolume, null, POINT_TYPE_DEFAULT)
 
-    constructor(id: Long?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, oldModel.type)
+    constructor(id: Long?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, oldModel.distance, oldModel.type)
 
-    constructor(id: Long?, type: Int?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, type)
+    constructor(id: Long?, type: Int?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, oldModel.distance, type)
+
+    constructor(distance: Double?, oldModel: RoutePointModel) : this(oldModel.id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, distance, oldModel.type)
+
 
 }

@@ -55,7 +55,7 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 CompletedHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_completed, parent, false))
             }
             POINT_TYPE_PENDING -> {
-                PendingtHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_pending, parent, false))
+                PendingHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_pending, parent, false))
             }
             else -> {
                 DefaultHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_point_default, parent, false))
@@ -71,7 +71,7 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             is CompletedHolder -> {
                 holder.bind(data[position], position)
             }
-            is PendingtHolder -> {
+            is PendingHolder -> {
                 holder.bind(data[position], position)
             }
         }
@@ -89,6 +89,7 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoDefault
 
         fun bind(item: RoutePointModel, pos: Int) {
+            //TODO DISTANCE
             textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(
@@ -102,7 +103,7 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     }
 
-    inner class PendingtHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PendingHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val frameBadge: FrameLayout = itemView.frameBadgePending
         private val textBadge: TextView = itemView.textBadgePending
@@ -110,6 +111,7 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoPending
 
         fun bind(item: RoutePointModel, pos: Int) {
+            //TODO DISTANCE
             textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(
@@ -131,6 +133,7 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoCompleted
 
         fun bind(item: RoutePointModel, pos: Int) {
+            //TODO DISTANCE
             textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
 
             val pluredCount = textInfo.resources.getQuantityString(

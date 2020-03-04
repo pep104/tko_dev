@@ -1,7 +1,6 @@
 package pro.apir.tko.presentation.ui.main.route
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -10,7 +9,9 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
 import pro.apir.tko.domain.model.RouteModel
@@ -19,6 +20,7 @@ import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.platform.BaseViewModel
 
+
 /**
  * Created by antonsarmatin
  * Date: 2020-02-05
@@ -26,7 +28,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED VM
 class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                         private val routeSessionInteractor: RouteSessionInteractor) : BaseViewModel() {
+                                                         private val routeSessionInteractor: RouteSessionInteractor,
+                                                         private val locationManager: LocationManager) : BaseViewModel() {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<RouteDetailedViewModel>
@@ -70,7 +73,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     private var _currentStopPos = handle.get<Int>("currentStop")
         set(value) {
-            Log.d("route","current point pos: $value")
             field = value
             val stopsCount = _routeStops.value?.size ?: 0
             if (value != null && value in 0 until stopsCount) {
@@ -86,6 +88,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val currentStop: LiveData<RoutePointModel>
         get() = _currentStop
 
+    init {
+        collectLocations()
+    }
 
     fun init(route: RouteModel) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -100,7 +105,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         if (_state.value == RouteState.Default || _state.value == RouteState.Pending)
             viewModelScope.launch(Dispatchers.IO) {
                 _routeSession.value?.let {
-                    //TODO PROCEED STATE CHANGING
                     routeSessionInteractor.startSession(it).fold(::handleFailure, ::setData)
                 }
             }
@@ -163,11 +167,11 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     }
 
-    fun setStopPos(pos : Int){
+    fun setStopPos(pos: Int) {
         _currentStopPos = pos
     }
 
-    private fun setStopData(pos: Int){
+    private fun setStopData(pos: Int) {
         _currentStop.postValue(_routeStops.value?.get(pos))
         //todo photo?
     }
@@ -205,6 +209,52 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         @Parcelize
         object InProgress : RouteState(), Parcelable
 
+    }
+
+    //test
+    //fixme extract this function
+    private fun collectLocations() {
+        viewModelScope.launch {
+            locationManager.getLocationFlow().collect { location ->
+                val route = _routeStops.value
+                val result = arrayListOf<RoutePointModel>()
+                route?.forEach {
+                    val locationRoutePoint = it.coordinates
+                    if (locationRoutePoint != null) {
+                        val dist = calcDistance(
+                                location.lat,
+                                location.lon,
+                                it.coordinates.lat,
+                                it.coordinates.lng
+                        )
+                        result.add(RoutePointModel(dist, it))
+                    } else {
+                        result.add(it)
+                    }
+                }
+
+                _routeStops.postValue(result)
+            }
+        }
+    }
+
+    //fixme extract this function
+    private fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val R = 6371 // Radius of the earth
+
+        val latDistance = Math.toRadians(lat2 - lat1)
+        val lonDistance = Math.toRadians(lon2 - lon1)
+        val a = (Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + (Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2)))
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        var distance = R * c * 1000 // convert to meters
+
+        //Not used
+        val height: Double = 0.0
+
+        distance = Math.pow(distance, 2.0) + Math.pow(height, 2.0)
+        return Math.sqrt(distance)
     }
 
 }
