@@ -7,10 +7,11 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.channelFlow
+import pro.apir.tko.BuildConfig
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.domain.model.LocationModel
 import javax.inject.Inject
@@ -22,7 +23,6 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
     private val KEY_LON = "lllon"
     private val KEY_LAT = "lllat"
 
-    private val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
     private val singleRequest by lazy {
         LocationRequest().apply {
             numUpdates = 1
@@ -30,18 +30,25 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
             priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         }
     }
+
     private val flowRequest by lazy {
         LocationRequest().apply {
-            maxWaitTime = 5000
-            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            maxWaitTime = 4500
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 5000
+            fastestInterval = 4000
+            if (!BuildConfig.DEBUG) {
+                smallestDisplacement = 50f
+            }
         }
     }
 
     override suspend fun getCurrentLocation(): LocationModel = suspendCoroutine { continuation ->
 
+        val locationClient = LocationServices.getFusedLocationProviderClient(context)
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult?) {
-                fusedLocationProviderClient.removeLocationUpdates(this)
+                locationClient.removeLocationUpdates(this)
                 result?.let { locationResult ->
                     val location = locationResult.lastLocation
                     location?.let {
@@ -55,20 +62,38 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
 
         try {
             CoroutineScope(Dispatchers.Main).launch {
-                fusedLocationProviderClient.requestLocationUpdates(singleRequest, locationCallback, Looper.myLooper())
+                locationClient.requestLocationUpdates(singleRequest, locationCallback, Looper.myLooper())
             }
         } catch (e: Exception) {
             Log.e("locationSource", "Exception: ${e.message}")
         }
 
-
     }
 
 
-    override fun getLocationFlow(): Flow<LocationModel> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    @ExperimentalCoroutinesApi
+    override fun getLocationFlow(): Flow<LocationModel> = channelFlow {
 
+        val locationClient = LocationServices.getFusedLocationProviderClient(context)
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult?) {
+                result?.lastLocation?.let {
+                    offer(LocationModel(lat = it.latitude, lon = it.longitude))
+                }
+            }
+        }
+
+        locationClient.lastLocation.addOnSuccessListener {
+            offer(LocationModel(lat = it.latitude, lon = it.longitude))
+        }
+        withContext(Dispatchers.Main) {
+            locationClient.requestLocationUpdates(flowRequest, locationCallback, Looper.myLooper())
+        }
+        awaitClose {
+            locationClient.removeLocationUpdates(locationCallback)
+        }
+
+    }
 
     override fun saveLastLocation(model: LocationModel) {
         preferencesManager.saveDouble(KEY_LAT, model.lat)
