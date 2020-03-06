@@ -11,6 +11,7 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import pro.apir.tko.core.extension.roundUpNearest
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
@@ -227,7 +228,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                                 it.coordinates.lat,
                                 it.coordinates.lng
                         )
-                        result.add(RoutePointModel(dist, it))
+                        result.add(RoutePointModel(dist.toInt().roundUpNearest(10), it))
                     } else {
                         result.add(it)
                     }

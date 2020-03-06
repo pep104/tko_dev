@@ -21,7 +21,7 @@ data class RoutePointModel(
         val registryNumber: String?,
         val containersCount: Int?,
         val containersVolume: Double?,
-        val distance: Double?,
+        val distance: Int?,
         var type: Int?
 ) : Parcelable {
 
@@ -31,7 +31,7 @@ data class RoutePointModel(
 
     constructor(id: Long?, type: Int?, oldModel: RoutePointModel) : this(id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, oldModel.distance, type)
 
-    constructor(distance: Double?, oldModel: RoutePointModel) : this(oldModel.id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, distance, oldModel.type)
+    constructor(distance: Int?, oldModel: RoutePointModel) : this(oldModel.id, oldModel.containerId, oldModel.resourceType, oldModel.location, oldModel.coordinates, oldModel.registryNumber, oldModel.containersCount, oldModel.containersVolume, distance, oldModel.type)
 
 
 }

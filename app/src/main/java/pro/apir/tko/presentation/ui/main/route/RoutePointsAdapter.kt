@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.item_route_point_completed.view.*
 import kotlinx.android.synthetic.main.item_route_point_default.view.*
 import kotlinx.android.synthetic.main.item_route_point_pending.view.*
 import pro.apir.tko.R
+import pro.apir.tko.core.extension.round
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_COMPLETED
 import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT
@@ -89,8 +90,19 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoDefault
 
         fun bind(item: RoutePointModel, pos: Int) {
-            //TODO DISTANCE
-            textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
+            val distance = item.distance
+            textName.text = when (true) {
+                distance != null && distance < 1000 -> {
+                    textName.context.getString(R.string.text_route_point_title_meters, item.location, distance.toString())
+                }
+                distance != null && distance > 1000 -> {
+                    val kms =  (distance.toDouble() / 1000).round(1)
+                    textName.context.getString(R.string.text_route_point_title_kilometers, item.location, kms.toString())
+                }
+                else -> {
+                    textName.context.getString(R.string.text_route_point_title_null_dist, item.location)
+                }
+            }
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
@@ -111,8 +123,20 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoPending
 
         fun bind(item: RoutePointModel, pos: Int) {
-            //TODO DISTANCE
-            textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
+            val distance = item.distance
+            textName.text = when (true) {
+                distance != null && distance < 1000 -> {
+                    textName.context.getString(R.string.text_route_point_title_meters, item.location, distance.toString())
+                }
+                distance != null && distance > 1000 -> {
+                    val kms =  (distance.toDouble() / 1000).round(2)
+                    textName.context.getString(R.string.text_route_point_title_kilometers, item.location, kms.toString())
+                }
+                else -> {
+                    textName.context.getString(R.string.text_route_point_title_null_dist, item.location)
+                }
+            }
+
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
@@ -133,8 +157,19 @@ class RoutePointsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val textInfo: TextView = itemView.textRouteInfoCompleted
 
         fun bind(item: RoutePointModel, pos: Int) {
-            //TODO DISTANCE
-            textName.text = textName.context.getString(R.string.text_route_point_title, item.location, "0")
+            val distance = item.distance
+            textName.text = when (true) {
+                distance != null && distance < 1000 -> {
+                    textName.context.getString(R.string.text_route_point_title_meters, item.location, distance.toString())
+                }
+                distance != null && distance > 1000 -> {
+                    val kms =  (distance.toDouble() / 1000).round(2)
+                    textName.context.getString(R.string.text_route_point_title_kilometers, item.location, kms.toString())
+                }
+                else -> {
+                    textName.context.getString(R.string.text_route_point_title_null_dist, item.location)
+                }
+            }
 
             val pluredCount = textInfo.resources.getQuantityString(
                     R.plurals.plurals_containers,
