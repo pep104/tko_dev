@@ -51,11 +51,6 @@ import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.collections.average
-import kotlin.collections.forEach
-import kotlin.collections.isNullOrEmpty
-import kotlin.collections.last
-import kotlin.collections.map
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -73,6 +68,7 @@ class CameraFragment : BaseFragment() {
 
     private val viewModel: CameraViewModel by viewModels()
     private val sharedViewModel: CameraSharedViewModel by activityViewModels()
+    private val sharedViewModel2: CameraSharedViewModel2 by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_camera
 
@@ -380,8 +376,11 @@ class CameraFragment : BaseFragment() {
         // Listener for button used to view last photo
         controls.findViewById<ImageButton>(R.id.imagePreview).setOnClickListener {
             val data = viewModel.photos.value
-            if (data != null)
+            if (data != null){
                 sharedViewModel.setImages(data)
+                sharedViewModel2.setData(data)
+            }
+
             findNavController().navigateUp()
         }
     }

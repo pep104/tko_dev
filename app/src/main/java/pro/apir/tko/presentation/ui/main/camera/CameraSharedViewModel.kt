@@ -10,6 +10,7 @@ import java.io.File
  * Date: 26.01.2020
  * Project: tko-android
  */
+@Deprecated("Use CameraSharedViewModel2")
 class CameraSharedViewModel : BaseSharedViewModel() {
 
     private val _photos = MutableLiveData<List<File>>()
