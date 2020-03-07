@@ -5,8 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import pro.apir.tko.BuildConfig
+import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
+import pro.apir.tko.data.framework.room.entity.PhotoEntity
 import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
 
@@ -15,12 +17,14 @@ import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
  * Date: 2020-02-11
  * Project: tko-android
  */
-@Database(entities = [RouteSessionEntity::class, PointEntity::class], version = 1)
+@Database(entities = [RouteSessionEntity::class, PointEntity::class, PhotoEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun routeSessionDao(): RouteSessionDao
 
     abstract fun pointDao(): PointDao
+
+    abstract fun photoDao(): PhotoDao
 
     companion object {
 

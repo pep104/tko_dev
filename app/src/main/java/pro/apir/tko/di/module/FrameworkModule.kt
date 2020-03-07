@@ -223,6 +223,10 @@ class FrameworkModule(private val application: Application) {
     @Provides
     fun routeSessionDao(appDatabase: AppDatabase) = appDatabase.routeSessionDao()
 
+    @Singleton
+    @Provides
+    fun routePhotosDao(appDatabase: AppDatabase) = appDatabase.photoDao()
+
 
     //
 

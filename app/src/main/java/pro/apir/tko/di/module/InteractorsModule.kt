@@ -10,6 +10,7 @@ import pro.apir.tko.data.repository.auth.AuthRepository
 import pro.apir.tko.data.repository.inventory.InventoryRepository
 import pro.apir.tko.data.repository.route.RouteRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepository
+import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
 import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.address.AddressInteractorImpl
@@ -21,6 +22,8 @@ import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractorImpl
 import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
 import pro.apir.tko.domain.interactors.route.RouteSessionInteractorImpl
+import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
+import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractorImpl
 import pro.apir.tko.domain.interactors.user.UserInteractor
 import pro.apir.tko.domain.interactors.user.UserInteractorImpl
 import javax.inject.Singleton
@@ -48,6 +51,10 @@ class InteractorsModule {
     @Provides
     @Singleton
     fun routeSessionInteractor(routeSessionRepository: RouteSessionRepository, userRepository: UserRepository): RouteSessionInteractor = RouteSessionInteractorImpl(routeSessionRepository, userRepository)
+
+    @Provides
+    @Singleton
+    fun routePhotoInteractor(routePhotoRepository: RoutePhotoRepository): RoutePhotoInteractor = RoutePhotoInteractorImpl(routePhotoRepository)
 
     @Provides
     @Singleton
