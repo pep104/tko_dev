@@ -9,16 +9,15 @@ import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pro.apir.tko.core.extension.roundUpNearest
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
-import pro.apir.tko.domain.model.RouteModel
-import pro.apir.tko.domain.model.RoutePointModel
-import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.RouteStateConstants
+import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
+import pro.apir.tko.domain.model.*
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 
@@ -30,6 +29,7 @@ import pro.apir.tko.presentation.platform.BaseViewModel
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED VM
 class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
                                                          private val routeSessionInteractor: RouteSessionInteractor,
+                                                         private val routePhotosInteractor: RoutePhotoInteractor,
                                                          private val locationManager: LocationManager) : BaseViewModel() {
 
     @AssistedInject.Factory
@@ -70,8 +70,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     //Navigation
 
-    //TODO CURRENT
-
     private var _currentStopPos = handle.get<Int>("currentStop")
         set(value) {
             field = value
@@ -80,6 +78,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 setStopData(value)
             } else {
                 _currentStop.postValue(null)
+                _currentStopPhotos.postValue(emptyList())
             }
         }
     val currentStopPos: Int?
@@ -88,6 +87,13 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private val _currentStop = MutableLiveData<RoutePointModel>()
     val currentStop: LiveData<RoutePointModel>
         get() = _currentStop
+
+    //TODO PHOTOS?
+    private var photoJob: Job? = null
+
+    private val _currentStopPhotos = MutableLiveData<List<PhotoModel>>()
+    val currentStopPhotos: LiveData<List<PhotoModel>>
+        get() = _currentStopPhotos
 
     init {
         collectLocations()
@@ -173,8 +179,23 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     }
 
     private fun setStopData(pos: Int) {
-        _currentStop.postValue(_routeStops.value?.get(pos))
-        //todo photo?
+        val stop = _routeStops.value?.get(pos)
+        _currentStop.postValue(stop)
+
+        stop?.id?.let {
+            photoJob?.cancel()
+            kotlin.runCatching {
+                photoJob = viewModelScope.launch {
+                    _currentStopPhotos.postValue(routePhotosInteractor.getPhotos(it))
+                }
+            }
+        }
+    }
+
+    //PHOTOS
+
+    fun addPhotos(pathList: List<String>){
+        //TODO SAVE(CREATE) LOCAL PHOTOS AND ADD IT TO LD FIELD
     }
 
     //controls

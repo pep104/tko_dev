@@ -7,16 +7,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_route_navigation.view.*
 import pro.apir.tko.R
+import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.platform.BaseFragment
+import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel2
 import pro.apir.tko.presentation.ui.main.route.RouteDetailedViewModel
+import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
 
 /**
  * Created by Антон Сарматин
@@ -24,10 +28,11 @@ import pro.apir.tko.presentation.ui.main.route.RouteDetailedViewModel
  * Project: tko-android
  *
  */
-class RouteNavigationFragment : BaseFragment() {
+class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.AttachInteractionListener {
 
 
     private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute, { defaultViewModelProviderFactory })
+    private val cameraSharedViewModel2: CameraSharedViewModel2 by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_route_navigation
 
@@ -51,8 +56,7 @@ class RouteNavigationFragment : BaseFragment() {
     //etc
 
     private lateinit var recyclerViewPhotos: RecyclerView
-    //adapter
-    //llmanager
+    private lateinit var recyclerViewAdapter: RoutePointPhotoAttachAdapter
 
     //TODO CONTROLS?
 
@@ -76,6 +80,13 @@ class RouteNavigationFragment : BaseFragment() {
         imgLocation = view.imgLocation
         textDistance = view.textDistance
 
+        recyclerViewPhotos = view.recyclerViewPhotos
+        recyclerViewAdapter = RoutePointPhotoAttachAdapter().apply { setListener(this@RouteNavigationFragment) }
+        with(recyclerViewPhotos) {
+            adapter = recyclerViewAdapter
+        }
+
+
         btnAction = view.btnAction
 
         observeViewModel()
@@ -85,6 +96,11 @@ class RouteNavigationFragment : BaseFragment() {
 
     }
 
+    override fun onDestroyView() {
+        recyclerViewAdapter.setListener(null)
+        super.onDestroyView()
+    }
+
     private fun observeViewModel() {
 
         viewModel.currentStop.observe(viewLifecycleOwner, Observer {
@@ -92,6 +108,10 @@ class RouteNavigationFragment : BaseFragment() {
                 setCardviewData(it)
                 setPointState(it)
             }
+        })
+
+        cameraSharedViewModel2.photoPathList.observe(viewLifecycleOwner, ConsumableObserver {
+            viewModel.addPhotos(it)
         })
 
     }
@@ -197,9 +217,11 @@ class RouteNavigationFragment : BaseFragment() {
     }
 
 
-    private fun setPhotosRecycler() {
-        //TODO ?
+    override fun onDeletePhoto(photo: PhotoModel) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-
+    override fun onAddNewPhoto() {
+        //TODO OPEN CAMERA FRAGMENT
+    }
 }
