@@ -91,9 +91,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val currentStop: LiveData<RoutePointModel>
         get() = _currentStop
 
-//    private val _currentStopDistance = MutableLiveData<Double>()
-//    val currentStopDistance: LiveData<Double>
-//        get() = _currentStopDistance
+    private val _currentStopStickyCoordinates = MutableLiveData<CoordinatesModel>()
+    val currentStopStickyCoordinates: LiveData<CoordinatesModel>
+        get() = _currentStopStickyCoordinates
 
     //TODO PHOTOS?
     private var photoJob: Job? = null
@@ -192,7 +192,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private fun setStopData(pos: Int) {
         val stop = _routeStops.value?.get(pos)
         _currentStop.postValue(stop)
-
+        _currentStopStickyCoordinates.postValue(stop?.coordinates)
+        _isFollowEnabled.postValue(false)
         stop?.id?.let {
             photoJob?.cancel()
             kotlin.runCatching {
@@ -249,9 +250,10 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private fun collectLocations() {
         viewModelScope.launch(Dispatchers.IO) {
             locationManager.getLocationFlow().collect { location ->
-                val route = _routeStops.value
+                //Count distance for all route stops
+                val routeStops = _routeStops.value
                 val result = arrayListOf<RoutePointModel>()
-                route?.forEach {
+                routeStops?.forEach {
                     val locationRoutePoint = it.coordinates
                     if (locationRoutePoint != null) {
                         val dist = calcDistance(
@@ -267,6 +269,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 }
                 _routeStops.postValue(result)
 
+                //Count distance for current nav stop
                 val currentNavStop = _currentStop.value
                 currentNavStop?.let { it ->
                     kotlin.runCatching {

@@ -1,20 +1,44 @@
 package pro.apir.tko.presentation.ui.main.route.navigation
 
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
+import android.preference.PreferenceManager
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_route_navigation.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.osmdroid.config.Configuration
+import org.osmdroid.events.DelayedMapListener
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.core.extension.round
+import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
@@ -62,6 +86,13 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     private lateinit var recyclerViewAdapter: RoutePointPhotoAttachAdapter
 
     //TODO CONTROLS?
+    private lateinit var mapView: MapView
+    private var mapJob: Job? = null
+    private var myLocationOverlay: MyLocationNewOverlay? = null
+
+    private lateinit var btnZoomIn: ImageButton
+    private lateinit var btnZoomOut: ImageButton
+    private lateinit var btnGeoSwitch: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,14 +114,24 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         imgLocation = view.imgLocation
         textDistance = view.textDistance
 
+        mapView = view.map
+        btnZoomIn = view.btnZoomIn
+        btnZoomOut = view.btnZoomOut
+        btnGeoSwitch = view.btnGeoSwitch
+
         recyclerViewPhotos = view.recyclerViewPhotos
         recyclerViewAdapter = RoutePointPhotoAttachAdapter().apply { setListener(this@RouteNavigationFragment) }
         with(recyclerViewPhotos) {
             adapter = recyclerViewAdapter
         }
 
-
         btnAction = view.btnAction
+
+        btnGeoSwitch.setOnClickListener {
+            viewModel.switchFollow()
+        }
+
+        setMap(mapView)
 
         observeViewModel()
 
@@ -113,9 +154,42 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
             }
         })
 
+        viewModel.currentStopStickyCoordinates.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                mapView.controller.setCenter(GeoPoint(it.lat, it.lng))
+            }
+        })
+
         viewModel.state.observe(viewLifecycleOwner, Observer {
             if (it == RouteDetailedViewModel.RouteState.InProgress) btnAction.visible()
             else btnAction.gone()
+        })
+
+        //Route
+
+        viewModel.routeSession.observe(viewLifecycleOwner, Observer {
+            setPath(it.path)
+        })
+
+        viewModel.routeStops.observe(viewLifecycleOwner, Observer {
+            it?.let { list ->
+                setMarkers(list)
+            }
+        })
+
+        //controls etc
+        viewModel.isFollowEnabled.observe(viewLifecycleOwner, Observer {
+            it?.let { enabled ->
+
+                if (enabled) {
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.blueMain), PorterDuff.Mode.SRC_IN)
+                    myLocationOverlay?.enableFollowLocation()
+                } else {
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black), PorterDuff.Mode.SRC_IN)
+                    myLocationOverlay?.disableFollowLocation()
+                }
+
+            }
         })
 
         cameraSharedViewModel2.photoPathList.observe(viewLifecycleOwner, ConsumableObserver {
@@ -235,6 +309,96 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         }
     }
 
+    private fun setMap(mapView: MapView) {
+        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mapView.setMultiTouchControls(true)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        mapView.controller.zoomTo(17.0, 0L)
+
+        val locationProvider = GpsMyLocationProvider(context)
+        myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
+        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
+
+
+        mapView.overlayManager.add(myLocationOverlay)
+
+        btnZoomIn.setOnClickListener {
+            mapView.controller.zoomIn(200)
+        }
+        btnZoomOut.setOnClickListener {
+            mapView.controller.zoomOut(150)
+        }
+
+        mapView.addMapListener(DelayedMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                Log.d("map", "follow: ${myLocationOverlay?.isFollowLocationEnabled}")
+                if (myLocationOverlay?.isFollowLocationEnabled == false) {
+                    viewModel.disableFollow()
+                }
+                return true
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                viewModel.setZoomLevel(mapView.zoomLevelDouble)
+                return false
+            }
+        }))
+
+
+    }
+
+
+    private fun setPath(list: List<CoordinatesModel>) {
+        if (list.isNotEmpty()) {
+            val firstItem = list.first()
+            mapView.setExpectedCenter(GeoPoint(firstItem.lat, firstItem.lng))
+
+            val points = arrayListOf<GeoPoint>()
+            list.forEach { points.add(GeoPoint(it.lat, it.lng)) }
+
+            val polyline = Polyline()
+            polyline.outlinePaint.color = Color.parseColor("#3469A8")
+            polyline.outlinePaint.alpha = 196
+            polyline.setPoints(points)
+
+            mapView.overlayManager.add(polyline)
+
+        }
+
+    }
+
+    private fun setMarkers(list: List<RoutePointModel>) {
+        val markers = arrayListOf<Marker>()
+        mapJob?.cancel()
+        mapJob = lifecycleScope.launch(Dispatchers.IO) {
+            Log.e("mapMarkers", "job start")
+            list.forEach {
+
+                val coordinates = it.coordinates
+                if (coordinates != null
+                        && coordinates.lat != 0.0 && coordinates.lng != 0.0
+                        && coordinates.lat in -85.05..85.05) {
+                    val location = GeoPoint(coordinates.lat, coordinates.lng)
+                    val marker = Marker(mapView)
+
+                    //TODO Set pending marker
+                    marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
+                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                    //
+
+                    marker.position = location
+                    markers.add(marker)
+
+                }
+            }
+            withContext(Dispatchers.Main) {
+                mapView.overlayManager.addAll(markers)
+                Log.e("mapMarkers", "job end")
+            }
+        }
+
+    }
 
     override fun onDeletePhoto(photo: PhotoModel) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -243,4 +407,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     override fun onAddNewPhoto() {
         //TODO OPEN CAMERA FRAGMENT
     }
+
+
+
 }
