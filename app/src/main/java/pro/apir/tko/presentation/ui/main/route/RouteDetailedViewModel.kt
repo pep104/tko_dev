@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.osmdroid.api.IGeoPoint
 import pro.apir.tko.core.extension.roundUpNearest
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
@@ -50,6 +51,18 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     val zoomLevel: Double?
         get() = _zoomLevel
+
+    protected var _lastPosition = handle.get<IGeoPoint>("bbox")
+        set(value) {
+            handle.set("bbox", value)
+            if (value != null) {
+                locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+            }
+            field = value
+        }
+
+    val lastPosition: IGeoPoint?
+        get() = _lastPosition
 
 
     //Route

@@ -43,6 +43,7 @@ import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.extension.gone
+import pro.apir.tko.presentation.extension.hideKeyboard
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel2
@@ -138,6 +139,31 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         btnNext.setOnClickListener { viewModel.nextStop() }
         btnPrevious.setOnClickListener { viewModel.previousStop() }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.isFollowEnabled.value?.let {
+            if(it){
+                myLocationOverlay?.enableMyLocation()
+            }
+        }
+        mapView.onResume()
+
+        viewModel.zoomLevel?.let {
+            mapView.controller.zoomTo(it, 0L)
+        }
+
+        viewModel.lastPosition?.let {
+            mapView.controller.setCenter(it)
+        }
+    }
+
+    override fun onPause() {
+        mapView.onPause()
+        hideKeyboard()
+        myLocationOverlay?.disableMyLocation()
+        super.onPause()
     }
 
     override fun onDestroyView() {

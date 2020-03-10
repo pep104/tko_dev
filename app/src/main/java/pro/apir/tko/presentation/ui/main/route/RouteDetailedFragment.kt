@@ -43,10 +43,7 @@ import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.presentation.entities.RouteStop
-import pro.apir.tko.presentation.extension.addViewObserver
-import pro.apir.tko.presentation.extension.dpToPx
-import pro.apir.tko.presentation.extension.gone
-import pro.apir.tko.presentation.extension.visible
+import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -135,6 +132,31 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
             contentLayout.layoutParams.height = bottomSheetLayout.y.toInt() + 16.dpToPx
             contentLayout.requestLayout()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.isFollowEnabled.value?.let {
+            if(it){
+                myLocationOverlay?.enableMyLocation()
+            }
+        }
+        mapView.onResume()
+
+        viewModel.zoomLevel?.let {
+            mapView.controller.zoomTo(it, 0L)
+        }
+
+        viewModel.lastPosition?.let {
+            mapView.controller.setCenter(it)
+        }
+    }
+
+    override fun onPause() {
+        mapView.onPause()
+        hideKeyboard()
+        myLocationOverlay?.disableMyLocation()
+        super.onPause()
     }
 
     private fun observeViewModel() {
@@ -243,7 +265,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
     private fun setPath(list: List<CoordinatesModel>) {
         if (list.isNotEmpty()) {
             val firstItem = list.first()
-            mapView.setExpectedCenter(GeoPoint(firstItem.lat, firstItem.lng))
+            mapView.controller.setCenter(GeoPoint(firstItem.lat, firstItem.lng))
 
             val points = arrayListOf<GeoPoint>()
             list.forEach { points.add(GeoPoint(it.lat, it.lng)) }
