@@ -14,9 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_route_navigation.view.*
 import pro.apir.tko.R
+import pro.apir.tko.core.extension.round
 import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
+import pro.apir.tko.presentation.extension.gone
+import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel2
 import pro.apir.tko.presentation.ui.main.route.RouteDetailedViewModel
@@ -110,6 +113,11 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
             }
         })
 
+        viewModel.state.observe(viewLifecycleOwner, Observer {
+            if (it == RouteDetailedViewModel.RouteState.InProgress) btnAction.visible()
+            else btnAction.gone()
+        })
+
         cameraSharedViewModel2.photoPathList.observe(viewLifecycleOwner, ConsumableObserver {
             viewModel.addPhotos(it)
         })
@@ -128,8 +136,19 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         textContainerInfo.text = getString(R.string.text_container_detailed_info, pluredCount, area.toString())
         textContainerNumber.text = point.registryNumber
 
-        //TODO DISTANCE
-        textDistance.text = getString(R.string.text_route_point_distance, 0.toString())
+        val distance = point.distance
+        textDistance.text = when (true) {
+            distance != null && distance < 1000 -> {
+                textDistance.context.getString(R.string.text_route_point_distance_meters, distance.toString())
+            }
+            distance != null && distance > 1000 -> {
+                val kms = (distance.toDouble() / 1000).round(2)
+                textDistance.context.getString(R.string.text_route_point_distance_kilometers, kms.toString())
+            }
+            else -> {
+                ""
+            }
+        }
     }
 
 

@@ -63,7 +63,8 @@
 
     <string name="text_route_point_info">%1$s  • %2$sм³</string>
 
-    <string name="text_route_point_distance">%1$sм от вас</string>
+    <string name="text_route_point_distance_meters">%1$sм от вас</string>
+    <string name="text_route_point_distance_kilometers">%1$sкм от вас</string>
 
     <string name="btn_route_start">Начать</string>
     <string name="btn_route_continue">Продолжить</string>

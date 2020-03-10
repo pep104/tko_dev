@@ -70,10 +70,13 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     //Navigation
 
+    private var currentStopLocationJob: Job? = null
+
     private var _currentStopPos = handle.get<Int>("currentStop")
         set(value) {
             field = value
             val stopsCount = _routeStops.value?.size ?: 0
+            currentStopLocationJob?.cancel()
             if (value != null && value in 0 until stopsCount) {
                 setStopData(value)
             } else {
@@ -87,6 +90,10 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private val _currentStop = MutableLiveData<RoutePointModel>()
     val currentStop: LiveData<RoutePointModel>
         get() = _currentStop
+
+//    private val _currentStopDistance = MutableLiveData<Double>()
+//    val currentStopDistance: LiveData<Double>
+//        get() = _currentStopDistance
 
     //TODO PHOTOS?
     private var photoJob: Job? = null
@@ -146,6 +153,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     //Route Navigation
 
     fun nextStop() {
+        currentStopLocationJob?.cancel()
+
         val currentPos = _currentStopPos
         val pointCount = _routeStops.value?.size
         if (pointCount != null && currentPos != null) {
@@ -161,6 +170,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     }
 
     fun previousStop() {
+        currentStopLocationJob?.cancel()
+
         val currentPos = _currentStopPos
         val pointCount = _routeStops.value?.size
         if (pointCount != null && currentPos != null) {
@@ -194,7 +205,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     //PHOTOS
 
-    fun addPhotos(pathList: List<String>){
+    fun addPhotos(pathList: List<String>) {
         //TODO SAVE(CREATE) LOCAL PHOTOS AND ADD IT TO LD FIELD
     }
 
@@ -236,7 +247,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     //test
     //fixme extract this function
     private fun collectLocations() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             locationManager.getLocationFlow().collect { location ->
                 val route = _routeStops.value
                 val result = arrayListOf<RoutePointModel>()
@@ -254,8 +265,27 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                         result.add(it)
                     }
                 }
-
                 _routeStops.postValue(result)
+
+                val currentNavStop = _currentStop.value
+                currentNavStop?.let { it ->
+                    kotlin.runCatching {
+                        currentStopLocationJob?.cancel()
+                        currentStopLocationJob = viewModelScope.launch {
+                            val locationRoutePoint = it.coordinates
+                            if (locationRoutePoint != null) {
+                                val dist = calcDistance(
+                                        location.lat,
+                                        location.lon,
+                                        it.coordinates.lat,
+                                        it.coordinates.lng
+                                )
+                                _currentStop.postValue(RoutePointModel(dist.toInt().roundUpNearest(10), it))
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
