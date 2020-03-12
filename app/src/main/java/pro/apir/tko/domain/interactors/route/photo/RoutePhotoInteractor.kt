@@ -11,6 +11,8 @@ interface RoutePhotoInteractor {
 
     suspend fun createPhoto(path: String, pointId: Long): PhotoModel
 
+    suspend fun createPhotos(paths: List<String>, pointId: Long): List<PhotoModel>
+
     suspend fun deletePhoto(photoModel: PhotoModel)
 
     suspend fun updatePhoto(id: Long, remotePath: String): PhotoModel
