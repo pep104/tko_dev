@@ -70,6 +70,9 @@
     <string name="btn_route_continue">Продолжить</string>
 
     <string name="title_activity_menu">Меню</string>
+    <string name="btn_route_action_done">Готово</string>
+    <string name="btn_route_action_add_photos">Добавить фото</string>
+    <string name="btn_route_action_next">Далее</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

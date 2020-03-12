@@ -1,6 +1,6 @@
 package pro.apir.tko.presentation.ui.main.route.navigation
 
-import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +15,8 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import kotlinx.android.synthetic.main.item_route_photo.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.PhotoModel
+import pro.apir.tko.presentation.extension.dpToPx
+import java.io.File
 
 /**
  * Created by Антон Сарматин
@@ -110,20 +112,22 @@ class RoutePointPhotoAttachAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
 
             val glide = when (image.photo) {
                 is PhotoModel.LocalFile -> {
+                    Log.d("route photo", image.photo.path)
                     Glide.with(imageView)
-                            .load(Uri.parse(image.photo.path))
+                            .load(File(image.photo.path))
 
                 }
                 is PhotoModel.RemoteFile -> {
+                    Log.d("route photo", image.photo.url)
                     Glide.with(imageView)
-                            .load(Uri.parse(image.photo.url))
+                            .load(image.photo.url)
 
                 }
             }
 
             glide.diskCacheStrategy(DiskCacheStrategy.ALL)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .transform(CenterCrop(), RoundedCorners(8))
+                    .transform(CenterCrop(), RoundedCorners(6.dpToPx))
                     .into(imageView)
 
 

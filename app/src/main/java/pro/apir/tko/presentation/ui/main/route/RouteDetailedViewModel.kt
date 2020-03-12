@@ -108,7 +108,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val currentStopStickyCoordinates: LiveData<CoordinatesModel>
         get() = _currentStopStickyCoordinates
 
-    //TODO PHOTOS?
+
     private var photoJob: Job? = null
 
     private val _currentStopPhotos = MutableLiveData<List<PhotoModel>>()
@@ -219,8 +219,19 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     //PHOTOS
 
-    fun addPhotos(pathList: List<String>) {
-        //TODO SAVE(CREATE) LOCAL PHOTOS AND ADD IT TO LD FIELD
+    fun addPhotos(filePaths: List<String>) {
+        viewModelScope.launch {
+            val currentStopId = _currentStop.value?.id
+            currentStopId?.let { stopId ->
+                val newPhotos = routePhotosInteractor.createPhotos(filePaths, stopId)
+                val currentPhotos = _currentStopPhotos.value
+                val resultPhotos = arrayListOf<PhotoModel>().apply {
+                    if (currentPhotos != null) addAll(currentPhotos)
+                    addAll(newPhotos)
+                }
+                _currentStopPhotos.postValue(resultPhotos)
+            }
+        }
     }
 
     //controls
