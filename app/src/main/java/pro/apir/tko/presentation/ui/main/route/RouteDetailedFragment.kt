@@ -42,6 +42,7 @@ import pro.apir.tko.R
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RoutePointModel
+import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.entities.RouteStop
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -287,7 +288,6 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.e("mapMarkers", "job start")
             list.forEach {
 
                 val coordinates = it.coordinates
@@ -297,10 +297,20 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
                     val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
 
-                    //TODO Set pending marker
-                    marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
-                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-                    //
+                    when(it.type){
+                        RouteStateConstants.POINT_TYPE_PENDING -> {
+                            marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin_pending)
+                            marker.setAnchor(Marker.ANCHOR_CENTER, 0.88f)
+                        }
+                        RouteStateConstants.POINT_TYPE_COMPLETED -> {
+                            marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle_completed)
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                        }
+                        RouteStateConstants.POINT_TYPE_DEFAULT -> {
+                            marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                        }
+                    }
 
                     marker.position = location
                     markers.add(marker)
@@ -309,7 +319,6 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
             }
             withContext(Dispatchers.Main) {
                 mapView.overlayManager.addAll(markers)
-                Log.e("mapMarkers", "job end")
             }
         }
 

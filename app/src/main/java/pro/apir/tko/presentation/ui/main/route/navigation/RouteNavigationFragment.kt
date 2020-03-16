@@ -461,10 +461,20 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                     val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
 
-                    //TODO Set pending marker
-                    marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
-                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-                    //
+                    when(it.type){
+                        RouteStateConstants.POINT_TYPE_PENDING -> {
+                            marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin_pending)
+                            marker.setAnchor(Marker.ANCHOR_CENTER, 0.88f)
+                        }
+                        RouteStateConstants.POINT_TYPE_COMPLETED -> {
+                            marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle_completed)
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                        }
+                        RouteStateConstants.POINT_TYPE_DEFAULT -> {
+                            marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
+                            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                        }
+                    }
 
                     marker.position = location
                     markers.add(marker)
