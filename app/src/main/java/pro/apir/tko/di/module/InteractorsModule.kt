@@ -42,7 +42,7 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun routeInteractor(routeRepository: RouteRepository): RouteInteractor = RouteInteractorImpl(routeRepository)
+    fun routeInteractor(routeRepository: RouteRepository, routeSessionInteractor: RouteSessionInteractor): RouteInteractor = RouteInteractorImpl(routeRepository, routeSessionInteractor)
 
     @Provides
     @Singleton

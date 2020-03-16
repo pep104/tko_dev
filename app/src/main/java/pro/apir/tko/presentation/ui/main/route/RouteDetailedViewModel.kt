@@ -158,6 +158,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 RouteStateConstants.ROUTE_TYPE_IN_PROGRESS -> {
                     _state.value = RouteState.InProgress
                 }
+                RouteStateConstants.ROUTE_TYPE_START_DISABLED -> {
+                    _state.value = RouteState.Disabled
+                }
             }
 
             //todo set pending to current if current null
@@ -256,7 +259,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     //Screen Route State
 
-    sealed class RouteState() {
+    sealed class RouteState {
 
         @Parcelize
         object Default : RouteState(), Parcelable
@@ -266,6 +269,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
         @Parcelize
         object InProgress : RouteState(), Parcelable
+
+        @Parcelize
+        object Disabled : RouteState(), Parcelable
 
     }
 

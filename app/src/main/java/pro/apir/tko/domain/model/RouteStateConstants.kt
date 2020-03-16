@@ -34,5 +34,11 @@ object RouteStateConstants {
      */
     const val ROUTE_TYPE_COMPLETED = 3
 
+    /**
+     * Other RouteSession is started but not completed yet
+     * New route not able to start
+     */
+    const val ROUTE_TYPE_START_DISABLED = 4
+
 
 }

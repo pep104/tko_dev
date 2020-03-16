@@ -12,11 +12,12 @@ import pro.apir.tko.domain.model.RouteSessionModel
  */
 interface RouteSessionInteractor {
 
+    suspend fun getExistingSessionRouteId(): Either<Failure, Int?>
 
     suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel>
 
     suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
 
-
+    suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>>
 
 }

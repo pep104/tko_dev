@@ -1,7 +1,8 @@
 package pro.apir.tko.data.repository.route
 
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
+import org.threeten.bp.ZoneOffset
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
@@ -12,15 +13,26 @@ import javax.inject.Inject
 
 class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao: RouteSessionDao) : RouteSessionRepository {
 
+    //TODO OFFSET FROM BACKEND
+    private val offsetHours = 3
+
     /**
      *
-     *  Checks if there is session state record for this User and Route by this day (today)
+     *  Checks if there is session state record for this User by this day (today from 02:00 to next day 02:00)
      *
      */
-    override suspend fun checkSessionExists(userId: Int, routeId: Int, date: String): Boolean {
-        return routeSessionDao.getSession(userId, routeId, date).isNotEmpty()
+    override suspend fun checkSessionExists(userId: Int): Int? {
+        val dateRange = getCurrentDateRange(offsetHours)
+        val result = routeSessionDao.getExistingSession(userId, dateRange.first, dateRange.second)
+        return if (result.isEmpty()) null else result.first().session.routeId
     }
 
+    /**
+     *
+     *  Checks if there is session state record for this User and Route ID by this day (today from 02:00 to next day 02:00)
+     *
+     */
+    override suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean  = checkSessionExists(userId) == routeId
 
     /**
      *
@@ -29,7 +41,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
      */
     override suspend fun createSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel {
         //Insert Session
-        val sessionEntity = RouteSessionEntity(null, userId, routeSessionModel.routeId, LocalDate.now().format(DateTimeFormatter.ISO_DATE), false)
+        //TODO OFFSET FROM BACKEND
+        val sessionEntity = RouteSessionEntity(null, userId, routeSessionModel.routeId, LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(offsetHours)), false)
         val sessionId = routeSessionDao.insertSession(sessionEntity)
         //Insert Points
         val newPoints = mutableListOf<RoutePointModel>()
@@ -50,8 +63,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
      *
      */
     override suspend fun resumeSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel {
-
-        val savedSessionEntityWithPoints = routeSessionDao.getSession(userId, routeSessionModel.routeId, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
+        val dateRange = getCurrentDateRange(offsetHours)
+        val savedSessionEntityWithPoints = routeSessionDao.getSession(userId, routeSessionModel.routeId, dateRange.first, dateRange.second)
 
         return if (savedSessionEntityWithPoints.isNotEmpty()) {
             val routeSessionWithPoints = savedSessionEntityWithPoints[0]
@@ -70,4 +83,24 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         }
 
     }
+
+
+    /**
+     * Get current day dates range
+     * Route finish time is 02:00
+     */
+    private fun getCurrentDateRange(offsetHours: Int): Pair<Long, Long> {
+        val now = LocalDateTime.now()
+        val offset = ZoneOffset.ofHours(offsetHours)
+        return if (now.hour <= 2) {
+            val start = LocalDateTime.of(now.minusDays(1).toLocalDate(), LocalTime.of(2, 0)).toEpochSecond(offset)
+            val end = LocalDateTime.of(now.toLocalDate(), LocalTime.of(2, 0)).toEpochSecond(offset)
+            Pair(start, end)
+        } else {
+            val start = LocalDateTime.of(now.toLocalDate(), LocalTime.of(2, 0)).toEpochSecond(offset)
+            val end = LocalDateTime.of(now.plusDays(1).toLocalDate(), LocalTime.of(2, 0)).toEpochSecond(offset)
+            Pair(start, end)
+        }
+    }
+
 }

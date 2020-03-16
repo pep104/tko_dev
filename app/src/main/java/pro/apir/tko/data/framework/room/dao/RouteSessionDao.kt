@@ -13,10 +13,13 @@ import pro.apir.tko.data.framework.room.entity.relation.RouteSessionWithPoints
 @Dao
 interface RouteSessionDao {
 
+    @Transaction
+    @Query("SELECT * FROM route_session_table where user_id LIKE :userId and dateLong BETWEEN :startDateTime AND :endDateTime LIMIT 1")
+    suspend fun getExistingSession(userId: Int, startDateTime: Long, endDateTime: Long): List<RouteSessionWithPoints>
 
     @Transaction
-    @Query("SELECT * FROM route_session_table where user_id LIKE :userId and route_id LIKE :routeId and date LIKE :date LIMIT 1")
-    suspend fun getSession(userId: Int, routeId: Int, date: String): List<RouteSessionWithPoints>
+    @Query("SELECT * FROM route_session_table where user_id LIKE :userId and route_id LIKE :routeId and dateLong BETWEEN :startDateTime AND :endDateTime LIMIT 1")
+    suspend fun getSession(userId: Int, routeId: Int, startDateTime: Long, endDateTime: Long): List<RouteSessionWithPoints>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSession(session: RouteSessionEntity): Long

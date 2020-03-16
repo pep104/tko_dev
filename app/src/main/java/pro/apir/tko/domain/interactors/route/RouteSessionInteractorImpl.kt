@@ -2,10 +2,9 @@ package pro.apir.tko.domain.interactors.route
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.functional.map
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.user.UserRepository
 import pro.apir.tko.domain.model.RouteModel
@@ -19,18 +18,50 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
 
     /**
      *
+     * Return ID of Route of existing RouteSession
+     *
+     */
+    override suspend fun getExistingSessionRouteId(): Either<Failure, Int?> {
+        return withContext(Dispatchers.IO) {
+            when (val userIdResult = userRepository.getUserId()) {
+                is Either.Right -> {
+                    val result = sessionRepository.checkSessionExists(userIdResult.b)
+                    Either.Right(result)
+                }
+                is Either.Left -> userIdResult
+            }
+        }
+    }
+
+    /**
+     *
      * Create initial RouteSessionModel from RouteModel
      *
      */
     override suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             when (val userIdResult = userRepository.getUserId()) {
                 is Either.Right -> {
                     //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
-                    val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeModel.id, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
-                    val state = if (isSessionExists) RouteStateConstants.ROUTE_TYPE_PENDING else RouteStateConstants.ROUTE_TYPE_DEFAULT
+                    val existingSession = sessionRepository.checkSessionExists(userIdResult.b)
 
-                    Either.Right(RouteSessionModel(routeModel, state))
+                    when (true) {
+                        existingSession == routeModel.id -> {
+                            val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS)
+                            val session = sessionRepository.resumeSession(userIdResult.b, route).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                            setPendingPoint(session.points)
+                            Either.Right(session)
+                        }
+                        existingSession == null -> {
+                            val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_DEFAULT)
+                            Either.Right(route)
+                        }
+                        else -> {
+                            val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_START_DISABLED)
+                            Either.Right(route)
+                        }
+                    }
+
                 }
                 is Either.Left -> userIdResult
             }
@@ -47,8 +78,8 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             when (val userIdResult = userRepository.getUserId()) {
                 is Either.Right -> {
                     //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
-                    val isSessionExists = sessionRepository.checkSessionExists(userIdResult.b, routeSessionModel.routeId, LocalDate.now().format(DateTimeFormatter.ISO_DATE))
-                    if (isSessionExists) {
+                    val existingSession = sessionRepository.checkSessionExists(userIdResult.b, routeSessionModel.routeId)
+                    if (existingSession) {
                         val session = sessionRepository.resumeSession(userIdResult.b, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
                         setPendingPoint(session.points)
                         Either.Right(session)
@@ -80,20 +111,15 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
 
     }
 
-    //Test return
-    private fun test(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
-        var lastCompleted = 0
-        routeSessionModel.points.forEachIndexed { index, routePointModel ->
-            if (index != 0 && index != routeSessionModel.points.size - 1 && index < 5) {
-                routePointModel.type = RouteStateConstants.POINT_TYPE_COMPLETED
-                lastCompleted = index
+    /**
+     * Find and map existing route session to route list model
+     */
+    override suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>> {
+       return withContext(Dispatchers.IO){
+            val routeId = getExistingSessionRouteId()
+            routeId.map {
+                list.map { model -> RouteModel(model, model.id == it) }
             }
         }
-
-        if (lastCompleted + 1 < routeSessionModel.points.size - 1) {
-            routeSessionModel.points[lastCompleted + 1].type = RouteStateConstants.POINT_TYPE_PENDING
-        }
-
-        return Either.Right(routeSessionModel.apply { state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS })
     }
 }

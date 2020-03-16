@@ -44,4 +44,20 @@ data class RouteData(val id: Int,
             periodicity
     )
 
+    fun toModel(hasExistingRouteSession: Boolean) = RouteModel(
+            id,
+            name,
+            status,
+            startLocation,
+            startCoordinates.toModel(),
+            endLocation,
+            endCoordinates.toModel(),
+            stops.map { it.toModel() },
+            path.map { it.toModel() },
+            distance,
+            duration,
+            periodicity,
+            hasExistingRouteSession
+    )
+
 }

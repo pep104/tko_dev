@@ -10,7 +10,9 @@ import pro.apir.tko.domain.model.RouteSessionModel
 interface RouteSessionRepository {
 
     //check existing session
-    suspend fun checkSessionExists(userId: Int, routeId: Int, date: String): Boolean
+    suspend fun checkSessionExists(userId: Int): Int?
+
+    suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean
 
     //get (start or resume) session
     suspend fun createSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel

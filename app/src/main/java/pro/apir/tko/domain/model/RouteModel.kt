@@ -21,5 +21,25 @@ data class RouteModel(
         val path: List<CoordinatesModel>,
         val distance: Int,
         val duration: Int,
-        val periodicity: String
-): Parcelable
+        val periodicity: String,
+        val hasExistingSession: Boolean = false
+) : Parcelable {
+
+    constructor(old: RouteModel, hasExistingSession: Boolean) : this(
+            old.id,
+            old.name,
+            old.status,
+            old.startLocation,
+            old.startCoordinates,
+            old.endLocation,
+            old.endCoordinates,
+            old.stops,
+            old.path,
+            old.distance,
+            old.duration,
+            old.periodicity,
+            hasExistingSession
+    )
+
+
+}

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
@@ -20,7 +21,7 @@ import pro.apir.tko.presentation.dict.OptionsDictionariesManager
  */
 class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : RecyclerView.Adapter<RouteListAdapter.RouteHolder>() {
 
-    private val peridicityOptions = dictionariesManager.getPeriodicityDictionary()
+    private val periodicityOptions = dictionariesManager.getPeriodicityDictionary()
 
     interface RouteChooseListener {
 
@@ -72,7 +73,7 @@ class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : Recycl
             val distance = (item.distance.toDouble() / 1000).toString()
 
             radio.text = item.name
-            textRouteInfo.text = textRouteInfo.context.getString(R.string.text_route_list_info, peridicityOptions[item.periodicity], distance)
+            textRouteInfo.text = textRouteInfo.context.getString(R.string.text_route_list_info, periodicityOptions[item.periodicity], distance)
 
             if (item.id == choosenID) {
                 radio.isChecked = true
@@ -81,6 +82,18 @@ class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : Recycl
                 radio.isChecked = false
             }
 
+            if(item.hasExistingSession){
+                itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.shape_rounded_blue_16)
+                radio.setTextColor(ContextCompat.getColor(radio.context, R.color.white))
+                radio.buttonTintList = ContextCompat.getColorStateList(radio.context, R.color.selector_radio_route_in_progress)
+                textRouteInfo.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
+
+            }else{
+                itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.shape_rounded_white_16)
+                radio.setTextColor(ContextCompat.getColor(radio.context, R.color.blueMain))
+                radio.buttonTintList = ContextCompat.getColorStateList(radio.context, R.color.selector_radio_default)
+                textRouteInfo.setTextColor(ContextCompat.getColor(itemView.context, R.color.black))
+            }
 
 
             radio.setOnCheckedChangeListener { buttonView, isChecked ->
