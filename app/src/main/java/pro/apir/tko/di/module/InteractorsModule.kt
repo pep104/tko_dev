@@ -20,10 +20,10 @@ import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractorImpl
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractorImpl
-import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
-import pro.apir.tko.domain.interactors.route.RouteSessionInteractorImpl
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractorImpl
+import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
+import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractorImpl
 import pro.apir.tko.domain.interactors.user.UserInteractor
 import pro.apir.tko.domain.interactors.user.UserInteractorImpl
 import javax.inject.Singleton

@@ -13,11 +13,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
+import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.extension.roundUpNearest
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
-import pro.apir.tko.domain.interactors.route.RouteSessionInteractor
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
+import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.presentation.platform.BaseViewModel
 
@@ -143,7 +144,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
             _routeSession.value = sessionModel
             _routeStops.value = sessionModel.points
 
-            if (_currentStopPos == null) {
+            val stopPos = _currentStopPos
+            if (stopPos == null) {
                 _currentStopPos = 0
             }
 
@@ -220,6 +222,35 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
+    fun completePoint() {
+        viewModelScope.launch {
+            val session = _routeSession.value
+            val currentPointId = _currentStop.value?.id
+            val currentPhotos = _currentStopPhotos.value
+
+            if (session != null && currentPointId != null && currentPhotos != null) {
+
+                if (currentPhotos.size < 2) {
+                    handleFailure(PhotosNotEnoughError())
+                } else {
+                    routeSessionInteractor.completePoint(session, currentPointId, currentPhotos).fold(::handleFailure) {
+                        setData(it)
+//                        //Update current pos
+                        //FIXME not updating point
+                        val tempPos = _currentStopPos
+                        if (tempPos != null)
+                            setStopData(tempPos)
+
+                        Unit
+                    }
+                }
+
+            } else {
+                handleFailure(SessionError())
+            }
+        }
+    }
+
     //PHOTOS
 
     fun addPhotos(filePaths: List<String>) {
@@ -274,6 +305,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         object Disabled : RouteState(), Parcelable
 
     }
+
+    class SessionError : Failure.FeatureFailure()
+    class PhotosNotEnoughError : Failure.FeatureFailure()
 
     //test
     //fixme extract this function

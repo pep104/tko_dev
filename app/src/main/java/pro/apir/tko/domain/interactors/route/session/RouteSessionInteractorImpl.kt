@@ -1,4 +1,4 @@
-package pro.apir.tko.domain.interactors.route
+package pro.apir.tko.domain.interactors.route.session
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -7,10 +7,7 @@ import pro.apir.tko.core.functional.Either
 import pro.apir.tko.core.functional.map
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.user.UserRepository
-import pro.apir.tko.domain.model.RouteModel
-import pro.apir.tko.domain.model.RoutePointModel
-import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.RouteStateConstants
+import pro.apir.tko.domain.model.*
 import javax.inject.Inject
 
 class RouteSessionInteractorImpl @Inject constructor(private val sessionRepository: RouteSessionRepository,
@@ -95,6 +92,36 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
 
     }
 
+
+    /**
+     * Find and map existing route session to route list model
+     */
+    override suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>> {
+        return withContext(Dispatchers.IO) {
+            val routeId = getExistingSessionRouteId()
+            routeId.map {
+                list.map { model -> RouteModel(model, model.id == it) }
+            }
+        }
+    }
+
+
+    /**
+     * Completes given route point model and return list with new states
+     */
+    override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long, photos: List<PhotoModel>): Either<Failure, RouteSessionModel> {
+        return withContext(Dispatchers.IO) {
+            //TODO LOAD PHOTOS TO SERVER?
+            //TODO REQUEST TO SERVER?
+            val newType =  RouteStateConstants.POINT_TYPE_COMPLETED
+            sessionRepository.updatePoint(routePointId, newType)
+            routeSessionModel.points.find { it.id == routePointId}?.type = newType
+            setPendingPoint(routeSessionModel.points)
+
+            Either.Right(routeSessionModel)
+        }
+    }
+
     /**
      *  Find next to last completed RoutePointModel and set it type to pending
      */
@@ -109,17 +136,5 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             points[lastCompleted + 1].type = RouteStateConstants.POINT_TYPE_PENDING
         }
 
-    }
-
-    /**
-     * Find and map existing route session to route list model
-     */
-    override suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>> {
-       return withContext(Dispatchers.IO){
-            val routeId = getExistingSessionRouteId()
-            routeId.map {
-                list.map { model -> RouteModel(model, model.id == it) }
-            }
-        }
     }
 }

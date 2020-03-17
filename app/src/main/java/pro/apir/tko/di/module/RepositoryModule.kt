@@ -6,6 +6,7 @@ import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.room.dao.PhotoDao
+import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
 import pro.apir.tko.data.mapper.PhotoTypeMapper
@@ -52,7 +53,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun routeSessionRepository(routeDao: RouteSessionDao): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao)
+    fun routeSessionRepository(routeDao: RouteSessionDao, routePointDao: PointDao): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao, routePointDao)
 
     @Provides
     @Singleton

@@ -225,6 +225,10 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
+    fun routePointDao(appDatabase: AppDatabase) = appDatabase.pointDao()
+
+    @Singleton
+    @Provides
     fun routePhotosDao(appDatabase: AppDatabase) = appDatabase.photoDao()
 
 

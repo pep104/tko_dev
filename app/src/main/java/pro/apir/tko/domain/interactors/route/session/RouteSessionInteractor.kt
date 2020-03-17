@@ -1,7 +1,8 @@
-package pro.apir.tko.domain.interactors.route
+package pro.apir.tko.domain.interactors.route.session
 
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
+import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RouteSessionModel
 
@@ -19,5 +20,7 @@ interface RouteSessionInteractor {
     suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
 
     suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>>
+
+    suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long, photos: List<PhotoModel>): Either<Failure, RouteSessionModel>
 
 }

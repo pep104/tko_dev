@@ -3,6 +3,7 @@ package pro.apir.tko.data.repository.route
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
+import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
@@ -11,7 +12,8 @@ import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
 import javax.inject.Inject
 
-class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao: RouteSessionDao) : RouteSessionRepository {
+class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao: RouteSessionDao,
+                                                     private val routePointDao: PointDao) : RouteSessionRepository {
 
     //TODO OFFSET FROM BACKEND
     private val offsetHours = 3
@@ -32,7 +34,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
      *  Checks if there is session state record for this User and Route ID by this day (today from 02:00 to next day 02:00)
      *
      */
-    override suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean  = checkSessionExists(userId) == routeId
+    override suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean = checkSessionExists(userId) == routeId
 
     /**
      *
@@ -103,4 +105,14 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         }
     }
 
+    /**
+     * Updates this route point with new type and return it
+     */
+    override suspend fun updatePoint(pointId: Long, type: Int) {
+        //TODO COMPLETE POINT AT BACKEND
+        //TODO IF SUCCESS THEN UPDATE IT IN DB
+        val point = routePointDao.getPoint(pointId)
+        val newPoint = PointEntity(point.id, point.containerId, type, point.sessionId)
+        routePointDao.updatePoint(newPoint)
+    }
 }

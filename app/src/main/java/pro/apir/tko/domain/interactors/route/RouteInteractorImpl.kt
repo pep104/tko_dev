@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.repository.route.RouteRepository
+import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import javax.inject.Inject
 
 class RouteInteractorImpl @Inject constructor(private val routeRepository: RouteRepository, private val routeSessionInteractor: RouteSessionInteractor) : RouteInteractor {
