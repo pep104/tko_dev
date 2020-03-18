@@ -30,7 +30,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         return if (results.isEmpty()) {
             null
         } else {
-            val result = results.first()
+            val result = results.last()
             if (result.session.isCompleted) {
                 null
             } else {
@@ -79,7 +79,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         val savedSessionEntityWithPoints = routeSessionDao.getSession(userId, routeSessionModel.routeId, dateRange.first, dateRange.second)
 
         return if (savedSessionEntityWithPoints.isNotEmpty()) {
-            val routeSessionWithPoints = savedSessionEntityWithPoints[0]
+            val routeSessionWithPoints = savedSessionEntityWithPoints.last()
 
             val newPoints = mutableListOf<RoutePointModel>()
             routeSessionModel.points.forEach { pointSession ->
