@@ -73,6 +73,7 @@
     <string name="btn_route_action_done">Готово</string>
     <string name="btn_route_action_add_photos">Добавить фото</string>
     <string name="btn_route_action_next">Далее</string>
+    <string name="btn_finish_route">Завершить</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

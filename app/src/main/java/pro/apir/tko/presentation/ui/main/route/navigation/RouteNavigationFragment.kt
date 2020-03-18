@@ -70,6 +70,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     override fun handleFailure() = viewModel.failure
 
     private lateinit var btnAction: MaterialButton
+    private lateinit var btnFinish: MaterialButton
 
     private lateinit var cardPoint: CardView
     private lateinit var btnPrevious: ImageButton
@@ -133,6 +134,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         }
 
         btnAction = view.btnAction
+        btnFinish = view.btnFinish
 
         btnGeoSwitch.setOnClickListener {
             viewModel.switchFollow()
@@ -198,8 +200,26 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         })
 
         viewModel.state.observe(viewLifecycleOwner, Observer {
-            if (it == RouteDetailedViewModel.RouteState.InProgress) btnAction.visible()
-            else btnAction.gone()
+            when (it) {
+                RouteDetailedViewModel.RouteState.Default,
+                RouteDetailedViewModel.RouteState.Pending,
+                RouteDetailedViewModel.RouteState.Disabled -> {
+                    btnAction.gone()
+                    btnFinish.gone()
+                }
+                RouteDetailedViewModel.RouteState.InProgress -> {
+                    btnAction.visible()
+                    btnFinish.gone()
+                }
+
+                RouteDetailedViewModel.RouteState.Completed -> {
+                    btnAction.gone()
+//                    btnFinish.visible()
+//                    btnFinish.setOnClickListener {
+//                        findNavController().popBackStack(R.id.routeListFragment, false)
+//                    }
+                }
+            }
         })
 
         viewModel.currentStopPhotos.observe(viewLifecycleOwner, Observer {

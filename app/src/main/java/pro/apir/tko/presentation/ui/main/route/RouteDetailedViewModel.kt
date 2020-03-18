@@ -160,6 +160,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 RouteStateConstants.ROUTE_TYPE_IN_PROGRESS -> {
                     _state.value = RouteState.InProgress
                 }
+                RouteStateConstants.ROUTE_TYPE_COMPLETED -> {
+                    _state.value = RouteState.Completed
+                }
                 RouteStateConstants.ROUTE_TYPE_START_DISABLED -> {
                     _state.value = RouteState.Disabled
                 }
@@ -306,6 +309,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
         @Parcelize
         object Disabled : RouteState(), Parcelable
+
+        @Parcelize
+        object Completed : RouteState(), Parcelable
 
     }
 

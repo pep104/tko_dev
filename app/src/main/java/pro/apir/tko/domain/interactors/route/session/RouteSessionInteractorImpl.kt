@@ -116,7 +116,14 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             val newType =  RouteStateConstants.POINT_TYPE_COMPLETED
             sessionRepository.updatePoint(routePointId, newType)
             routeSessionModel.points.find { it.id == routePointId}?.type = newType
+
             setPendingPoint(routeSessionModel.points)
+
+            val isCompleted = checkCompletion(routeSessionModel)
+            if(isCompleted){
+                routeSessionModel.state = RouteStateConstants.ROUTE_TYPE_COMPLETED
+                sessionRepository.finishSession(routeSessionModel)
+            }
 
             Either.Right(routeSessionModel)
         }
@@ -137,4 +144,14 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         }
 
     }
+
+    private fun checkCompletion(routeSessionModel: RouteSessionModel): Boolean{
+        var flag = true
+        routeSessionModel.points.forEach {
+            if(it.type != RouteStateConstants.POINT_TYPE_COMPLETED)
+                flag = false
+        }
+        return flag
+    }
+
 }

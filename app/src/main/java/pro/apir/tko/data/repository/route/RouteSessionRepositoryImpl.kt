@@ -25,8 +25,18 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
      */
     override suspend fun checkSessionExists(userId: Int): Int? {
         val dateRange = getCurrentDateRange(offsetHours)
-        val result = routeSessionDao.getExistingSession(userId, dateRange.first, dateRange.second)
-        return if (result.isEmpty()) null else result.first().session.routeId
+        val results = routeSessionDao.getExistingSession(userId, dateRange.first, dateRange.second)
+
+        return if (results.isEmpty()) {
+            null
+        } else {
+            val result = results.first()
+            if (result.session.isCompleted) {
+                null
+            } else {
+                result.session.routeId
+            }
+        }
     }
 
     /**
@@ -86,6 +96,16 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
 
     }
 
+    /**
+     * Finishes session
+     */
+    override suspend fun finishSession(routeSessionModel: RouteSessionModel) {
+        //TODO network
+        routeSessionModel.sessionId?.let {
+            val entity = routeSessionDao.getSession(it)
+            routeSessionDao.updateSession(RouteSessionEntity(entity.id, entity.userId, entity.routeId, entity.dateLong, true))
+        }
+    }
 
     /**
      * Get current day dates range
