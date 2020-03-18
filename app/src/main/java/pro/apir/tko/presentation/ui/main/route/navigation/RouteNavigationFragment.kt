@@ -35,6 +35,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -94,6 +95,9 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     private lateinit var mapView: MapView
     private var mapJob: Job? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
+
+    private var pathOverlay: FolderOverlay? = null
+    private var markersOverlay: FolderOverlay? = null
 
     private lateinit var btnZoomIn: ImageButton
     private lateinit var btnZoomOut: ImageButton
@@ -501,18 +505,22 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
             polyline.outlinePaint.alpha = 196
             polyline.setPoints(points)
 
-            mapView.overlayManager.add(polyline)
+            val newFolderOverlay = FolderOverlay().apply { add(polyline) }
 
+            mapView.overlayManager.remove(pathOverlay)
+            mapView.overlayManager.add(newFolderOverlay)
+            pathOverlay = newFolderOverlay
         }
 
     }
 
     //TODO CLEAR AND ADD NEW
     private fun setMarkers(list: List<RoutePointModel>) {
-        val markers = arrayListOf<Marker>()
+
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.e("mapMarkers", "job start")
+            val newFolderOverlay = FolderOverlay()
             list.forEach {
 
                 val coordinates = it.coordinates
@@ -538,12 +546,14 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                     }
 
                     marker.position = location
-                    markers.add(marker)
-
+                    newFolderOverlay.add(marker)
                 }
             }
             withContext(Dispatchers.Main) {
-                mapView.overlayManager.addAll(markers)
+
+                mapView.overlayManager.remove(markersOverlay)
+                mapView.overlayManager.add(newFolderOverlay)
+                markersOverlay = newFolderOverlay
                 Log.e("mapMarkers", "job end")
             }
         }
