@@ -209,6 +209,11 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     private fun setStopData(pos: Int) {
         val stop = _routeStops.value?.get(pos)
+        setStopData(stop)
+    }
+
+    private fun setStopData(stop: RoutePointModel?) {
+        currentStopLocationJob?.cancel()
         _currentStop.postValue(stop)
         _currentStopStickyCoordinates.postValue(stop?.coordinates)
         _isFollowEnabled.postValue(false)
@@ -225,21 +230,19 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     fun completePoint() {
         viewModelScope.launch {
             val session = _routeSession.value
-            val currentPointId = _currentStop.value?.id
-            val currentPhotos = _currentStopPhotos.value
+            val completablePointId = _currentStop.value?.id
+            val completablePhotos = _currentStopPhotos.value
 
-            if (session != null && currentPointId != null && currentPhotos != null) {
+            if (session != null && completablePointId != null && completablePhotos != null) {
 
-                if (currentPhotos.size < 2) {
+                if (completablePhotos.size < 2) {
                     handleFailure(PhotosNotEnoughError())
                 } else {
-                    routeSessionInteractor.completePoint(session, currentPointId, currentPhotos).fold(::handleFailure) {
+                    routeSessionInteractor.completePoint(session, completablePointId, completablePhotos).fold(::handleFailure) {
                         setData(it)
 //                        //Update current pos
-                        //FIXME not updating point
-                        val tempPos = _currentStopPos
-                        if (tempPos != null)
-                            setStopData(tempPos)
+                        val completedPos = it.points.first { it.id == completablePointId }
+                        setStopData(completedPos)
 
                         Unit
                     }
