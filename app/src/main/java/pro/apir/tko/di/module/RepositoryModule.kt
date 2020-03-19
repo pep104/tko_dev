@@ -53,7 +53,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun routeSessionRepository(routeDao: RouteSessionDao, routePointDao: PointDao): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao, routePointDao)
+    fun routeSessionRepository(routeDao: RouteSessionDao, routePointDao: PointDao, routeActionApi: RouteActionApi): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao, routePointDao, routeActionApi)
 
     @Provides
     @Singleton

@@ -3,6 +3,7 @@ package pro.apir.tko.data.repository.route
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
+import pro.apir.tko.data.framework.network.api.RouteActionApi
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.room.entity.PointEntity
@@ -13,7 +14,8 @@ import pro.apir.tko.domain.model.RouteStateConstants
 import javax.inject.Inject
 
 class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao: RouteSessionDao,
-                                                     private val routePointDao: PointDao) : RouteSessionRepository {
+                                                     private val routePointDao: PointDao,
+                                                     private val routeActionApi: RouteActionApi) : RouteSessionRepository {
 
     //TODO OFFSET FROM BACKEND
     private val offsetHours = 3
