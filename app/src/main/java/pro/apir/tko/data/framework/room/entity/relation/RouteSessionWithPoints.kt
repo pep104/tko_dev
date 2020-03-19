@@ -15,7 +15,7 @@ data class RouteSessionWithPoints(
         @Embedded
         val session: RouteSessionEntity,
 
-        @Relation(parentColumn = "id", entityColumn = "session_id")
-        val points: List<PointEntity>
+        @Relation(parentColumn = "id", entityColumn = "session_id", entity = PointEntity::class)
+        val points: List<PointWithPhotos>
 
 )

@@ -35,8 +35,8 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
         LocationRequest().apply {
             maxWaitTime = 4500
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = 5000
-            fastestInterval = 4000
+            interval = 15000
+            fastestInterval = 14000
             if (!BuildConfig.DEBUG) {
                 smallestDisplacement = 50f
             }

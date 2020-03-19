@@ -7,7 +7,10 @@ import pro.apir.tko.core.functional.Either
 import pro.apir.tko.core.functional.map
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.user.UserRepository
-import pro.apir.tko.domain.model.*
+import pro.apir.tko.domain.model.RouteModel
+import pro.apir.tko.domain.model.RoutePointModel
+import pro.apir.tko.domain.model.RouteSessionModel
+import pro.apir.tko.domain.model.RouteStateConstants
 import javax.inject.Inject
 
 class RouteSessionInteractorImpl @Inject constructor(private val sessionRepository: RouteSessionRepository,
@@ -105,27 +108,35 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         }
     }
 
+    /**
+     *
+     */
+    override suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
+        val result = sessionRepository.updateSession(routeSessionModel)
+        if (result.state == RouteStateConstants.ROUTE_TYPE_IN_PROGRESS)
+            setPendingPoint(result.points)
+        return result
+    }
 
     /**
      * Completes given route point model and return list with new states
      */
-    override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long, photos: List<PhotoModel>): Either<Failure, RouteSessionModel> {
+    override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
         return withContext(Dispatchers.IO) {
             //TODO LOAD PHOTOS TO SERVER?
             //TODO REQUEST TO SERVER?
-            val newType =  RouteStateConstants.POINT_TYPE_COMPLETED
+
+            val newType = RouteStateConstants.POINT_TYPE_COMPLETED
             sessionRepository.updatePoint(routePointId, newType)
-            routeSessionModel.points.find { it.id == routePointId}?.type = newType
-
-            setPendingPoint(routeSessionModel.points)
-
+            routeSessionModel.points.find { it.id == routePointId }?.type = newType
             val isCompleted = checkCompletion(routeSessionModel)
-            if(isCompleted){
+            if (isCompleted) {
                 routeSessionModel.state = RouteStateConstants.ROUTE_TYPE_COMPLETED
                 sessionRepository.finishSession(routeSessionModel)
             }
 
-            Either.Right(routeSessionModel)
+
+            Either.Right(updateSession(routeSessionModel))
         }
     }
 
@@ -145,10 +156,10 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
 
     }
 
-    private fun checkCompletion(routeSessionModel: RouteSessionModel): Boolean{
+    private fun checkCompletion(routeSessionModel: RouteSessionModel): Boolean {
         var flag = true
         routeSessionModel.points.forEach {
-            if(it.type != RouteStateConstants.POINT_TYPE_COMPLETED)
+            if (it.type != RouteStateConstants.POINT_TYPE_COMPLETED)
                 flag = false
         }
         return flag

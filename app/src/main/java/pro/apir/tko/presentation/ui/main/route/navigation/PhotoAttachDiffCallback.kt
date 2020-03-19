@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
  * Date: 07.03.2020
  * Project: tko-android
  */
-class PhotoAttachDiffCallback (
+class PhotoAttachDiffCallback(
         private val oldList: List<RoutePointPhotoAttachAdapter.ListItem>,
         private val newList: List<RoutePointPhotoAttachAdapter.ListItem>
 ) : DiffUtil.Callback() {
@@ -22,7 +22,7 @@ class PhotoAttachDiffCallback (
         val new = newList[newItemPosition]
         return if (old is RoutePointPhotoAttachAdapter.ListItem.Image && new is RoutePointPhotoAttachAdapter.ListItem.Image) {
             //todo compare loc and remote photos
-            old.photo == new.photo
+            old.photo.path == new.photo.path && old.photo.type == new.photo.type
         } else {
             old is RoutePointPhotoAttachAdapter.ListItem.AddButton && new is RoutePointPhotoAttachAdapter.ListItem.AddButton
         }

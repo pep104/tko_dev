@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -105,6 +104,9 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
     private var currentState: Int? = -123
 
+    //DIFFS
+    private var lastPoint: Long? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectRouteNavigationFragment(this)
@@ -193,7 +195,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         viewModel.currentStop.observe(viewLifecycleOwner, Observer {
             it?.let {
                 setCardviewData(it)
-                setPointState(it)
+                setCardviewState(it)
             }
         })
 
@@ -218,66 +220,8 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
                 RouteDetailedViewModel.RouteState.Completed -> {
                     btnAction.gone()
-//                    btnFinish.visible()
-//                    btnFinish.setOnClickListener {
-//                        findNavController().popBackStack(R.id.routeListFragment, false)
-//                    }
                 }
             }
-        })
-
-        viewModel.currentStopPhotos.observe(viewLifecycleOwner, Observer {
-
-            val pointType = viewModel.currentStop.value?.type
-
-            when (pointType) {
-                RouteStateConstants.POINT_TYPE_DEFAULT -> {
-                    recyclerViewAdapter.setPhoto(it)
-                    if (it.isNotEmpty()) {
-
-                        if (recyclerViewPhotos.isGone) {
-                            enablePhotoRecycler()
-                        }
-
-
-                    } else {
-                        recyclerViewPhotos.gone()
-                        btnAction.text = getString(R.string.btn_route_action_add_photos)
-                        btnAction.setOnClickListener {
-                            enablePhotoRecycler()
-                        }
-                    }
-                }
-                RouteStateConstants.POINT_TYPE_PENDING -> {
-                    recyclerViewAdapter.setPhoto(it)
-                    if (it.isNotEmpty()) {
-
-                        if (recyclerViewPhotos.isGone) {
-                            enablePhotoRecycler()
-                        }
-
-                        if (it.size > 1) {
-                            btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_completed)
-                        } else {
-                            btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_pending)
-                        }
-
-
-                    } else {
-                        btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_pending)
-                        recyclerViewPhotos.gone()
-                        btnAction.text = getString(R.string.btn_route_action_add_photos)
-                        btnAction.setOnClickListener {
-                            enablePhotoRecycler()
-                        }
-                    }
-
-                }
-                RouteStateConstants.POINT_TYPE_COMPLETED -> {
-                    recyclerViewAdapter.setPhoto(it)
-                }
-            }
-
         })
 
         //Route
@@ -342,9 +286,16 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         }
     }
 
-    //TODO BtnAction text to other states? (default)
-    private fun setPointState(point: RoutePointModel) {
+    private fun setCardviewState(point: RoutePointModel) {
         Log.d("point", "setPointState: ${point.location} ${point.type}")
+        val isNewPoint = if (lastPoint != point.id) {
+            lastPoint = point.id
+            true
+        } else {
+            false
+        }
+
+        val photosCount = point.photos.size
 
         when (point.type) {
             RouteStateConstants.POINT_TYPE_DEFAULT -> {
@@ -375,12 +326,13 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
             }
             RouteStateConstants.POINT_TYPE_PENDING -> {
-                val photosCount = viewModel.currentStopPhotos.value?.size
-                if (photosCount != null && photosCount > 1) {
+
+                if (photosCount > 1) {
                     btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_completed)
                 } else {
                     btnAction.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.selector_button_action_state_pending)
                 }
+
                 btnAction.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
 
                 cardPoint.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blueMain))
@@ -432,16 +384,40 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                     background = ContextCompat.getDrawable(requireContext(), R.drawable.ripple_nav_icon_light)
                 }
 
-                recyclerViewPhotos.visible()
 
+            }
+
+        }
+
+        setRecycler(point, isNewPoint)
+
+
+    }
+
+    private fun setRecycler(point: RoutePointModel, isNewPoint: Boolean) {
+        val photosCount = point.photos.size
+
+        recyclerViewAdapter.setPhoto(point.photos)
+
+        when (point.type) {
+            RouteStateConstants.POINT_TYPE_DEFAULT,
+            RouteStateConstants.POINT_TYPE_PENDING -> {
+                if (photosCount > 0) {
+                    enablePhotoRecycler()
+                } else {
+                    if (isNewPoint) {
+                        disablePhotoRecycler()
+                    }
+                }
+            }
+            RouteStateConstants.POINT_TYPE_COMPLETED -> {
+                recyclerViewPhotos.visible()
                 btnAction.text = getString(R.string.btn_route_action_next)
                 btnAction.setOnClickListener {
                     viewModel.nextStop()
                 }
-
             }
         }
-
     }
 
     private fun enablePhotoRecycler() {
@@ -449,6 +425,14 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         btnAction.text = getString(R.string.btn_route_action_done)
         btnAction.setOnClickListener {
             viewModel.completePoint()
+        }
+    }
+
+    private fun disablePhotoRecycler() {
+        recyclerViewPhotos.gone()
+        btnAction.text = getString(R.string.btn_route_action_add_photos)
+        btnAction.setOnClickListener {
+            enablePhotoRecycler()
         }
     }
 

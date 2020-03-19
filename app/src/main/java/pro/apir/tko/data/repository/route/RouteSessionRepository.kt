@@ -19,8 +19,12 @@ interface RouteSessionRepository {
 
     suspend fun resumeSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel
 
-    suspend fun finishSession(routeSessionModel: RouteSessionModel)
+    suspend fun finishSession(routeSessionModel: RouteSessionModel): RouteSessionModel
 
     suspend fun updatePoint(pointId: Long, type: Int)
+
+    //
+
+    suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel
 
 }

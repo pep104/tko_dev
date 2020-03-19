@@ -15,6 +15,6 @@ interface RoutePhotoRepository {
 
     suspend fun updatePhoto(id: Long, remotePath: String): PhotoModel
 
-    suspend fun getPhotos(pointId: Long): List<PhotoModel>
+    suspend fun getPhotos(pointId: Long)
 
 }

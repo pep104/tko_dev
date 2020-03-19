@@ -68,6 +68,11 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
         observeViewModel()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshChosen()
+    }
+
     private fun observeViewModel() {
         viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
         viewModel.loading.observe(viewLifecycleOwner, Observer {

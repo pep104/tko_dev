@@ -1,6 +1,5 @@
 package pro.apir.tko.presentation.ui.main.route.navigation
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -110,17 +109,15 @@ class RoutePointPhotoAttachAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
         fun bind(image: ListItem.Image) {
 
 
-            val glide = when (image.photo) {
-                is PhotoModel.LocalFile -> {
-                    Log.d("route photo", image.photo.path)
+            val glide = when (image.photo.type) {
+                PhotoModel.Type.LOCAL -> {
                     Glide.with(imageView)
                             .load(File(image.photo.path))
 
                 }
-                is PhotoModel.RemoteFile -> {
-                    Log.d("route photo", image.photo.url)
+                PhotoModel.Type.REMOTE -> {
                     Glide.with(imageView)
-                            .load(image.photo.url)
+                            .load(image.photo.path)
 
                 }
             }

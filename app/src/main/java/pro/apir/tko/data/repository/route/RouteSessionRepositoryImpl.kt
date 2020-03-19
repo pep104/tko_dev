@@ -1,13 +1,17 @@
 package pro.apir.tko.data.repository.route
 
+import android.util.Log
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
 import pro.apir.tko.data.framework.network.api.RouteActionApi
+import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
+import pro.apir.tko.data.framework.room.entity.relation.RouteSessionWithPoints
+import pro.apir.tko.data.mapper.PhotoTypeMapper
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
@@ -15,10 +19,13 @@ import javax.inject.Inject
 
 class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao: RouteSessionDao,
                                                      private val routePointDao: PointDao,
+                                                     private val routePhotoDao: PhotoDao,
+                                                     private val photoTypeMapper: PhotoTypeMapper,
                                                      private val routeActionApi: RouteActionApi) : RouteSessionRepository {
 
     //TODO OFFSET FROM BACKEND
     private val offsetHours = 3
+
 
     /**
      *
@@ -82,15 +89,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
 
         return if (savedSessionEntityWithPoints.isNotEmpty()) {
             val routeSessionWithPoints = savedSessionEntityWithPoints.last()
-
-            val newPoints = mutableListOf<RoutePointModel>()
-            routeSessionModel.points.forEach { pointSession ->
-                val saved = routeSessionWithPoints.points.find { pointEntity -> pointEntity.containerId == pointSession.containerId }
-                if (saved != null)
-                    newPoints.add(RoutePointModel(saved.id, saved.type, pointSession))
-            }
-
-            RouteSessionModel(routeSessionWithPoints.session.id, newPoints, routeSessionModel)
+            mapRouteSessionEntityToModel(routeSessionModel, routeSessionWithPoints)
 
         } else {
             createSession(userId, routeSessionModel)
@@ -99,14 +98,29 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     }
 
     /**
+     * Updates session
+     */
+    override suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
+        val id = routeSessionModel.sessionId
+        return if (id != null) {
+            mapRouteSessionEntityToModel(routeSessionModel, routeSessionDao.getSessionWithPoints(id))
+
+        } else {
+            routeSessionModel
+        }
+
+    }
+
+    /**
      * Finishes session
      */
-    override suspend fun finishSession(routeSessionModel: RouteSessionModel) {
+    override suspend fun finishSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
         //TODO network
         routeSessionModel.sessionId?.let {
             val entity = routeSessionDao.getSession(it)
             routeSessionDao.updateSession(RouteSessionEntity(entity.id, entity.userId, entity.routeId, entity.dateLong, true))
         }
+        return updateSession(routeSessionModel)
     }
 
     /**
@@ -137,4 +151,26 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         val newPoint = PointEntity(point.id, point.containerId, type, point.sessionId)
         routePointDao.updatePoint(newPoint)
     }
+
+
+    //TODO to mapper class
+    private fun mapRouteSessionEntityToModel(routeSessionModel: RouteSessionModel, routeSessionWithPoints: RouteSessionWithPoints): RouteSessionModel {
+        val newPoints = mutableListOf<RoutePointModel>()
+        routeSessionModel.points.forEach { pointSession ->
+
+            val saved = routeSessionWithPoints.points.find { pointEntity -> pointEntity.point.containerId == pointSession.containerId }
+            if (saved != null && saved.point.id != null) {
+                val photos = routePhotoDao.selectAllPhotosByPoint(saved.point.id).map { photoTypeMapper.toModel(it) }
+                Log.d("photos", "at session interactor: $photos")
+                val model = RoutePointModel(saved.point.id, saved.point.type, photos, pointSession)
+                Log.d("point","model: $model")
+                newPoints.add(model)
+            }
+
+        }
+
+        return RouteSessionModel(routeSessionWithPoints.session.id, newPoints, routeSessionModel)
+    }
+
+
 }

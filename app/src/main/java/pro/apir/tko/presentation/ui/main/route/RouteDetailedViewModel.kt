@@ -1,6 +1,7 @@
 package pro.apir.tko.presentation.ui.main.route
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -12,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.api.IGeoPoint
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.extension.roundUpNearest
@@ -78,6 +80,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         get() = _state
 
 
+    private var stopsLocationJob: Job? = null
+
     private val _routeStops = handle.getLiveData<List<RoutePointModel>>("routeStops")
     val routeStops: LiveData<List<RoutePointModel>>
         get() = _routeStops
@@ -85,6 +89,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     //Navigation
 
     private var currentStopLocationJob: Job? = null
+    private var photoJob: Job? = null
 
     private var _currentStopPos = handle.get<Int>("currentStop")
         set(value) {
@@ -95,7 +100,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 setStopData(value)
             } else {
                 _currentStop.postValue(null)
-                _currentStopPhotos.postValue(emptyList())
             }
         }
     val currentStopPos: Int?
@@ -110,11 +114,22 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         get() = _currentStopStickyCoordinates
 
 
-    private var photoJob: Job? = null
+    //Location
 
-    private val _currentStopPhotos = MutableLiveData<List<PhotoModel>>()
-    val currentStopPhotos: LiveData<List<PhotoModel>>
-        get() = _currentStopPhotos
+    private var lastUserLocation = handle.get<LocationModel>("lastLocation")
+        set(value) {
+            field = value
+
+            _routeStops.value?.let {
+                updateStopsDistances(it)
+            }
+
+            _currentStop.value?.let {
+                updateCurrentStopDistance(it)
+            }
+
+        }
+
 
     init {
         collectLocations()
@@ -168,6 +183,11 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 }
             }
 
+            updateStopsDistances(sessionModel.points)
+            _currentStop.value?.let {
+                updateCurrentStopDistance(it)
+            }
+
             //todo set pending to current if current null
         }
     }
@@ -217,31 +237,27 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     private fun setStopData(stop: RoutePointModel?) {
         currentStopLocationJob?.cancel()
-        _currentStop.postValue(stop)
-        _currentStopStickyCoordinates.postValue(stop?.coordinates)
-        _isFollowEnabled.postValue(false)
-        stop?.id?.let {
-            photoJob?.cancel()
-            kotlin.runCatching {
-                photoJob = viewModelScope.launch {
-                    _currentStopPhotos.postValue(routePhotosInteractor.getPhotos(it))
-                }
-            }
+        viewModelScope.launch(Dispatchers.Main) {
+            _currentStop.value = stop
+            _currentStopStickyCoordinates.value = stop?.coordinates
+            _isFollowEnabled.value = false
+            if (stop != null)
+                updateCurrentStopDistance(stop)
         }
     }
 
     fun completePoint() {
         viewModelScope.launch {
             val session = _routeSession.value
+            val completablePoint = _currentStop.value
             val completablePointId = _currentStop.value?.id
-            val completablePhotos = _currentStopPhotos.value
 
-            if (session != null && completablePointId != null && completablePhotos != null) {
+            if (session != null && completablePointId != null && completablePoint != null) {
 
-                if (completablePhotos.size < 2) {
+                if (completablePoint.photos.size < 2) {
                     handleFailure(PhotosNotEnoughError())
                 } else {
-                    routeSessionInteractor.completePoint(session, completablePointId, completablePhotos).fold(::handleFailure) {
+                    routeSessionInteractor.completePoint(session, completablePointId).fold(::handleFailure) {
                         setData(it)
 //                        //Update current pos
                         val completedPos = it.points.first { it.id == completablePointId }
@@ -261,15 +277,15 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     fun addPhotos(filePaths: List<String>) {
         viewModelScope.launch {
+            val session = _routeSession.value
             val currentStopId = _currentStop.value?.id
-            currentStopId?.let { stopId ->
-                val newPhotos = routePhotosInteractor.createPhotos(filePaths, stopId)
-                val currentPhotos = _currentStopPhotos.value
-                val resultPhotos = arrayListOf<PhotoModel>().apply {
-                    if (currentPhotos != null) addAll(currentPhotos)
-                    addAll(newPhotos)
-                }
-                _currentStopPhotos.postValue(resultPhotos)
+            if (session != null && currentStopId != null) {
+                val res = routePhotosInteractor.createPhotos(session, filePaths, currentStopId)
+                setData(res)
+
+                val addedPos = res.points.first { it.id == currentStopId }
+                setStopData(addedPos)
+
             }
         }
     }
@@ -323,46 +339,105 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private fun collectLocations() {
         viewModelScope.launch(Dispatchers.IO) {
             locationManager.getLocationFlow().collect { location ->
-                //Count distance for all route stops
-                val routeStops = _routeStops.value
-                val result = arrayListOf<RoutePointModel>()
-                routeStops?.forEach {
-                    val locationRoutePoint = it.coordinates
-                    if (locationRoutePoint != null) {
-                        val dist = calcDistance(
-                                location.lat,
-                                location.lon,
-                                it.coordinates.lat,
-                                it.coordinates.lng
-                        )
-                        result.add(RoutePointModel(dist.toInt().roundUpNearest(10), it))
-                    } else {
-                        result.add(it)
-                    }
-                }
-                _routeStops.postValue(result)
+                //                //Count distance for all route stops
+//                val routeStops = _routeStops.value
+//                val result = arrayListOf<RoutePointModel>()
+//                routeStops?.forEach {
+//                    val locationRoutePoint = it.coordinates
+//                    if (locationRoutePoint != null) {
+//                        val dist = calcDistance(
+//                                location.lat,
+//                                location.lon,
+//                                it.coordinates.lat,
+//                                it.coordinates.lng
+//                        )
+//                        result.add(RoutePointModel(dist.toInt().roundUpNearest(10), it))
+//                    } else {
+//                        result.add(it)
+//                    }
+//                }
+//                _routeStops.postValue(result)
+//
+//                //Count distance for current nav stop
+//                val currentNavStop = _currentStop.value
+//                currentNavStop?.let { it ->
+//                    kotlin.runCatching {
+//                        currentStopLocationJob?.cancel()
+//                        currentStopLocationJob = viewModelScope.launch {
+//                            val locationRoutePoint = it.coordinates
+//                            if (locationRoutePoint != null) {
+//                                val dist = calcDistance(
+//                                        location.lat,
+//                                        location.lon,
+//                                        it.coordinates.lat,
+//                                        it.coordinates.lng
+//                                )
+//                                _currentStop.postValue(RoutePointModel(dist.toInt().roundUpNearest(10), it))
+//                            }
+//                        }
+//                    }
+//                }
 
-                //Count distance for current nav stop
-                val currentNavStop = _currentStop.value
-                currentNavStop?.let { it ->
-                    kotlin.runCatching {
-                        currentStopLocationJob?.cancel()
-                        currentStopLocationJob = viewModelScope.launch {
-                            val locationRoutePoint = it.coordinates
-                            if (locationRoutePoint != null) {
-                                val dist = calcDistance(
-                                        location.lat,
-                                        location.lon,
-                                        it.coordinates.lat,
-                                        it.coordinates.lng
-                                )
-                                _currentStop.postValue(RoutePointModel(dist.toInt().roundUpNearest(10), it))
-                            }
-                        }
-                    }
-                }
+                //todo map dist via field
+                lastUserLocation = location
 
             }
+        }
+    }
+
+    private fun updateStopsDistances(stops: List<RoutePointModel>) {
+        stopsLocationJob?.cancel()
+        stopsLocationJob = viewModelScope.launch(Dispatchers.IO) {
+            Log.d("location", "stops start")
+            stops.let {
+                val result = mapDistances(it, lastUserLocation)
+                withContext(Dispatchers.Main) {
+                    _routeStops.value = result
+                }
+            }
+            Log.d("location", "stops end")
+        }
+    }
+
+    private fun updateCurrentStopDistance(current: RoutePointModel) {
+        currentStopLocationJob?.cancel()
+        currentStopLocationJob = viewModelScope.launch(Dispatchers.IO) {
+            Log.d("location", "current start")
+            current.let {
+                if (it.coordinates != null) {
+                    val dist = calcDistance(it.coordinates, lastUserLocation)
+
+                    //todo update current!
+                    withContext(Dispatchers.Main) {
+                        _currentStop.value = RoutePointModel(dist?.toInt()?.roundUpNearest(10), it)
+                    }
+                }
+            }
+            Log.d("location", "current end")
+        }
+    }
+
+
+    private fun mapDistances(list: List<RoutePointModel>, userLocation: LocationModel?): List<RoutePointModel> {
+        return if (userLocation != null)
+            list.map {
+                val pointCoordinates = it.coordinates
+                if (pointCoordinates != null) {
+                    val dist = calcDistance(pointCoordinates, userLocation)
+                    RoutePointModel(dist?.toInt()?.roundUpNearest(10), it)
+                } else {
+                    it
+                }
+            }
+        else
+            list
+    }
+
+    private fun calcDistance(point: CoordinatesModel?, user: LocationModel?): Double? {
+        return if (point != null && user != null) {
+            calcDistance(user.lat, user.lon, point.lat, point.lng)
+        } else {
+            null
         }
     }
 

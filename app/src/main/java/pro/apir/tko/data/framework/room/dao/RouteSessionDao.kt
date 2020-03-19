@@ -25,6 +25,10 @@ interface RouteSessionDao {
     @Query("SELECT * FROM route_session_table where id = :id")
     suspend fun getSession(id: Long): RouteSessionEntity
 
+    @Transaction
+    @Query("SELECT * FROM route_session_table where id = :id")
+    suspend fun getSessionWithPoints(id: Long): RouteSessionWithPoints
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSession(session: RouteSessionEntity): Long
 

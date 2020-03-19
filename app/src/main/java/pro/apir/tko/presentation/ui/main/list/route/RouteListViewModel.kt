@@ -13,6 +13,7 @@ import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
+import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
@@ -25,6 +26,7 @@ import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
 class RouteListViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
                                                      inventoryInteractor: InventoryInteractor,
                                                      private val routeInteractor: RouteInteractor,
+                                                     private val routeSessionInteractor: RouteSessionInteractor,
                                                      private val locationManager: LocationManager) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
 
     @AssistedInject.Factory
@@ -73,6 +75,18 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
         _routes.value?.let { list ->
             val item = list.find { model -> model.id == id }
             _choosenRoute.postValue(item)
+        }
+    }
+
+    fun refreshChosen() {
+        viewModelScope.launch {
+            val routes = _routes.value
+            routes?.let { list ->
+                routeSessionInteractor.mapRouteListWithExisting(list).fold(::handleFailure) {
+                    _routes.postValue(it.toMutableList())
+                }
+            }
+
         }
     }
 

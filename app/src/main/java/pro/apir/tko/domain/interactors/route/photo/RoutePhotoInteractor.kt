@@ -1,6 +1,7 @@
 package pro.apir.tko.domain.interactors.route.photo
 
 import pro.apir.tko.domain.model.PhotoModel
+import pro.apir.tko.domain.model.RouteSessionModel
 
 /**
  * Created by Антон Сарматин
@@ -9,14 +10,12 @@ import pro.apir.tko.domain.model.PhotoModel
  */
 interface RoutePhotoInteractor {
 
-    suspend fun createPhoto(path: String, pointId: Long): PhotoModel
+    suspend fun createPhoto(routeSessionModel: RouteSessionModel,path: String, pointId: Long): RouteSessionModel
 
-    suspend fun createPhotos(paths: List<String>, pointId: Long): List<PhotoModel>
+    suspend fun createPhotos(routeSessionModel: RouteSessionModel,paths: List<String>, pointId: Long): RouteSessionModel
 
-    suspend fun deletePhoto(photoModel: PhotoModel)
+    suspend fun deletePhoto(routeSessionModel: RouteSessionModel,photoModel: PhotoModel): RouteSessionModel
 
-    suspend fun updatePhoto(id: Long, remotePath: String): PhotoModel
-
-    suspend fun getPhotos(pointId: Long): List<PhotoModel>
+    suspend fun updatePhoto(routeSessionModel: RouteSessionModel,id: Long, remotePath: String): RouteSessionModel
 
 }

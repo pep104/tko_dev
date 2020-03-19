@@ -54,7 +54,7 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun routePhotoInteractor(routePhotoRepository: RoutePhotoRepository): RoutePhotoInteractor = RoutePhotoInteractorImpl(routePhotoRepository)
+    fun routePhotoInteractor(routePhotoRepository: RoutePhotoRepository, routeSessionInteractor: RouteSessionInteractor): RoutePhotoInteractor = RoutePhotoInteractorImpl(routePhotoRepository, routeSessionInteractor)
 
     @Provides
     @Singleton

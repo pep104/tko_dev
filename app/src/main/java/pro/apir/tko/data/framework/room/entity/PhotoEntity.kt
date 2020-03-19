@@ -15,7 +15,7 @@ data class PhotoEntity(
         val id: Long?,
 
         @ColumnInfo(name = "point_id")
-        val point: Long,
+        val pointId: Long,
 
         val type: String,
 
