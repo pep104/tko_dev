@@ -10,6 +10,9 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import pro.apir.tko.data.framework.manager.location.LocationManager
+import pro.apir.tko.data.framework.network.api.RouteTrackApi
+import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
+import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
@@ -27,7 +30,8 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
                                                      inventoryInteractor: InventoryInteractor,
                                                      private val routeInteractor: RouteInteractor,
                                                      private val routeSessionInteractor: RouteSessionInteractor,
-                                                     private val locationManager: LocationManager) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
+                                                     private val locationManager: LocationManager,
+                                                     private val routeTrackApi: RouteTrackApi) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<RouteListViewModel>
@@ -63,6 +67,16 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
     init {
         loading(true)
         loadMore()
+
+        //TODO REMOVE
+        val testJob = viewModelScope.launch {
+//            routeTrackApi.startRouteTracking(RouteTrackingStartRequest(34))
+            routeTrackApi.getCurrentRoute()
+            routeTrackApi.enterStop(RouteEnterStopRequest(292))
+            routeTrackApi.leaveStop(RouteLeaveStopRequest(emptyList()))
+            routeTrackApi.getCurrentRoute()
+//            routeTrackApi.finishRouteTracking()
+        }
     }
 
     //???

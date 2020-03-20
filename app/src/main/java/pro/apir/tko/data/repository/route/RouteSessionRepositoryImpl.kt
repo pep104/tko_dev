@@ -4,7 +4,7 @@ import android.util.Log
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
-import pro.apir.tko.data.framework.network.api.RouteActionApi
+import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
@@ -21,7 +21,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
                                                      private val routePointDao: PointDao,
                                                      private val routePhotoDao: PhotoDao,
                                                      private val photoTypeMapper: PhotoTypeMapper,
-                                                     private val routeActionApi: RouteActionApi) : RouteSessionRepository {
+                                                     private val routeTrackApi: RouteTrackApi) : RouteSessionRepository {
 
     //TODO OFFSET FROM BACKEND
     private val offsetHours = 3

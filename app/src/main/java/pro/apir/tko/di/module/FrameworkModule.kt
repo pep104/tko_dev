@@ -29,8 +29,8 @@ import pro.apir.tko.data.framework.source.attachment.AttachmentSource
 import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
 import pro.apir.tko.data.framework.source.auth.AuthSource
 import pro.apir.tko.data.framework.source.inventory.InventorySource
-import pro.apir.tko.data.framework.source.route.RouteActionSource
 import pro.apir.tko.data.framework.source.route.RouteSource
+import pro.apir.tko.data.framework.source.route.RouteTrackSource
 import pro.apir.tko.data.framework.source.user.UserSource
 import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.dict.OptionsDictionariesManagerImpl
@@ -194,7 +194,7 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun routeActionApi(retrofit: Retrofit): RouteActionApi = RouteActionSource(retrofit)
+    fun routeTrackApi(retrofit: Retrofit): RouteTrackApi = RouteTrackSource(retrofit)
 
     @Singleton
     @Provides

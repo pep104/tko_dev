@@ -53,7 +53,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun routeSessionRepository(routeDao: RouteSessionDao, routePointDao: PointDao, photoDao: PhotoDao, photoTypeMapper: PhotoTypeMapper, routeActionApi: RouteActionApi): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao, routePointDao, photoDao, photoTypeMapper, routeActionApi)
+    fun routeSessionRepository(routeDao: RouteSessionDao, routePointDao: PointDao, photoDao: PhotoDao, photoTypeMapper: PhotoTypeMapper, routeTrackApi: RouteTrackApi): RouteSessionRepository = RouteSessionRepositoryImpl(routeDao, routePointDao, photoDao, photoTypeMapper, routeTrackApi)
 
     @Provides
     @Singleton
