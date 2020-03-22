@@ -5,7 +5,9 @@ import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.core.functional.map
+import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepository
+import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RoutePointModel
@@ -14,6 +16,8 @@ import pro.apir.tko.domain.model.RouteStateConstants
 import javax.inject.Inject
 
 class RouteSessionInteractorImpl @Inject constructor(private val sessionRepository: RouteSessionRepository,
+                                                     private val photoRepository: RoutePhotoRepository,
+                                                     private val attachmentRepository: AttachmentRepository,
                                                      private val userRepository: UserRepository) : RouteSessionInteractor {
 
     /**
@@ -118,16 +122,21 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         return result
     }
 
+    override suspend fun startPoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
+        TODO()
+    }
+
+
     /**
      * Completes given route point model and return list with new states
      */
     override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
         return withContext(Dispatchers.IO) {
             //TODO LOAD PHOTOS TO SERVER?
-            //TODO REQUEST TO SERVER?
+            val photos = mutableListOf<String>()
 
             val newType = RouteStateConstants.POINT_TYPE_COMPLETED
-            sessionRepository.updatePoint(routePointId, newType)
+            sessionRepository.updatePoint(routePointId, photos, newType)
             routeSessionModel.points.find { it.id == routePointId }?.type = newType
             val isCompleted = checkCompletion(routeSessionModel)
             if (isCompleted) {

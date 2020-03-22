@@ -4,7 +4,12 @@ import android.util.Log
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
+import pro.apir.tko.core.exception.Failure
+import pro.apir.tko.core.functional.Either
+import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
+import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
+import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
@@ -12,6 +17,7 @@ import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
 import pro.apir.tko.data.framework.room.entity.relation.RouteSessionWithPoints
 import pro.apir.tko.data.mapper.PhotoTypeMapper
+import pro.apir.tko.data.repository.BaseRepository
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
@@ -21,7 +27,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
                                                      private val routePointDao: PointDao,
                                                      private val routePhotoDao: PhotoDao,
                                                      private val photoTypeMapper: PhotoTypeMapper,
-                                                     private val routeTrackApi: RouteTrackApi) : RouteSessionRepository {
+                                                     private val routeTrackApi: RouteTrackApi,
+                                                     private val tokenManager: TokenManager) : RouteSessionRepository, BaseRepository(tokenManager) {
 
     //TODO OFFSET FROM BACKEND
     private val offsetHours = 3
@@ -142,14 +149,27 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     }
 
     /**
-     * Updates this route point with new type and return it
+     * Updates this route point with new type
      */
-    override suspend fun updatePoint(pointId: Long, type: Int) {
+    override suspend fun updatePoint(pointId: Long, attachedPhotos: List<String>, type: Int): Either<Failure, Boolean> {
         //TODO COMPLETE POINT AT BACKEND
-        //TODO IF SUCCESS THEN UPDATE IT IN DB
+        //Разделить старт точки и завершение в логике приложения?
+        //Start current point
+        val startResult = request({ routeTrackApi.enterStop(RouteEnterStopRequest(pointId.toInt())) }, { true })
+        if (startResult is Either.Left)
+            return startResult
+
+        //Finish current point
+        val completeResult = request({ routeTrackApi.leaveStop(RouteLeaveStopRequest(attachedPhotos)) }, { true })
+        if (completeResult is Either.Left)
+            return completeResult
+
+        //Update local DB
         val point = routePointDao.getPoint(pointId)
         val newPoint = PointEntity(point.id, point.containerId, type, point.sessionId)
         routePointDao.updatePoint(newPoint)
+
+        return Either.Right(true)
     }
 
 
@@ -163,7 +183,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
                 val photos = routePhotoDao.selectAllPhotosByPoint(saved.point.id).map { photoTypeMapper.toModel(it) }
                 Log.d("photos", "at session interactor: $photos")
                 val model = RoutePointModel(saved.point.id, saved.point.type, photos, pointSession)
-                Log.d("point","model: $model")
+                Log.d("point", "model: $model")
                 newPoints.add(model)
             }
 

@@ -1,5 +1,7 @@
 package pro.apir.tko.data.repository.route
 
+import pro.apir.tko.core.exception.Failure
+import pro.apir.tko.core.functional.Either
 import pro.apir.tko.domain.model.RouteSessionModel
 
 /**
@@ -21,7 +23,7 @@ interface RouteSessionRepository {
 
     suspend fun finishSession(routeSessionModel: RouteSessionModel): RouteSessionModel
 
-    suspend fun updatePoint(pointId: Long, type: Int)
+    suspend fun updatePoint(pointId: Long, attachedPhotos: List<String>, type: Int): Either<Failure, Boolean>
 
     //
 

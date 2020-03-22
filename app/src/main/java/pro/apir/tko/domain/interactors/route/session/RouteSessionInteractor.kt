@@ -22,6 +22,8 @@ interface RouteSessionInteractor {
 
     suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel
 
+    suspend fun startPoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
+
     suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
 
 }
