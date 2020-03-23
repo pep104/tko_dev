@@ -6,7 +6,7 @@ package pro.apir.tko.core.exception
  */
 sealed class Failure {
     object NetworkConnection : Failure()
-    object ServerError : Failure()
+    data class ServerError(val message: String? = null) : Failure()
     object RefreshTokenExpired: Failure()
 
     object Ignore: Failure()

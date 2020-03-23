@@ -18,6 +18,7 @@ import pro.apir.tko.App
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.di.ViewModelFactory
 import pro.apir.tko.di.component.AppComponent
+import pro.apir.tko.presentation.extension.alert
 import pro.apir.tko.presentation.ui.main.GlobalState
 import javax.inject.Inject
 
@@ -45,7 +46,11 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
             when (it) {
                 is Failure.FeatureFailure -> TODO()
                 Failure.NetworkConnection -> TODO()
-                Failure.ServerError -> TODO()
+                is Failure.ServerError -> {
+                    if(it.message != null){
+                        alert(it.message)
+                    }
+                }
                 Failure.RefreshTokenExpired -> {
                     globalState.setUserState(GlobalState.UserState.TokenExpired)
                 }

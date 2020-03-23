@@ -1,16 +1,14 @@
 package pro.apir.tko.data.repository
 
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import retrofit2.Response
 import java.io.IOException
-import kotlin.coroutines.CoroutineContext
 
 abstract class BaseRepository(private val tokenManager: TokenManager?, private val tokenStrategy: TokenStrategy? = TokenStrategy.CHECK) {
 
@@ -25,7 +23,9 @@ abstract class BaseRepository(private val tokenManager: TokenManager?, private v
                 val body = call.body()
                 when (call.isSuccessful && body != null) {
                     true -> Either.Right(transform(body))
-                    false -> Either.Left(Failure.ServerError)
+                    false -> {
+                        Either.Left(Failure.ServerError(parseError(call.errorBody()?.string())))
+                    }
                 }
             } catch (exception: Throwable) {
                 Log.e("failure", "Failure: " + exception.localizedMessage)
@@ -38,7 +38,7 @@ abstract class BaseRepository(private val tokenManager: TokenManager?, private v
                         Either.Left(Failure.Ignore)
                     }
                     else -> {
-                        Either.Left(Failure.ServerError)
+                        Either.Left(Failure.ServerError())
                     }
                 }
             }
@@ -50,6 +50,22 @@ abstract class BaseRepository(private val tokenManager: TokenManager?, private v
     enum class TokenStrategy {
         CHECK,
         NO_AUTH
+    }
+
+
+    private fun parseError(string: String?): String? {
+        if (string == null)
+            return null
+
+        //TODO Parse error with ObjectRequestErrorModels - not ready yet
+        return try {
+            Log.e("http", "Server error: $string")
+            val errorResponse: JsonObject = Gson().fromJson(string, JsonObject::class.java)
+            val message = errorResponse.get("code").asString
+            message
+        } catch (e: Exception) {
+            null
+        }
     }
 
 }
