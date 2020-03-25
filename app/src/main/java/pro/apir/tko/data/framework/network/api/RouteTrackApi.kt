@@ -1,9 +1,9 @@
 package pro.apir.tko.data.framework.network.api
 
-import pro.apir.tko.data.framework.network.model.BaseResponse
 import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
+import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -30,9 +30,9 @@ interface RouteTrackApi {
 
     //Stops
     @POST("fleet/tracks/enter-stop/")
-    suspend fun enterStop(@Body request: RouteEnterStopRequest ): Response<BaseResponse>
+    suspend fun enterStop(@Body request: RouteEnterStopRequest ): Response<RouteStopTrackingResponse>
 
     @POST("fleet/tracks/leave-stop/")
-    suspend fun leaveStop(@Body request: RouteLeaveStopRequest): Response<BaseResponse>
+    suspend fun leaveStop(@Body request: RouteLeaveStopRequest): Response<RouteStopTrackingResponse>
 
 }

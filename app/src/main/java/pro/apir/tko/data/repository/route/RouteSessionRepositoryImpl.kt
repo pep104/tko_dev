@@ -75,8 +75,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         //Insert Points
         val newPoints = mutableListOf<RoutePointModel>()
         routeSessionModel.points.forEach {
-            val pointEntity = PointEntity(null, it.containerId, it.type
-                    ?: RouteStateConstants.POINT_TYPE_DEFAULT, sessionId)
+            val pointEntity = PointEntity(null, it.pointId, it.entityId, it.type ?: RouteStateConstants.POINT_TYPE_DEFAULT, sessionId)
             val id = routeSessionDao.insertPoint(pointEntity)
             newPoints.add(RoutePointModel(id, it))
         }
@@ -166,7 +165,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
 
         //Update local DB
         val point = routePointDao.getPoint(pointId)
-        val newPoint = PointEntity(point.id, point.containerId, type, point.sessionId)
+        val newPoint = PointEntity(point.id, point.pointId, point.entityId, type, point.sessionId)
         routePointDao.updatePoint(newPoint)
 
         return Either.Right(true)
@@ -178,7 +177,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         val newPoints = mutableListOf<RoutePointModel>()
         routeSessionModel.points.forEach { pointSession ->
 
-            val saved = routeSessionWithPoints.points.find { pointEntity -> pointEntity.point.containerId == pointSession.containerId }
+            val saved = routeSessionWithPoints.points.find { pointEntity -> pointEntity.point.pointId == pointSession.pointId }
             if (saved != null && saved.point.id != null) {
                 val photos = routePhotoDao.selectAllPhotosByPoint(saved.point.id).map { photoTypeMapper.toModel(it) }
                 Log.d("photos", "at session interactor: $photos")

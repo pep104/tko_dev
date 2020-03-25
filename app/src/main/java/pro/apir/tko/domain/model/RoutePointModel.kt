@@ -14,7 +14,8 @@ import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT
 @Parcelize
 data class RoutePointModel(
         val id: Long?,
-        val containerId: Int,
+        val pointId: Int,
+        val entityId: Int,
         val resourceType: String,
         val location: String?,
         val coordinates: CoordinatesModel?,
@@ -29,6 +30,7 @@ data class RoutePointModel(
     constructor(stop: ContainerAreaStopModel) : this(
             null,
             stop.id,
+            stop.entityId,
             stop.resourceType,
             stop.location,
             stop.coordinates,
@@ -42,7 +44,8 @@ data class RoutePointModel(
 
     constructor(id: Long?, oldModel: RoutePointModel) : this(
             id,
-            oldModel.containerId,
+            oldModel.pointId,
+            oldModel.entityId,
             oldModel.resourceType,
             oldModel.location,
             oldModel.coordinates,
@@ -56,7 +59,8 @@ data class RoutePointModel(
 
     constructor(id: Long?, type: Int?, photos: List<PhotoModel>, oldModel: RoutePointModel) : this(
             id,
-            oldModel.containerId,
+            oldModel.pointId,
+            oldModel.entityId,
             oldModel.resourceType,
             oldModel.location,
             oldModel.coordinates,
@@ -70,7 +74,8 @@ data class RoutePointModel(
 
     constructor(distance: Int?, oldModel: RoutePointModel) : this(
             oldModel.id,
-            oldModel.containerId,
+            oldModel.pointId,
+            oldModel.entityId,
             oldModel.resourceType,
             oldModel.location,
             oldModel.coordinates,
@@ -84,7 +89,8 @@ data class RoutePointModel(
 
     constructor(photos: List<PhotoModel>, oldModel: RoutePointModel) : this(
             oldModel.id,
-            oldModel.containerId,
+            oldModel.pointId,
+            oldModel.entityId,
             oldModel.resourceType,
             oldModel.location,
             oldModel.coordinates,

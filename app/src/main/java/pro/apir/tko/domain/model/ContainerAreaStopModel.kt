@@ -11,6 +11,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class ContainerAreaStopModel(
         val id: Int,
+        val entityId: Int,
         val resourceType: String,
         val location: String?,
         val coordinates: CoordinatesModel?,

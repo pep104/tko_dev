@@ -10,6 +10,8 @@ import pro.apir.tko.domain.model.ContainerAreaStopModel
  */
 data class ContainerAreaStopData(
         val id: Int,
+        @SerializedName("entity_id")
+        val entityId: Int,
         @SerializedName("resourcetype")
         val resourceType: String,
         val location: String?,
@@ -22,6 +24,6 @@ data class ContainerAreaStopData(
         val containersVolume: Double?
 ) {
 
-    fun toModel() = ContainerAreaStopModel(id, resourceType, location, coordinates?.toModel(),registryNumber, containersCount, containersVolume )
+    fun toModel() = ContainerAreaStopModel(id, entityId, resourceType, location, coordinates?.toModel(), registryNumber, containersCount, containersVolume)
 
 }

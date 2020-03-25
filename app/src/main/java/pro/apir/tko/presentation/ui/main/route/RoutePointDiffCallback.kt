@@ -14,7 +14,7 @@ class RoutePointDiffCallback(
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].id == newList[newItemPosition].id || oldList[oldItemPosition].containerId == newList[newItemPosition].containerId
+        return oldList[oldItemPosition].id == newList[newItemPosition].id || oldList[oldItemPosition].pointId == newList[newItemPosition].pointId
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

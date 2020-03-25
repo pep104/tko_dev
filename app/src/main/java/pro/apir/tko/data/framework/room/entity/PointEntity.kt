@@ -20,8 +20,11 @@ data class PointEntity(
         @PrimaryKey(autoGenerate = true)
         val id: Long?,
 
-        @ColumnInfo(name = "container_id")
-        val containerId: Int,
+        @ColumnInfo(name = "point_id")
+        val pointId: Int,
+
+        @ColumnInfo(name = "entity_id")
+        val entityId: Int,
 
         val type: Int,
 

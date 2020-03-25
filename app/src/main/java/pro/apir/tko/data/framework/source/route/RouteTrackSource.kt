@@ -1,10 +1,10 @@
 package pro.apir.tko.data.framework.source.route
 
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
-import pro.apir.tko.data.framework.network.model.BaseResponse
 import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
+import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingResponse
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -31,11 +31,12 @@ class RouteTrackSource @Inject constructor(retrofit: Retrofit): RouteTrackApi{
         return api.finishRouteTracking()
     }
 
-    override suspend fun enterStop(request: RouteEnterStopRequest): Response<BaseResponse> {
+    override suspend fun enterStop(request: RouteEnterStopRequest): Response<RouteStopTrackingResponse> {
         return api.enterStop(request)
     }
 
-    override suspend fun leaveStop(request: RouteLeaveStopRequest): Response<BaseResponse> {
+    override suspend fun leaveStop(request: RouteLeaveStopRequest): Response<RouteStopTrackingResponse> {
         return api.leaveStop(request)
     }
+
 }

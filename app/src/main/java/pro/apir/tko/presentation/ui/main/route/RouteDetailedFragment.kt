@@ -43,7 +43,6 @@ import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
-import pro.apir.tko.presentation.entities.RouteStop
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 
@@ -321,10 +320,6 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
                 mapView.overlayManager.addAll(markers)
             }
         }
-
-    }
-
-    private fun setPoints(list: List<RouteStop>) {
 
     }
 
