@@ -11,7 +11,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
-import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
@@ -70,9 +69,9 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
 
         //TODO REMOVE
         val testJob = viewModelScope.launch {
-//            routeTrackApi.startRouteTracking(RouteTrackingStartRequest(34))
+//            routeTrackApi.startRouteTracking(RouteTrackingStartRequest(32))
             routeTrackApi.getCurrentRoute()
-            routeTrackApi.enterStop(RouteEnterStopRequest(292))
+//            routeTrackApi.enterStop(RouteEnterStopRequest(232))
             routeTrackApi.leaveStop(RouteLeaveStopRequest(emptyList()))
             routeTrackApi.getCurrentRoute()
 //            routeTrackApi.finishRouteTracking()

@@ -1,6 +1,7 @@
 package pro.apir.tko.data.repository.route
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import org.threeten.bp.ZoneOffset
@@ -10,6 +11,7 @@ import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
+import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingResponse
 import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
@@ -18,9 +20,13 @@ import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
 import pro.apir.tko.data.framework.room.entity.relation.RouteSessionWithPoints
 import pro.apir.tko.data.mapper.PhotoTypeMapper
 import pro.apir.tko.data.repository.BaseRepository
+import pro.apir.tko.domain.failure.RouteTrackingFailure
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
+import pro.apir.tko.domain.model.RouteTrackingModel
+import retrofit2.Response
+import java.io.IOException
 import javax.inject.Inject
 
 class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao: RouteSessionDao,
@@ -39,34 +45,59 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
      *  Checks if there is session state record for this User by this day (today from 02:00 to next day 02:00)
      *
      */
-    override suspend fun checkSessionExists(userId: Int): Int? {
-        val dateRange = getCurrentDateRange(offsetHours)
-        val results = routeSessionDao.getExistingSession(userId, dateRange.first, dateRange.second)
+    override suspend fun checkSessionExists(userId: Int): Either<Failure, RouteTrackingModel?> {
+        val call = suspend { routeTrackApi.getCurrentRoute() }
+        val map: (RouteTrackingResponse) -> RouteTrackingModel = { it.toModel() }
+        val remoteResult = requestTracking(call, map)
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            val result = results.last()
-            if (result.session.isCompleted) {
-                null
-            } else {
-                result.session.routeId
-            }
+        if (remoteResult is Either.Left && remoteResult.a is RouteTrackingFailure) {
+            return Either.Right(null)
         }
+
+        //TODO CHECK IF LOCAL SESSION EXISTS
+        // IF NOT -> getTracking from api, create session, return remoteResult
+        // IF TRUE -> return remoteResult
+
+        return remoteResult
     }
+    //    override suspend fun checkSessionExists(userId: Int): Int? {
+//        val dateRange = getCurrentDateRange(offsetHours)
+//        val results = routeSessionDao.getExistingSession(userId, dateRange.first, dateRange.second)
+//
+//        return if (results.isEmpty()) {
+//            null
+//        } else {
+//            val result = results.last()
+//            if (result.session.isCompleted) {
+//                null
+//            } else {
+//                result.session.routeId
+//            }
+//        }
+//    }
 
     /**
      *
      *  Checks if there is session state record for this User and Route ID by this day (today from 02:00 to next day 02:00)
      *
      */
-    override suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean = checkSessionExists(userId) == routeId
+    override suspend fun checkSessionExists(userId: Int, routeId: Int): Either<Failure, Boolean> {
+        val res = checkSessionExists(userId)
+        return when (res) {
+            is Either.Left -> res
+            is Either.Right -> {
+                return Either.Right(res.b?.routeId == routeId.toLong())
+            }
+        }
+    }
+    //    override suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean = checkSessionExists(userId) == routeId
 
     /**
      *
      *  Creates new state record for RouteSessionModel and starts this RouteSessionModel
      *
      */
+    //TODO TO START? WITH API INTERACTION
     override suspend fun createSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel {
         //Insert Session
         //TODO OFFSET FROM BACKEND
@@ -75,7 +106,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         //Insert Points
         val newPoints = mutableListOf<RoutePointModel>()
         routeSessionModel.points.forEach {
-            val pointEntity = PointEntity(null, it.pointId, it.entityId, it.type ?: RouteStateConstants.POINT_TYPE_DEFAULT, sessionId)
+            val pointEntity = PointEntity(null, it.pointId, it.entityId, it.type
+                    ?: RouteStateConstants.POINT_TYPE_DEFAULT, sessionId)
             val id = routeSessionDao.insertPoint(pointEntity)
             newPoints.add(RoutePointModel(id, it))
         }
@@ -120,8 +152,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     /**
      * Finishes session
      */
+    //TODO WITH NETWORK
     override suspend fun finishSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
-        //TODO network
         routeSessionModel.sessionId?.let {
             val entity = routeSessionDao.getSession(it)
             routeSessionDao.updateSession(RouteSessionEntity(entity.id, entity.userId, entity.routeId, entity.dateLong, true))
@@ -150,8 +182,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     /**
      * Updates this route point with new type
      */
+    //TODO COMPLETE POINT AT BACKEND
     override suspend fun updatePoint(pointId: Long, attachedPhotos: List<String>, type: Int): Either<Failure, Boolean> {
-        //TODO COMPLETE POINT AT BACKEND
         //Разделить старт точки и завершение в логике приложения?
         //Start current point
         val startResult = request({ routeTrackApi.enterStop(RouteEnterStopRequest(pointId.toInt())) }, { true })
@@ -191,5 +223,44 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         return RouteSessionModel(routeSessionWithPoints.session.id, newPoints, routeSessionModel)
     }
 
+
+    //FIXME make open fun with custom error parsing?
+    suspend fun <T, R> requestTracking(call: suspend () -> Response<T>, transform: (T) -> R): Either<Failure, R> {
+        return if (!tokenManager.isRefreshTokenExpired()) {
+            try {
+                val call = call.invoke()
+                val body = call.body()
+                when (call.isSuccessful && body != null) {
+                    true -> Either.Right(transform(body))
+                    false -> {
+                        when (call.code()) {
+                            in 400..499 -> {
+                                Either.Left(RouteTrackingFailure())
+                            }
+                            else -> {
+                                Either.Left(Failure.ServerError())
+                            }
+                        }
+                    }
+                }
+            } catch (exception: Throwable) {
+                Log.e("failure", "Failure: " + exception.localizedMessage)
+                when (exception) {
+                    is IOException -> {
+                        Either.Left(Failure.Ignore)
+                    }
+                    //WARNING
+                    is CancellationException -> {
+                        Either.Left(Failure.Ignore)
+                    }
+                    else -> {
+                        Either.Left(Failure.ServerError())
+                    }
+                }
+            }
+        } else {
+            Either.Left(Failure.RefreshTokenExpired)
+        }
+    }
 
 }

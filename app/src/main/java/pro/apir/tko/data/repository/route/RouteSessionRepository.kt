@@ -3,6 +3,7 @@ package pro.apir.tko.data.repository.route
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.domain.model.RouteSessionModel
+import pro.apir.tko.domain.model.RouteTrackingModel
 
 /**
  * Created by Антон Сарматин
@@ -12,9 +13,9 @@ import pro.apir.tko.domain.model.RouteSessionModel
 interface RouteSessionRepository {
 
     //check existing session
-    suspend fun checkSessionExists(userId: Int): Int?
+    suspend fun checkSessionExists(userId: Int): Either<Failure, RouteTrackingModel?>
 
-    suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean
+    suspend fun checkSessionExists(userId: Int, routeId: Int): Either<Failure, Boolean>
 
     //get (start or resume) session
     suspend fun createSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel
