@@ -3,7 +3,8 @@ package pro.apir.tko.data.repository.route
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.RouteTrackingModel
+import pro.apir.tko.domain.model.route.RouteTrackingModel
+import pro.apir.tko.domain.model.route.remote.RouteTrackingDetailedRemoteModel
 
 /**
  * Created by Антон Сарматин
@@ -11,7 +12,12 @@ import pro.apir.tko.domain.model.RouteTrackingModel
  * Project: tko-android
  */
 interface RouteSessionRepository {
+    //new
 
+    suspend fun getRouteTrackingRemoteSessionById(sessionId: Long): Either<Failure, RouteTrackingDetailedRemoteModel>
+
+
+   //old
     //check existing session
     suspend fun checkSessionExists(userId: Int): Either<Failure, RouteTrackingModel?>
 

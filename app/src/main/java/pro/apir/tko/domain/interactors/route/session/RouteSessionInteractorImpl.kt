@@ -9,7 +9,11 @@ import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
-import pro.apir.tko.domain.model.*
+import pro.apir.tko.domain.model.RouteModel
+import pro.apir.tko.domain.model.RoutePointModel
+import pro.apir.tko.domain.model.RouteSessionModel
+import pro.apir.tko.domain.model.RouteStateConstants
+import pro.apir.tko.domain.model.route.RouteTrackingModel
 import javax.inject.Inject
 
 class RouteSessionInteractorImpl @Inject constructor(private val sessionRepository: RouteSessionRepository,

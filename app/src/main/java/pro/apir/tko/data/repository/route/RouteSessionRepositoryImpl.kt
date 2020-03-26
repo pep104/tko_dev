@@ -11,6 +11,7 @@ import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
+import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingResponse
 import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
@@ -24,7 +25,8 @@ import pro.apir.tko.domain.failure.RouteTrackingFailure
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
-import pro.apir.tko.domain.model.RouteTrackingModel
+import pro.apir.tko.domain.model.route.RouteTrackingModel
+import pro.apir.tko.domain.model.route.remote.RouteTrackingDetailedRemoteModel
 import retrofit2.Response
 import java.io.IOException
 import javax.inject.Inject
@@ -39,6 +41,20 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     //TODO OFFSET FROM BACKEND
     private val offsetHours = 3
 
+    //NEW
+
+    /**
+     * Retrieves session from remote api by id
+     */
+    override suspend fun getRouteTrackingRemoteSessionById(sessionId: Long): Either<Failure, RouteTrackingDetailedRemoteModel> {
+        val call = suspend { routeTrackApi.getRouteById(sessionId) }
+        val map: (RouteTrackingDetailedResponse) -> RouteTrackingDetailedRemoteModel = { it.toModel() }
+
+        return requestTracking(call, map)
+    }
+
+
+    //OLD
 
     /**
      *

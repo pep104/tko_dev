@@ -1,4 +1,4 @@
-package pro.apir.tko.domain.model
+package pro.apir.tko.domain.model.route
 
 /**
  * Created by antonsarmatin

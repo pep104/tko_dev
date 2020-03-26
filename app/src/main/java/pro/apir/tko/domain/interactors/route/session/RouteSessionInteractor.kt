@@ -4,7 +4,7 @@ import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.RouteTrackingModel
+import pro.apir.tko.domain.model.route.RouteTrackingModel
 
 /**
  * Created by Антон Сарматин

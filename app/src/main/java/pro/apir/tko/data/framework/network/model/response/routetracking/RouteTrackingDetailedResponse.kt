@@ -2,27 +2,26 @@ package pro.apir.tko.data.framework.network.model.response.routetracking
 
 import com.google.gson.annotations.SerializedName
 import pro.apir.tko.data.framework.network.model.response.routetracking.data.PeriodData
-import pro.apir.tko.domain.model.route.RouteTrackingModel
+import pro.apir.tko.domain.model.route.remote.RouteTrackingDetailedRemoteModel
 
 /**
- * Created by Антон Сарматин
- * Date: 20.03.2020
+ * Created by antonsarmatin
+ * Date: 2020-03-26
  * Project: tko-android
  */
-data class RouteTrackingResponse(
+data class RouteTrackingDetailedResponse(
         @SerializedName("id")
         val sessionId: Long,
         @SerializedName("route")
         val routeId: Long,
-        @SerializedName("user")
-        val userId: Long,
         val period: PeriodData,
+        val stops: List<RouteStopTrackingResponse>,
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("updated_at")
         val updatedAt: String
-) {
+){
 
-    fun toModel() = RouteTrackingModel(sessionId, routeId, userId)
+        fun toModel() = RouteTrackingDetailedRemoteModel(sessionId)
 
 }
