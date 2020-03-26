@@ -12,7 +12,7 @@ import pro.apir.tko.domain.model.RouteTrackingModel
 data class RouteTrackingResponse(
         @SerializedName("id")
         val sessionId: Long,
-        @SerializedName("id")
+        @SerializedName("route")
         val routeId: Long,
         @SerializedName("user")
         val userId: Long,
