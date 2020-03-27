@@ -13,6 +13,6 @@ interface UserRepository {
 
     suspend fun getUser() : Either<Failure, UserModel>
 
-    suspend fun getUserId() : Either<Failure, Int>
+    suspend fun getUserId() : Int
 
 }

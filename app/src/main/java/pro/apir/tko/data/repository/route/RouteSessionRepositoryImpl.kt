@@ -12,21 +12,19 @@ import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
-import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingResponse
 import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.dao.PointDao
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
+import pro.apir.tko.data.framework.room.entity.PhotoEntity
 import pro.apir.tko.data.framework.room.entity.PointEntity
 import pro.apir.tko.data.framework.room.entity.RouteSessionEntity
 import pro.apir.tko.data.framework.room.entity.relation.RouteSessionWithPoints
 import pro.apir.tko.data.mapper.PhotoTypeMapper
 import pro.apir.tko.data.repository.BaseRepository
+import pro.apir.tko.data.repository.user.UserRepository
 import pro.apir.tko.domain.failure.RouteTrackingFailure
-import pro.apir.tko.domain.model.RoutePointModel
-import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.RouteStateConstants
-import pro.apir.tko.domain.model.route.RouteTrackingModel
-import pro.apir.tko.domain.model.route.remote.RouteTrackingDetailedRemoteModel
+import pro.apir.tko.domain.model.*
+import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 import retrofit2.Response
 import java.io.IOException
 import javax.inject.Inject
@@ -35,7 +33,9 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
                                                      private val routePointDao: PointDao,
                                                      private val routePhotoDao: PhotoDao,
                                                      private val photoTypeMapper: PhotoTypeMapper,
+                                                     private val routeRepository: RouteRepository,
                                                      private val routeTrackApi: RouteTrackApi,
+                                                     private val userRepository: UserRepository,
                                                      private val tokenManager: TokenManager) : RouteSessionRepository, BaseRepository(tokenManager) {
 
     //TODO OFFSET FROM BACKEND
@@ -46,67 +46,94 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     /**
      * Retrieves session from remote api by id
      */
-    override suspend fun getRouteTrackingRemoteSessionById(sessionId: Long): Either<Failure, RouteTrackingDetailedRemoteModel> {
+    override suspend fun getRouteTrackingRemoteSessionById(sessionId: Long): Either<Failure, RouteTrackingInfoModel> {
         val call = suspend { routeTrackApi.getRouteById(sessionId) }
-        val map: (RouteTrackingDetailedResponse) -> RouteTrackingDetailedRemoteModel = { it.toModel() }
+        val map: (RouteTrackingDetailedResponse) -> RouteTrackingInfoModel = { it.toModel() }
 
         return requestTracking(call, map)
+    }
+
+    override suspend fun getCurrentRouteTrackingInfo(): Either<Failure, RouteTrackingInfoModel?> {
+        //REMOTE
+        val remoteInfo = getCurrentRouteTrackingInfoFromRemote()
+
+        when (remoteInfo) {
+            is Either.Left -> {
+                //If Remote call is Failure check is RouteTrackingFailure (no route tracked)
+                return if (remoteInfo.a is RouteTrackingFailure)
+                    Either.Right(null)
+                else
+                    remoteInfo
+            }
+            is Either.Right -> {
+                return if (routeSessionDao.getSession(remoteInfo.b.sessionId) == null) {
+                    TODO("RETRIEVE ROUTE INFO AND")
+                } else {
+                    return remoteInfo
+                }
+            }
+        }
+    }
+
+    override suspend fun startRouteTrackingSession(): Either<Failure, RouteSessionModel> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun getCurrentRouteTrackingSession(): Either<Failure, RouteSessionModel> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun finishRouteTrackingSession(): Either<Failure, RouteSessionModel> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
+    private suspend fun getCurrentRouteTrackingInfoFromRemote(): Either<Failure, RouteTrackingInfoModel> {
+        val call = suspend { routeTrackApi.getCurrentRoute() }
+        val map: (RouteTrackingDetailedResponse) -> RouteTrackingInfoModel = { it.toModel() }
+        return requestTracking(call, map)
+    }
+
+    private suspend fun fetchRemoteSessionToLocal(infoModel: RouteTrackingInfoModel): Boolean {
+        //FETCH ROUTE
+        val routeResult = routeRepository.getRoute(infoModel.routeId)
+
+        when (routeResult) {
+            is Either.Left -> return false
+            is Either.Right -> {
+                //CREATE LOCAL CACHE
+                val result = createLocalRecord(routeResult.b, infoModel)
+                return result != null
+            }
+        }
+
+    }
+
+    private suspend fun createLocalRecord(route: RouteModel, info: RouteTrackingInfoModel): Long? {
+        val sessionEntity = RouteSessionEntity(info.sessionId, userRepository.getUserId(), route.id, info.createdAt, false)
+        val sessionId = routeSessionDao.insertSession(sessionEntity)
+
+        route.stops.forEach { stop ->
+            val completed = info.stopsCompleted.findLast { it.id == stop.id.toLong() }
+            if (completed != null) {
+                val pointEntity = PointEntity(null, stop.id, stop.entityId, RouteStateConstants.POINT_TYPE_COMPLETED, sessionId)
+                val pointId = routePointDao.insertPoint(pointEntity)
+                completed.attachments.forEach {
+                    val photoEntity = PhotoEntity(null, pointId, PhotoModel.Type.REMOTE.name, it)
+                    routePhotoDao.insert(photoEntity)
+                }
+            } else {
+                val pointEntity = PointEntity(null, stop.id, stop.entityId, RouteStateConstants.POINT_TYPE_DEFAULT, sessionId)
+                val pointId = routePointDao.insertPoint(pointEntity)
+            }
+        }
+
+        return sessionId
     }
 
 
     //OLD
 
-    /**
-     *
-     *  Checks if there is session state record for this User by this day (today from 02:00 to next day 02:00)
-     *
-     */
-    override suspend fun checkSessionExists(userId: Int): Either<Failure, RouteTrackingModel?> {
-        val call = suspend { routeTrackApi.getCurrentRoute() }
-        val map: (RouteTrackingResponse) -> RouteTrackingModel = { it.toModel() }
-        val remoteResult = requestTracking(call, map)
-
-        if (remoteResult is Either.Left && remoteResult.a is RouteTrackingFailure) {
-            return Either.Right(null)
-        }
-
-        //TODO CHECK IF LOCAL SESSION EXISTS
-        // IF NOT -> getTracking from api, create session, return remoteResult
-        // IF TRUE -> return remoteResult
-
-        return remoteResult
-    }
-    //    override suspend fun checkSessionExists(userId: Int): Int? {
-//        val dateRange = getCurrentDateRange(offsetHours)
-//        val results = routeSessionDao.getExistingSession(userId, dateRange.first, dateRange.second)
-//
-//        return if (results.isEmpty()) {
-//            null
-//        } else {
-//            val result = results.last()
-//            if (result.session.isCompleted) {
-//                null
-//            } else {
-//                result.session.routeId
-//            }
-//        }
-//    }
-
-    /**
-     *
-     *  Checks if there is session state record for this User and Route ID by this day (today from 02:00 to next day 02:00)
-     *
-     */
-    override suspend fun checkSessionExists(userId: Int, routeId: Int): Either<Failure, Boolean> {
-        val res = checkSessionExists(userId)
-        return when (res) {
-            is Either.Left -> res
-            is Either.Right -> {
-                return Either.Right(res.b?.routeId == routeId.toLong())
-            }
-        }
-    }
-    //    override suspend fun checkSessionExists(userId: Int, routeId: Int): Boolean = checkSessionExists(userId) == routeId
 
     /**
      *
@@ -124,7 +151,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
         routeSessionModel.points.forEach {
             val pointEntity = PointEntity(null, it.pointId, it.entityId, it.type
                     ?: RouteStateConstants.POINT_TYPE_DEFAULT, sessionId)
-            val id = routeSessionDao.insertPoint(pointEntity)
+            val id = routePointDao.insertPoint(pointEntity)
             newPoints.add(RoutePointModel(id, it))
         }
 
@@ -172,7 +199,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
     override suspend fun finishSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
         routeSessionModel.sessionId?.let {
             val entity = routeSessionDao.getSession(it)
-            routeSessionDao.updateSession(RouteSessionEntity(entity.id, entity.userId, entity.routeId, entity.dateLong, true))
+            if (entity != null)
+                routeSessionDao.updateSession(RouteSessionEntity(entity.id, entity.userId, entity.routeId, entity.date, true))
         }
         return updateSession(routeSessionModel)
     }
@@ -251,6 +279,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routeSessionDao
                     false -> {
                         when (call.code()) {
                             in 400..499 -> {
+                                //TODO RETRIEVE CODE!
                                 Either.Left(RouteTrackingFailure())
                             }
                             else -> {

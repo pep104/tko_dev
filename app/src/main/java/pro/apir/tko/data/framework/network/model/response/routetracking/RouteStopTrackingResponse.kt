@@ -2,6 +2,7 @@ package pro.apir.tko.data.framework.network.model.response.routetracking
 
 import com.google.gson.annotations.SerializedName
 import pro.apir.tko.data.framework.network.model.response.routetracking.data.PeriodData
+import pro.apir.tko.domain.model.route.RouteTrackingStopModel
 
 /**
  * Created by Антон Сарматин
@@ -17,4 +18,8 @@ data class RouteStopTrackingResponse(
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("updated_at")
-        val updatedAt: String)
+        val updatedAt: String){
+
+        fun toModel() = RouteTrackingStopModel(id, track, stop, attachments)
+
+}

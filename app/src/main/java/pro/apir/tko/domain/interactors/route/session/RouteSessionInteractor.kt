@@ -4,7 +4,7 @@ import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.route.RouteTrackingModel
+import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 
 /**
  * Created by Антон Сарматин
@@ -13,7 +13,7 @@ import pro.apir.tko.domain.model.route.RouteTrackingModel
  */
 interface RouteSessionInteractor {
 
-    suspend fun getCurrentTrackingSession(): Either<Failure, RouteTrackingModel?>
+    suspend fun getCurrentTrackingSession(): Either<Failure, RouteTrackingInfoModel?>
 
     suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel>
 

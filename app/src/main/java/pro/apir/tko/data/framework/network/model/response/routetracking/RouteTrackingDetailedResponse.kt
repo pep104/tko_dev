@@ -2,7 +2,7 @@ package pro.apir.tko.data.framework.network.model.response.routetracking
 
 import com.google.gson.annotations.SerializedName
 import pro.apir.tko.data.framework.network.model.response.routetracking.data.PeriodData
-import pro.apir.tko.domain.model.route.remote.RouteTrackingDetailedRemoteModel
+import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 
 /**
  * Created by antonsarmatin
@@ -20,8 +20,8 @@ data class RouteTrackingDetailedResponse(
         val createdAt: String,
         @SerializedName("updated_at")
         val updatedAt: String
-){
+) {
 
-        fun toModel() = RouteTrackingDetailedRemoteModel(sessionId)
+    fun toModel() = RouteTrackingInfoModel(sessionId, routeId, stops.map { it.toModel() }, createdAt)
 
 }
