@@ -13,7 +13,7 @@ import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
  */
 interface RouteSessionInteractor {
 
-    suspend fun getCurrentTrackingSession(): Either<Failure, RouteTrackingInfoModel?>
+    suspend fun getCurrentTrackingInfo(): Either<Failure, RouteTrackingInfoModel?>
 
     suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel>
 
@@ -22,8 +22,6 @@ interface RouteSessionInteractor {
     suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>>
 
     suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel
-
-    suspend fun startPoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
 
     suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
 

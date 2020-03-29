@@ -6,10 +6,7 @@ import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.room.dao.PhotoDao
-import pro.apir.tko.data.framework.room.dao.PointDao
-import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
-import pro.apir.tko.data.mapper.PhotoTypeMapper
 import pro.apir.tko.data.repository.address.AddressRepository
 import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.attachment.AttachmentRepository
@@ -54,19 +51,13 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun routeSessionRepository(
-            routeDao: RouteSessionDao,
-            routePointDao: PointDao,
-            photoDao: PhotoDao,
-            photoTypeMapper: PhotoTypeMapper,
+            routePhotoRepository: RoutePhotoRepository,
             routeRepository: RouteRepository,
             routeTrackApi: RouteTrackApi,
             userRepository: UserRepository,
             tokenManager: TokenManager
     ): RouteSessionRepository = RouteSessionRepositoryImpl(
-            routeDao,
-            routePointDao,
-            photoDao,
-            photoTypeMapper,
+            routePhotoRepository,
             routeRepository,
             routeTrackApi,
             userRepository,
@@ -75,7 +66,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun routePhotoRepository(photoDao: PhotoDao, photoTypeMapperImpl: PhotoTypeMapper): RoutePhotoRepository = RoutePhotoRepositoryImpl(photoDao, photoTypeMapperImpl)
+    fun routePhotoRepository(photoDao: PhotoDao): RoutePhotoRepository = RoutePhotoRepositoryImpl(photoDao)
 
     @Provides
     @Singleton

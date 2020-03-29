@@ -6,7 +6,6 @@ import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
-import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingInfoResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -28,11 +27,11 @@ class RouteTrackSource @Inject constructor(retrofit: Retrofit): RouteTrackApi{
         return api.getCurrentRoute()
     }
 
-    override suspend fun startRouteTracking(request: RouteTrackingStartRequest): Response<RouteTrackingInfoResponse> {
+    override suspend fun startRouteTracking(request: RouteTrackingStartRequest): Response<RouteTrackingDetailedResponse> {
         return api.startRouteTracking(request)
     }
 
-    override suspend fun finishRouteTracking(): Response<RouteTrackingInfoResponse> {
+    override suspend fun finishRouteTracking(): Response<RouteTrackingDetailedResponse> {
         return api.finishRouteTracking()
     }
 

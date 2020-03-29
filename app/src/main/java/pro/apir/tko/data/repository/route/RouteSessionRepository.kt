@@ -2,8 +2,8 @@ package pro.apir.tko.data.repository.route
 
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
+import pro.apir.tko.domain.model.route.RouteTrackingStopModel
 
 /**
  * Created by Антон Сарматин
@@ -17,30 +17,12 @@ interface RouteSessionRepository {
 
     suspend fun getCurrentRouteTrackingInfo():  Either<Failure, RouteTrackingInfoModel?>
 
-    suspend fun startRouteTrackingSession(): Either<Failure, RouteSessionModel>
+    suspend fun startRouteTracking(routeId: Long): Either<Failure, RouteTrackingInfoModel>
 
-    suspend fun getCurrentRouteTrackingSession(): Either<Failure, RouteSessionModel>
+    suspend fun finishRouteTracking(sessionId: Long): Either<Failure, RouteTrackingInfoModel>
 
-    suspend fun finishRouteTrackingSession(): Either<Failure, RouteSessionModel>
+    suspend fun enterRouteStop(stopId: Long): Either<Failure, RouteTrackingStopModel>
 
-
-    //old
-    //check existing session
-//    suspend fun checkSessionExists(userId: Int): Either<Failure, RouteTrackingInfoModel?>
-//
-//    suspend fun checkSessionExists(userId: Int, routeId: Int): Either<Failure, Boolean>
-
-    //get (start or resume) session
-    suspend fun createSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel
-
-    suspend fun resumeSession(userId: Int, routeSessionModel: RouteSessionModel): RouteSessionModel
-
-    suspend fun finishSession(routeSessionModel: RouteSessionModel): RouteSessionModel
-
-    suspend fun updatePoint(pointId: Long, attachedPhotos: List<String>, type: Int): Either<Failure, Boolean>
-
-    //
-
-    suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel
+    suspend fun leaveRouteStop(attachments: List<String>): Either<Failure, RouteTrackingInfoModel>
 
 }

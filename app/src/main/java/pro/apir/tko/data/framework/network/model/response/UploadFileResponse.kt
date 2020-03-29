@@ -8,8 +8,11 @@ import pro.apir.tko.domain.model.UploadedFileModel
  * Date: 28.01.2020
  * Project: tko-android
  */
-class UploadFileResponse(val id: Int) : BaseResponse() {
+class UploadFileResponse(
+        val id: Int,
+        val url: String
+) : BaseResponse() {
 
-    fun toModel() = UploadedFileModel(id)
+    fun toModel() = UploadedFileModel(id, url)
 
 }

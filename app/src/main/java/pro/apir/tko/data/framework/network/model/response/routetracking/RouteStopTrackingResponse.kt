@@ -18,7 +18,7 @@ data class RouteStopTrackingResponse(
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("updated_at")
-        val updatedAt: String){
+        val updatedAt: String) {
 
         fun toModel() = RouteTrackingStopModel(id, track, stop, attachments)
 

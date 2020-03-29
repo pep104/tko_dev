@@ -1,6 +1,6 @@
 package pro.apir.tko.data.repository.route.photo
 
-import pro.apir.tko.domain.model.PhotoModel
+import pro.apir.tko.domain.model.PhotoCacheModel
 
 /**
  * Created by Антон Сарматин
@@ -9,12 +9,13 @@ import pro.apir.tko.domain.model.PhotoModel
  */
 interface RoutePhotoRepository {
 
-    suspend fun createPhoto(path: String, pointId: Long): PhotoModel
+    suspend fun getPhotosBySession(sessionId: Long): List<PhotoCacheModel>
 
-    suspend fun deletePhoto(photoModel: PhotoModel)
+    suspend fun getPhotosByPoint(sessionId: Long, pointId: Long): List<PhotoCacheModel>
 
-    suspend fun updatePhoto(id: Long, remotePath: String): PhotoModel
+    suspend fun createPhoto(path: String, sessionId: Long, pointId: Long): PhotoCacheModel
 
-    suspend fun getPhotos(pointId: Long)
+    suspend fun deletePhoto(photoId: Long)
+
 
 }

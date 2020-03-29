@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.core.functional.map
+import pro.apir.tko.core.functional.onRight
 import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
@@ -14,6 +15,7 @@ import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
+import java.io.File
 import javax.inject.Inject
 
 class RouteSessionInteractorImpl @Inject constructor(private val sessionRepository: RouteSessionRepository,
@@ -26,7 +28,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      * Return ID of Route of existing RouteSession
      *
      */
-    override suspend fun getCurrentTrackingSession(): Either<Failure, RouteTrackingInfoModel?> = withContext(Dispatchers.IO) {
+    override suspend fun getCurrentTrackingInfo(): Either<Failure, RouteTrackingInfoModel?> = withContext(Dispatchers.IO) {
         sessionRepository.getCurrentRouteTrackingInfo()
     }
 
@@ -47,10 +49,8 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
                 is Either.Left -> existingSession
                 is Either.Right -> {
                     when (true) {
-                        existingSession.b?.routeId == routeModel.id.toLong() -> {
-                            val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS)
-                            val session = sessionRepository.resumeSession(userIdResult, route).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                            setPendingPoint(session.points)
+                        existingSession.b != null && existingSession.b.routeId == routeModel.id.toLong() -> {
+                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingSession.b)
                             Either.Right(session)
                         }
                         existingSession.b == null -> {
@@ -80,13 +80,18 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
             val existingSession = sessionRepository.getCurrentRouteTrackingInfo()
             if (existingSession is Either.Right && existingSession.b != null) {
-                val session = sessionRepository.resumeSession(userIdResult, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                setPendingPoint(session.points)
+                val session = mapSessionWithInfo(routeSessionModel, existingSession.b).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
                 Either.Right(session)
             } else {
-                val session = sessionRepository.createSession(userIdResult, routeSessionModel).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                setPendingPoint(session.points)
-                Either.Right(session)
+                //NOT EXISTS -> START ROUTE TRACKING
+                val startResult = sessionRepository.startRouteTracking(routeSessionModel.routeId.toLong())
+                when (startResult) {
+                    is Either.Left -> Either.Left(startResult.a)
+                    is Either.Right -> {
+                        val session = mapSessionWithInfo(routeSessionModel, startResult.b).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                        Either.Right(session)
+                    }
+                }
             }
 
         }
@@ -99,7 +104,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      */
     override suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>> {
         return withContext(Dispatchers.IO) {
-            val routeId = getCurrentTrackingSession()
+            val routeId = getCurrentTrackingInfo()
             routeId.map { tracking ->
                 list.map { model -> RouteModel(model, model.id.toLong() == tracking?.routeId) }
             }
@@ -110,13 +115,6 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      *
      */
     override suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
-        val result = sessionRepository.updateSession(routeSessionModel)
-        if (result.state == RouteStateConstants.ROUTE_TYPE_IN_PROGRESS)
-            setPendingPoint(result.points)
-        return result
-    }
-
-    override suspend fun startPoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
         TODO()
     }
 
@@ -126,21 +124,34 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      */
     override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
         return withContext(Dispatchers.IO) {
-            //TODO LOAD PHOTOS TO SERVER?
-            val photos = mutableListOf<String>()
+            val enterResult = sessionRepository.enterRouteStop(routePointId)
 
-            val newType = RouteStateConstants.POINT_TYPE_COMPLETED
-            sessionRepository.updatePoint(routePointId, photos, newType)
-            routeSessionModel.points.find { it.id == routePointId }?.type = newType
-            val isCompleted = checkCompletion(routeSessionModel)
-            if (isCompleted) {
-                routeSessionModel.state = RouteStateConstants.ROUTE_TYPE_COMPLETED
-                sessionRepository.finishSession(routeSessionModel)
+            val photos = arrayListOf<String>()
+            if (routeSessionModel.sessionId != null) {
+                val photosToUpload = photoRepository.getPhotosByPoint(routeSessionModel.sessionId, routePointId)
+                photosToUpload.forEach {
+                    try {
+                        attachmentRepository.uploadFile(File(it.path)).onRight {
+                            photos.addAll(it.map { it.url })
+                        }
+                    } catch (e: Exception) {
+                    }
+
+                }
             }
+           //TODO ADD EXISTING REMOTE PHOTOS?
+
+            //TODO
+            val completeResult = sessionRepository.leaveRouteStop()
 
 
-            Either.Right(updateSession(routeSessionModel))
+            TODO("return updated route session model")
         }
+    }
+
+
+    private fun mapSessionWithInfo(sessionModel: RouteSessionModel, infoModel: RouteTrackingInfoModel): RouteSessionModel {
+        TODO("not implemented")
     }
 
     /**

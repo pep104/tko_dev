@@ -5,7 +5,6 @@ import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
-import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingInfoResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -30,10 +29,10 @@ interface RouteTrackApi {
 
 
     @POST("fleet/tracks/start/")
-    suspend fun startRouteTracking(@Body request: RouteTrackingStartRequest): Response<RouteTrackingInfoResponse>
+    suspend fun startRouteTracking(@Body request: RouteTrackingStartRequest): Response<RouteTrackingDetailedResponse>
 
     @POST("fleet/tracks/finish/")
-    suspend fun finishRouteTracking(): Response<RouteTrackingInfoResponse>
+    suspend fun finishRouteTracking(): Response<RouteTrackingDetailedResponse>
 
     //Stops
     @POST("fleet/tracks/enter-stop/")
