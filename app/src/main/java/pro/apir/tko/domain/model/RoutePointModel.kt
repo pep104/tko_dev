@@ -13,7 +13,6 @@ import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT
 //TODO REFACTOR MODEL DUE TO REMOVE DB ID
 @Parcelize
 data class RoutePointModel(
-        val id: Long?,
         val pointId: Int,
         val entityId: Int,
         val resourceType: String,
@@ -28,7 +27,6 @@ data class RoutePointModel(
 ) : Parcelable {
 
     constructor(stop: ContainerAreaStopModel) : this(
-            null,
             stop.id,
             stop.entityId,
             stop.resourceType,
@@ -42,8 +40,7 @@ data class RoutePointModel(
             POINT_TYPE_DEFAULT
     )
 
-    constructor(id: Long?, oldModel: RoutePointModel) : this(
-            id,
+    constructor(oldModel: RoutePointModel) : this(
             oldModel.pointId,
             oldModel.entityId,
             oldModel.resourceType,
@@ -57,8 +54,7 @@ data class RoutePointModel(
             oldModel.type
     )
 
-    constructor(id: Long?, type: Int?, photos: List<PhotoModel>, oldModel: RoutePointModel) : this(
-            id,
+    constructor( type: Int?, photos: List<PhotoModel>, oldModel: RoutePointModel) : this(
             oldModel.pointId,
             oldModel.entityId,
             oldModel.resourceType,
@@ -73,7 +69,6 @@ data class RoutePointModel(
     )
 
     constructor(distance: Int?, oldModel: RoutePointModel) : this(
-            oldModel.id,
             oldModel.pointId,
             oldModel.entityId,
             oldModel.resourceType,
@@ -88,7 +83,6 @@ data class RoutePointModel(
     )
 
     constructor(photos: List<PhotoModel>, oldModel: RoutePointModel) : this(
-            oldModel.id,
             oldModel.pointId,
             oldModel.entityId,
             oldModel.resourceType,
