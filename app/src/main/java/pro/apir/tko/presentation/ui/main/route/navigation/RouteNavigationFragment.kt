@@ -47,6 +47,7 @@ import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.extension.gone
 import pro.apir.tko.presentation.extension.hideKeyboard
+import pro.apir.tko.presentation.extension.invisible
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel2
@@ -157,6 +158,9 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         btnPrevious.setOnClickListener {
             viewModel.previousStop()
         }
+
+        view.btnBack.setOnClickListener { findNavController().navigateUp() }
+        view.btnSearch.invisible()
 
     }
 

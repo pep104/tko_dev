@@ -125,7 +125,8 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
                         photosToUpload.forEach { cachePhoto ->
                             try {
                                 attachmentRepository.uploadFile(File(cachePhoto.path)).onRight {
-                                    photos.addAll(it.map { it.url })
+                                    //FIXME not url but id?
+                                    photos.addAll(it.map { it.id.toString() })
                                     launch(Dispatchers.IO) {
                                         photoRepository.deletePhoto(cachePhoto.id)
                                     }

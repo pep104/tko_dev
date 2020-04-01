@@ -33,7 +33,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
             val uploaded = mutableListOf<UploadedFileModel>()
             newPhotos?.forEach { newPhoto ->
                 attachmentRepository.uploadFile(newPhoto).fold({}, {
-                    it.forEach { photo -> uploaded.add(UploadedFileModel(photo.id)) }
+                    uploaded.addAll(it)
                 })
             }
 

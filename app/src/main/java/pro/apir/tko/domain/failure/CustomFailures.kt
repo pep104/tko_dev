@@ -7,5 +7,6 @@ import pro.apir.tko.core.exception.Failure
  * Date: 2020-03-25
  * Project: tko-android
  */
-class RouteTrackingFailure : Failure.FeatureFailure()
+//todo enum failure
+data class RouteTrackingFailure(val code: String? = null) : Failure.FeatureFailure()
 class RouteTrackingNotExist: Failure.FeatureFailure()
