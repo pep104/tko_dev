@@ -6,7 +6,10 @@ import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
+import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
+import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
+import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
 import pro.apir.tko.data.repository.BaseRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
@@ -23,11 +26,6 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routePhotoRepos
                                                      private val routeTrackApi: RouteTrackApi,
                                                      private val userRepository: UserRepository,
                                                      private val tokenManager: TokenManager) : RouteSessionRepository, BaseRepository(tokenManager) {
-
-    //TODO OFFSET FROM BACKEND
-    private val offsetHours = 3
-
-    //NEW
 
     /**
      * Retrieves session from remote api by id
@@ -80,19 +78,27 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routePhotoRepos
     }
 
     override suspend fun enterRouteStop(stopId: Long): Either<Failure, RouteTrackingStopModel> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val call = suspend { routeTrackApi.enterStop(RouteEnterStopRequest(stopId)) }
+        val map: (RouteStopTrackingResponse) -> RouteTrackingStopModel = { it.toModel() }
+        return requestTracking(call, map)
     }
 
     override suspend fun leaveRouteStop(attachments: List<String>): Either<Failure, RouteTrackingInfoModel> {
 
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val callStop = suspend { routeTrackApi.leaveStop(RouteLeaveStopRequest(attachments)) }
+        val mapStop: (RouteStopTrackingResponse) -> RouteTrackingStopModel = { it.toModel() }
+        val resultStop = requestTracking(callStop, mapStop)
 
-        val call = suspend { routeTrackApi.getCurrentRoute() }
-        val map: (RouteTrackingDetailedResponse) -> RouteTrackingInfoModel = { it.toModel() }
-        return requestTracking(call, map)
+        return  when(resultStop){
+            is Either.Left -> Either.Left(resultStop.a)
+            is Either.Right -> {
+                val callResult = suspend { routeTrackApi.getCurrentRoute() }
+                val mapResult: (RouteTrackingDetailedResponse) -> RouteTrackingInfoModel = { it.toModel() }
+                return requestTracking(callResult, mapResult)
+            }
+        }
     }
 
-    //FIXME make open fun with custom error parsing?
     suspend fun <T, R> requestTracking(call: suspend () -> Response<T>, transform: (T) -> R): Either<Failure, R> {
         return if (!tokenManager.isRefreshTokenExpired()) {
             try {
