@@ -16,7 +16,7 @@ class UserInteractorImpl @Inject constructor(private val userRepository: UserRep
         userRepository.getUser()
     }
 
-    override suspend fun getCurrentUserId(): Either<Failure, Int> = withContext(dispatcher) {
+    override suspend fun getCurrentUserId(): Int = withContext(dispatcher) {
         userRepository.getUserId()
     }
 }

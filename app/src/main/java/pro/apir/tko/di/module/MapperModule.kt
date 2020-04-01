@@ -1,8 +1,6 @@
 package pro.apir.tko.di.module
 
 import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
 
 /**
  * Created by Антон Сарматин
@@ -12,9 +10,7 @@ import javax.inject.Singleton
 @Module
 class MapperModule {
 
-    @Singleton
-    @Provides
-    fun photoTypeMapper(): PhotoTypeMapper = PhotoTypeMapperImpl()
+
 
 
 }

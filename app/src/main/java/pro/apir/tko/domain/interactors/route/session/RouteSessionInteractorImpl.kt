@@ -1,6 +1,7 @@
 package pro.apir.tko.domain.interactors.route.session
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
@@ -10,10 +11,7 @@ import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
-import pro.apir.tko.domain.model.RouteModel
-import pro.apir.tko.domain.model.RoutePointModel
-import pro.apir.tko.domain.model.RouteSessionModel
-import pro.apir.tko.domain.model.RouteStateConstants
+import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 import java.io.File
 import javax.inject.Inject
@@ -42,7 +40,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         return withContext(Dispatchers.IO) {
             val userIdResult = userRepository.getUserId()
             //get current session
-            val existingSession = sessionRepository.getCurrentRouteTrackingInfo()
+            val existingSession = getCurrentTrackingInfo()
 
             //
             when (existingSession) {
@@ -112,46 +110,86 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
     }
 
     /**
-     *
-     */
-    override suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel {
-        TODO()
-    }
-
-
-    /**
      * Completes given route point model and return list with new states
      */
     override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
         return withContext(Dispatchers.IO) {
             val enterResult = sessionRepository.enterRouteStop(routePointId)
 
-            val photos = arrayListOf<String>()
-            if (routeSessionModel.sessionId != null) {
-                val photosToUpload = photoRepository.getPhotosByPoint(routeSessionModel.sessionId, routePointId)
-                photosToUpload.forEach {
-                    try {
-                        attachmentRepository.uploadFile(File(it.path)).onRight {
-                            photos.addAll(it.map { it.url })
-                        }
-                    } catch (e: Exception) {
-                    }
+            when (enterResult) {
+                is Either.Left -> return@withContext Either.Left(enterResult.a)
+                is Either.Right -> {
+                    val photos = arrayListOf<String>()
+                    if (routeSessionModel.sessionId != null) {
+                        val photosToUpload = photoRepository.getPhotosByPoint(routeSessionModel.sessionId, routePointId)
+                        photosToUpload.forEach { cachePhoto ->
+                            try {
+                                attachmentRepository.uploadFile(File(cachePhoto.path)).onRight {
+                                    photos.addAll(it.map { it.url })
+                                    launch(Dispatchers.IO) {
+                                        photoRepository.deletePhoto(cachePhoto.id)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                            }
 
+                        }
+                    }
+                    val completeResult = sessionRepository.leaveRouteStop(photos)
+                    when (completeResult) {
+                        is Either.Left -> Either.Left(completeResult.a)
+                    }
                 }
             }
-           //TODO ADD EXISTING REMOTE PHOTOS?
 
-            //TODO
-            val completeResult = sessionRepository.leaveRouteStop()
+            return@withContext updateSession(routeSessionModel)
+        }
+    }
 
-
-            TODO("return updated route session model")
+    private suspend fun updateSession(sessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
+        val info = getCurrentTrackingInfo()
+        return when (info) {
+            is Either.Left -> Either.Left(info.a)
+            is Either.Right -> {
+                return if (info.b != null) Either.Right(mapSessionWithInfo(sessionModel, info.b)) else Either.Right(sessionModel)
+            }
         }
     }
 
 
     private fun mapSessionWithInfo(sessionModel: RouteSessionModel, infoModel: RouteTrackingInfoModel): RouteSessionModel {
-        TODO("not implemented")
+
+        var completedCount = 0
+        var completedLastPos = -1
+        val sessionId = infoModel.sessionId
+        val mappedPoints = arrayListOf<RoutePointModel>()
+        sessionModel.points.forEachIndexed { index, point ->
+            val infoPoint = infoModel.stopsCompleted.findLast { info -> info.stop == point.pointId.toLong() }
+
+            val newPoint = if (infoPoint != null) {
+                completedCount++
+                completedLastPos = index
+                val photos = infoPoint.attachments.map { PhotoModel(null, PhotoModel.Type.REMOTE, it) }
+                RoutePointModel(RouteStateConstants.POINT_TYPE_COMPLETED, photos, point)
+            } else {
+                val photos =
+                        infoModel.localPhotos
+                                .filter { cache -> cache.pointId == point.pointId.toLong() }
+                                .map { PhotoModel(it.id, PhotoModel.Type.LOCAL, it.path) }
+                RoutePointModel(RouteStateConstants.POINT_TYPE_DEFAULT, photos, point)
+            }
+            mappedPoints.add(newPoint)
+        }
+
+        val isCompleted = completedCount == mappedPoints.size && completedLastPos == mappedPoints.size - 1
+
+        if (!isCompleted)
+            setPendingPoint(mappedPoints)
+
+        val newSession = RouteSessionModel(sessionId, mappedPoints, sessionModel)
+                .apply { state = if (isCompleted) RouteStateConstants.ROUTE_TYPE_COMPLETED else RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+
+        return newSession
     }
 
     /**

@@ -250,7 +250,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         viewModelScope.launch {
             val session = _routeSession.value
             val completablePoint = _currentStop.value
-            val completablePointId = _currentStop.value?.id
+            val completablePointId = _currentStop.value?.pointId
 
             if (session != null && completablePointId != null && completablePoint != null) {
 
@@ -260,7 +260,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                     routeSessionInteractor.completePoint(session, completablePointId).fold(::handleFailure) {
                         setData(it)
 //                        //Update current pos
-                        val completedPos = it.points.first { it.id == completablePointId }
+                        val completedPos = it.points.first { it.pointId == completablePointId }
                         setStopData(completedPos)
 
                         Unit
@@ -278,12 +278,12 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     fun addPhotos(filePaths: List<String>) {
         viewModelScope.launch {
             val session = _routeSession.value
-            val currentStopId = _currentStop.value?.id
+            val currentStopId = _currentStop.value?.pointId
             if (session != null && currentStopId != null) {
                 val res = routePhotosInteractor.createPhotos(session, filePaths, currentStopId)
                 setData(res)
 
-                val addedPos = res.points.first { it.id == currentStopId }
+                val addedPos = res.points.first { it.pointId == currentStopId }
                 setStopData(addedPos)
 
             }

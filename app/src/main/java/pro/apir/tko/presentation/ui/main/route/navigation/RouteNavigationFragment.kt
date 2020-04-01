@@ -288,8 +288,8 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
     private fun setCardviewState(point: RoutePointModel) {
         Log.d("point", "setPointState: ${point.location} ${point.type}")
-        val isNewPoint = if (lastPoint != point.id) {
-            lastPoint = point.id
+        val isNewPoint = if (lastPoint != point.pointId) {
+            lastPoint = point.pointId
             true
         } else {
             false
