@@ -1,6 +1,8 @@
 package pro.apir.tko.data.repository.route
 
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.CancellationException
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
@@ -11,6 +13,7 @@ import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
+import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.repository.BaseRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
@@ -25,6 +28,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routePhotoRepos
                                                      private val routeRepository: RouteRepository,
                                                      private val routeTrackApi: RouteTrackApi,
                                                      private val userRepository: UserRepository,
+                                                     private val trackingFailureCodeMapper: TrackingFailureCodeMapper,
                                                      private val tokenManager: TokenManager) : RouteSessionRepository, BaseRepository(tokenManager) {
 
     /**
@@ -109,8 +113,11 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routePhotoRepos
                     false -> {
                         when (call.code()) {
                             in 400..499 -> {
-                                //TODO RETRIEVE CODE!
-                                Either.Left(RouteTrackingFailure())
+                                //RETRIEVE CODE!
+                                val error = call.errorBody()?.string()
+                                Log.d("http","error is $error")
+                                val errorObj : JsonObject = Gson().fromJson(error, JsonObject::class.java)
+                                Either.Left(RouteTrackingFailure(errorObj.get("code").asString))
                             }
                             else -> {
                                 Either.Left(Failure.ServerError())
