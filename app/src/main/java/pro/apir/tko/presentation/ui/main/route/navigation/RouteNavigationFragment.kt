@@ -401,7 +401,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     private fun setRecycler(point: RoutePointModel, isNewPoint: Boolean) {
         val photosCount = point.photos.size
 
-        recyclerViewAdapter.setPhoto(point.photos)
+        recyclerViewAdapter.setPhoto(point.photos, point.type)
 
         when (point.type) {
             RouteStateConstants.POINT_TYPE_DEFAULT,
