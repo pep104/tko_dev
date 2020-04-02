@@ -138,7 +138,9 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     fun init(route: RouteModel) {
         viewModelScope.launch(Dispatchers.IO) {
             if (_routeSession.value == null) {
-                routeSessionInteractor.getInitialSessionFromRoute(route).fold(::handleFailure, ::setData)
+                routeSessionInteractor.getSessionFromRoute(route).collect {
+                    it.fold(::handleFailure, ::setData)
+                }
             }
         }
     }

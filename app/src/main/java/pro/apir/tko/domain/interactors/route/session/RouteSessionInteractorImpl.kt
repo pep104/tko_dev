@@ -3,6 +3,8 @@ package pro.apir.tko.domain.interactors.route.session
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
@@ -34,15 +36,30 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         sessionRepository.getCurrentRouteTrackingInfo()
     }
 
-
     /**
      *
-     * Create initial RouteSessionModel from RouteModel
+     * FLOW
+     * 1) Create initial RouteSessionModel from RouteModel
+     * 2) Create actual session with tracking api
      *
      */
-    override suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel> {
+    override suspend fun getSessionFromRoute(routeModel: RouteModel): Flow<Either<Failure, RouteSessionModel>> = flow {
+        withContext(Dispatchers.IO) {
+            //Create and emit initial session
+            val initialSession = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_START_DISABLED)
+            emit(Either.Right(initialSession))
+
+            //Request for actual session
+            val actualSession = getActualSession(routeModel)
+            emit(actualSession)
+        }
+    }
+
+    /**
+     * Creates session with tracking info
+     */
+    suspend fun getActualSession(routeModel: RouteModel): Either<Failure, RouteSessionModel> {
         return withContext(Dispatchers.IO) {
-            val userIdResult = userRepository.getUserId()
             //get current session
             val existingTrackingInfo = getCurrentTrackingInfo()
 
