@@ -25,5 +25,12 @@ class RoutePhotoInteractorImpl @Inject constructor(private val routePhotoReposit
         return@withContext sessionModel
     }
 
+    override suspend fun deletePhoto(sessionModel: RouteSessionModel, photoModel: PhotoModel, pointId: Long): RouteSessionModel = withContext(dispatcher) {
+        if (photoModel.id != null)
+            routePhotoRepository.deletePhoto(photoModel.id)
 
+        sessionModel.points.findLast { it.pointId == pointId }?.let { point -> point.photos.remove(photoModel) }
+
+        return@withContext sessionModel
+    }
 }

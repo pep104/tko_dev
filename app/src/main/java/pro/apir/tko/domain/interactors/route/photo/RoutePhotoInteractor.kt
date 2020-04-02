@@ -1,5 +1,6 @@
 package pro.apir.tko.domain.interactors.route.photo
 
+import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RouteSessionModel
 
 /**
@@ -10,5 +11,7 @@ import pro.apir.tko.domain.model.RouteSessionModel
 interface RoutePhotoInteractor {
 
     suspend fun createPhotos(sessionModel: RouteSessionModel, photoPaths: List<String>, pointId: Long): RouteSessionModel
+
+    suspend fun deletePhoto(sessionModel: RouteSessionModel, photoModel: PhotoModel, pointId: Long): RouteSessionModel
 
 }

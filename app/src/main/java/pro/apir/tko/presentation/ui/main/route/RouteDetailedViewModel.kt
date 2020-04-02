@@ -284,12 +284,26 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
             if (session != null && currentStopId != null) {
                 val res = routePhotosInteractor.createPhotos(session, filePaths, currentStopId)
                 setData(res)
-
-                val addedPos = res.points.first { it.pointId == currentStopId }
-                setStopData(addedPos)
-
+                refreshCurrent(res, currentStopId)
             }
         }
+    }
+
+    fun deletePhoto(photoModel: PhotoModel) {
+        viewModelScope.launch {
+            val session = _routeSession.value
+            val currentStopId = _currentStop.value?.pointId
+            if (session != null && currentStopId != null) {
+                val res = routePhotosInteractor.deletePhoto(session, photoModel, currentStopId)
+                refreshCurrent(res, currentStopId)
+            }
+        }
+    }
+
+    private fun refreshCurrent(sessionModel: RouteSessionModel, pointId: Long) {
+        setData(sessionModel)
+        val addedPos = sessionModel.points.first { it.pointId == pointId }
+        setStopData(addedPos)
     }
 
     //controls
@@ -341,48 +355,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private fun collectLocations() {
         viewModelScope.launch(Dispatchers.IO) {
             locationManager.getLocationFlow().collect { location ->
-                //                //Count distance for all route stops
-//                val routeStops = _routeStops.value
-//                val result = arrayListOf<RoutePointModel>()
-//                routeStops?.forEach {
-//                    val locationRoutePoint = it.coordinates
-//                    if (locationRoutePoint != null) {
-//                        val dist = calcDistance(
-//                                location.lat,
-//                                location.lon,
-//                                it.coordinates.lat,
-//                                it.coordinates.lng
-//                        )
-//                        result.add(RoutePointModel(dist.toInt().roundUpNearest(10), it))
-//                    } else {
-//                        result.add(it)
-//                    }
-//                }
-//                _routeStops.postValue(result)
-//
-//                //Count distance for current nav stop
-//                val currentNavStop = _currentStop.value
-//                currentNavStop?.let { it ->
-//                    kotlin.runCatching {
-//                        currentStopLocationJob?.cancel()
-//                        currentStopLocationJob = viewModelScope.launch {
-//                            val locationRoutePoint = it.coordinates
-//                            if (locationRoutePoint != null) {
-//                                val dist = calcDistance(
-//                                        location.lat,
-//                                        location.lon,
-//                                        it.coordinates.lat,
-//                                        it.coordinates.lng
-//                                )
-//                                _currentStop.postValue(RoutePointModel(dist.toInt().roundUpNearest(10), it))
-//                            }
-//                        }
-//                    }
-//                }
-
-                //todo map dist via field
                 lastUserLocation = location
-
             }
         }
     }
@@ -409,7 +382,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 if (it.coordinates != null) {
                     val dist = calcDistance(it.coordinates, lastUserLocation)
 
-                    //todo update current!
                     withContext(Dispatchers.Main) {
                         _currentStop.value = RoutePointModel(dist?.toInt()?.roundUpNearest(10), it)
                     }

@@ -549,7 +549,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     }
 
     override fun onDeletePhoto(photo: PhotoModel) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        viewModel.deletePhoto(photo)
     }
 
     override fun onAddNewPhoto() {

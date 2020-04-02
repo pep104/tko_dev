@@ -3,6 +3,7 @@ package pro.apir.tko.data.repository.route.photo
 import pro.apir.tko.data.framework.room.dao.PhotoDao
 import pro.apir.tko.data.framework.room.entity.PhotoEntity
 import pro.apir.tko.domain.model.PhotoCacheModel
+import java.io.File
 import javax.inject.Inject
 
 class RoutePhotoRepositoryImpl @Inject constructor(private val photoDao: PhotoDao) : RoutePhotoRepository {
@@ -13,7 +14,13 @@ class RoutePhotoRepositoryImpl @Inject constructor(private val photoDao: PhotoDa
     }
 
     override suspend fun deletePhoto(photoId: Long) {
-        photoDao.delete(photoDao.get(photoId))
+        val entity = photoDao.get(photoId)
+        try {
+            File(entity.path).delete()
+        } catch (e: Exception) {
+
+        }
+        photoDao.delete(entity)
     }
 
     override suspend fun getPhotosBySession(sessionId: Long): List<PhotoCacheModel> {
