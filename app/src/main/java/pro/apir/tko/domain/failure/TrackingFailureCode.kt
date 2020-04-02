@@ -5,6 +5,7 @@ package pro.apir.tko.domain.failure
  * Date: 2020-04-01
  * Project: tko-android
  */
-enum class TrackingFailureCode(val code: String) {
-    ALREADY_ENTERED("already_entered")
+enum class TrackingFailureCode {
+    ALREADY_ENTERED,
+    UNKNOWN
 }

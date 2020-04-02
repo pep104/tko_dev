@@ -1,8 +1,6 @@
 package pro.apir.tko.data.repository.route
 
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import kotlinx.coroutines.CancellationException
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
@@ -93,7 +91,7 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routePhotoRepos
         val mapStop: (RouteStopTrackingResponse) -> RouteTrackingStopModel = { it.toModel() }
         val resultStop = requestTracking(callStop, mapStop)
 
-        return  when(resultStop){
+        return when (resultStop) {
             is Either.Left -> Either.Left(resultStop.a)
             is Either.Right -> {
                 val callResult = suspend { routeTrackApi.getCurrentRoute() }
@@ -115,9 +113,8 @@ class RouteSessionRepositoryImpl @Inject constructor(private val routePhotoRepos
                             in 400..499 -> {
                                 //RETRIEVE CODE!
                                 val error = call.errorBody()?.string()
-                                Log.d("http","error is $error")
-                                val errorObj : JsonObject = Gson().fromJson(error, JsonObject::class.java)
-                                Either.Left(RouteTrackingFailure(errorObj.get("code").asString))
+                                Log.d("http", "error is $error")
+                                Either.Left(RouteTrackingFailure(trackingFailureCodeMapper.getFailureFromJSON(error)))
                             }
                             else -> {
                                 Either.Left(Failure.ServerError())

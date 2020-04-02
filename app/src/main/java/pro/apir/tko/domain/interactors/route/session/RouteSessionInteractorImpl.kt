@@ -1,5 +1,7 @@
 package pro.apir.tko.domain.interactors.route.session
 
+import android.util.Log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -11,6 +13,8 @@ import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
+import pro.apir.tko.domain.failure.RouteTrackingFailure
+import pro.apir.tko.domain.failure.TrackingFailureCode
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 import java.io.File
@@ -40,18 +44,18 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         return withContext(Dispatchers.IO) {
             val userIdResult = userRepository.getUserId()
             //get current session
-            val existingSession = getCurrentTrackingInfo()
+            val existingTrackingInfo = getCurrentTrackingInfo()
 
             //
-            when (existingSession) {
-                is Either.Left -> existingSession
+            when (existingTrackingInfo) {
+                is Either.Left -> existingTrackingInfo
                 is Either.Right -> {
                     when (true) {
-                        existingSession.b != null && existingSession.b.routeId == routeModel.id.toLong() -> {
-                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingSession.b)
+                        existingTrackingInfo.b != null && existingTrackingInfo.b.routeId == routeModel.id.toLong() -> {
+                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingTrackingInfo.b)
                             Either.Right(session)
                         }
-                        existingSession.b == null -> {
+                        existingTrackingInfo.b == null -> {
                             val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_DEFAULT)
                             Either.Right(route)
                         }
@@ -117,33 +121,46 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             val enterResult = sessionRepository.enterRouteStop(routePointId)
 
             when (enterResult) {
-                is Either.Left -> return@withContext Either.Left(enterResult.a)
-                is Either.Right -> {
-                    val photos = arrayListOf<String>()
-                    if (routeSessionModel.sessionId != null) {
-                        val photosToUpload = photoRepository.getPhotosByPoint(routeSessionModel.sessionId, routePointId)
-                        photosToUpload.forEach { cachePhoto ->
-                            try {
-                                attachmentRepository.uploadFile(File(cachePhoto.path)).onRight {
-                                    //FIXME not url but id?
-                                    photos.addAll(it.map { it.id.toString() })
-                                    launch(Dispatchers.IO) {
-                                        photoRepository.deletePhoto(cachePhoto.id)
-                                    }
-                                }
-                            } catch (e: Exception) {
-                            }
+                is Either.Left -> {
+                    when (true) {
 
-                        }
+                        enterResult.a is RouteTrackingFailure
+                                && enterResult.a.code == TrackingFailureCode.ALREADY_ENTERED -> completePointRequest(routeSessionModel, routePointId, this)
+
+                        else -> Either.Left(enterResult.a)
+
                     }
-                    val completeResult = sessionRepository.leaveRouteStop(photos)
-                    when (completeResult) {
-                        is Either.Left -> Either.Left(completeResult.a)
-                    }
+                }
+                is Either.Right -> {
+                    completePointRequest(routeSessionModel, routePointId, this)
                 }
             }
 
             return@withContext updateSession(routeSessionModel)
+        }
+    }
+
+    private suspend fun completePointRequest(routeSessionModel: RouteSessionModel, routePointId: Long, scope: CoroutineScope) {
+        val photos = arrayListOf<String>()
+        if (routeSessionModel.sessionId != null) {
+            val photosToUpload = photoRepository.getPhotosByPoint(routeSessionModel.sessionId, routePointId)
+            photosToUpload.forEach { cachePhoto ->
+                try {
+                    attachmentRepository.uploadFile(File(cachePhoto.path)).onRight { uploadedPhotos ->
+                        photos.addAll(uploadedPhotos.map { it.id.toString() })
+                        scope.launch {
+                            photoRepository.deletePhoto(cachePhoto.id)
+                        }
+
+                    }
+                } catch (e: Exception) {
+                }
+
+            }
+        }
+        val completeResult = sessionRepository.leaveRouteStop(photos)
+        when (completeResult) {
+            is Either.Left -> Either.Left(completeResult.a)
         }
     }
 
@@ -165,12 +182,17 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         val sessionId = infoModel.sessionId
         val mappedPoints = arrayListOf<RoutePointModel>()
         sessionModel.points.forEachIndexed { index, point ->
-            val infoPoint = infoModel.stopsCompleted.findLast { info -> info.stop == point.pointId.toLong() }
+
+            val infoPoint = infoModel.stopsCompleted.findLast { info ->
+                Log.e("httpStop", "info routeStopId: ${info.routeStopId} point pointId: ${point.pointId}")
+                info.routeStopId == point.pointId
+            }
+
 
             val newPoint = if (infoPoint != null) {
                 completedCount++
                 completedLastPos = index
-                val photos = infoPoint.attachments.map { PhotoModel(null, PhotoModel.Type.REMOTE, it) }
+                val photos = infoPoint.attachments.map { PhotoModel(it.id.toLong(), PhotoModel.Type.REMOTE, it.url) }
                 RoutePointModel(RouteStateConstants.POINT_TYPE_COMPLETED, photos, point)
             } else {
                 val photos =

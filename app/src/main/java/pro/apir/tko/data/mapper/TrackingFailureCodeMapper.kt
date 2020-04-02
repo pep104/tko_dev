@@ -9,5 +9,5 @@ import pro.apir.tko.domain.failure.TrackingFailureCode
  */
 interface TrackingFailureCodeMapper {
 
-    fun getEnumFromCode(str: String): TrackingFailureCode
+    fun getFailureFromJSON(json: String?): TrackingFailureCode
 }
