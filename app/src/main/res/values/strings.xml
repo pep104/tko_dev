@@ -75,6 +75,9 @@
     <string name="btn_route_action_next">Далее</string>
     <string name="btn_finish_route">Завершить</string>
 
+    //Errors
+    <string name="error_network_connection">Ошибка подключения к интернету</string>
+
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
         <item quantity="one">%1$d контейнер</item>
