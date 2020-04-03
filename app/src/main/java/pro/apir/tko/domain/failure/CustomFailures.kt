@@ -10,3 +10,5 @@ import pro.apir.tko.core.exception.Failure
 data class RouteTrackingFailure(val code: TrackingFailureCode = TrackingFailureCode.UNKNOWN) : Failure.FeatureFailure()
 
 class RouteTrackingNotExist : Failure.FeatureFailure()
+
+class RouteTrackingNotCompleted : Failure.FeatureFailure()

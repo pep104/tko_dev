@@ -252,34 +252,36 @@
         android:clipToPadding="false"
         android:paddingStart="8dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/btnAction" />
+        app:layout_constraintBottom_toTopOf="@+id/frameButtons" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAction"
-        style="@style/ButtonPrimary"
+    <FrameLayout
+        android:id="@+id/frameButtons"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFinish"
-        style="@style/ButtonPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/btn_finish_route"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAction"
+            style="@style/ButtonPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp" />
 
-        <include layout="@layout/include_loading"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFinish"
+            style="@style/ButtonPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/btn_finish_route"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <include layout="@layout/include_loading" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

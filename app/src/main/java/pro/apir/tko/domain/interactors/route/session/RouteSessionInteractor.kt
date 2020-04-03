@@ -21,6 +21,8 @@ interface RouteSessionInteractor {
 
     suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
 
+    suspend fun finishSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
+
     suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>>
 
     suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>

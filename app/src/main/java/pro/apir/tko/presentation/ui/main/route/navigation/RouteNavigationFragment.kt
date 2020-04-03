@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_route_navigation.view.*
+import kotlinx.android.synthetic.main.include_loading.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -40,15 +43,15 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
+import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.extension.round
+import pro.apir.tko.domain.failure.RouteTrackingNotCompleted
+import pro.apir.tko.domain.failure.RouteTrackingNotExist
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants
-import pro.apir.tko.presentation.extension.gone
-import pro.apir.tko.presentation.extension.hideKeyboard
-import pro.apir.tko.presentation.extension.invisible
-import pro.apir.tko.presentation.extension.visible
+import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.camera.CameraSharedViewModel2
 import pro.apir.tko.presentation.ui.main.route.RouteDetailedViewModel
@@ -63,12 +66,25 @@ import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
 class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.AttachInteractionListener {
 
 
-    private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute, { defaultViewModelProviderFactory })
+    private val viewModel: RouteDetailedViewModel by navGraphViewModels(R.id.graphRoute) { defaultViewModelProviderFactory }
     private val cameraSharedViewModel2: CameraSharedViewModel2 by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_route_navigation
 
     override fun handleFailure() = viewModel.failure
+
+    override val failureObserver: Observer<Failure> = Observer {
+        if (it is Failure.FeatureFailure) {
+            when (it) {
+                is RouteTrackingNotExist -> {
+                    alert(R.string.error_route_tracking_not_exist)
+                }
+                is RouteTrackingNotCompleted -> {
+                    alert(R.string.error_route_not_completed)
+                }
+            }
+        } else super.failureObserver
+    }
 
     private lateinit var btnAction: MaterialButton
     private lateinit var btnFinish: MaterialButton
@@ -85,11 +101,12 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
     private lateinit var imgLocation: ImageView
     private lateinit var textDistance: TextView
 
-
     //etc
 
     private lateinit var recyclerViewPhotos: RecyclerView
     private lateinit var recyclerViewAdapter: RoutePointPhotoAttachAdapter
+
+    private lateinit var frameLoading: FrameLayout
 
 
     private lateinit var mapView: MapView
@@ -127,6 +144,8 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
         textContainerNumber = view.textContainerNumber
         imgLocation = view.imgLocation
         textDistance = view.textDistance
+
+        frameLoading = view.frameLoading
 
         mapView = view.map
         btnZoomIn = view.btnZoomIn
@@ -224,8 +243,27 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
                 RouteDetailedViewModel.RouteState.Completed -> {
                     btnAction.gone()
+                    btnFinish.visible()
+                    btnFinish.setOnClickListener {
+                        viewModel.finishTracking()
+                    }
                 }
             }
+        })
+
+        viewModel.loadingStopCompletion.observe(viewLifecycleOwner, Observer {
+            frameLoading.isVisible = it
+        })
+
+        viewModel.loadingTrackingCompletion.observe(viewLifecycleOwner, Observer {
+            frameLoading.isVisible = it
+        })
+
+        viewModel.eventTrackingCompletion.observe(viewLifecycleOwner, Observer {
+            if (it)
+                findNavController().popBackStack(R.id.routeListFragment, false)
+            else
+                alert(getString(R.string.error_default))
         })
 
         //Route

@@ -16,6 +16,7 @@ import pro.apir.tko.data.repository.route.RouteSessionRepository
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.data.repository.user.UserRepository
 import pro.apir.tko.domain.failure.RouteTrackingFailure
+import pro.apir.tko.domain.failure.RouteTrackingNotExist
 import pro.apir.tko.domain.failure.TrackingFailureCode
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
@@ -117,6 +118,19 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
 
     }
 
+    /**
+     * Finish route tracking for completed session
+     */
+    override suspend fun finishSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> = withContext(Dispatchers.IO) {
+        return@withContext if (routeSessionModel.sessionId != null) {
+            val result = sessionRepository.finishRouteTracking(routeSessionModel.sessionId)
+            when (result) {
+                is Either.Left -> Either.Left(result.a)
+                is Either.Right -> Either.Right(mapSessionWithInfo(routeSessionModel, result.b))
+            }
+        } else
+            Either.Left(RouteTrackingNotExist())
+    }
 
     /**
      * Find and map existing route session to route list model

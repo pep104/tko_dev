@@ -113,6 +113,17 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val currentStopStickyCoordinates: LiveData<CoordinatesModel>
         get() = _currentStopStickyCoordinates
 
+    private val _loadingStopCompletion = handle.getLiveData<Boolean>("loadingStopCompletion")
+    val loadingStopCompletion: LiveData<Boolean>
+        get() = _loadingStopCompletion
+
+    private val _loadingTrackingCompletion = handle.getLiveData<Boolean>("loadingTrackingCompletion")
+    val loadingTrackingCompletion: LiveData<Boolean>
+        get() = _loadingTrackingCompletion
+
+    private val _eventTrackingCompletion = MutableLiveData<Boolean>()
+    val eventTrackingCompletion: LiveData<Boolean>
+        get() = _eventTrackingCompletion
 
     //Location
 
@@ -146,14 +157,37 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     }
 
     //Btn Start/Resume
-    fun start() {
+    fun startTracking() {
         if (_state.value == RouteState.Default || _state.value == RouteState.Pending)
-            viewModelScope.launch(Dispatchers.IO) {
-                _routeSession.value?.let {
-                    routeSessionInteractor.startSession(it).fold(::handleFailure, ::setData)
+            viewModelScope.launch {
+                _loadingTrackingCompletion.postValue(true)
+                _routeSession.value?.let { sessionModel ->
+                    routeSessionInteractor.startSession(sessionModel).fold({
+                        _loadingTrackingCompletion.postValue(false)
+                        handleFailure(it)
+                    }, {
+                        _loadingTrackingCompletion.postValue(false)
+                        setData(it)
+                    })
                 }
             }
+    }
 
+    fun finishTracking() {
+        if (_state.value == RouteState.Completed) {
+            viewModelScope.launch {
+                _routeSession.value?.let {
+                    _loadingTrackingCompletion.postValue(true)
+                    routeSessionInteractor.finishSession(it).fold({
+                        _loadingTrackingCompletion.postValue(false)
+                        handleFailure(it)
+                    }, {
+                        _loadingTrackingCompletion.postValue(false)
+                        _eventTrackingCompletion.postValue(true)
+                    })
+                }
+            }
+        }
     }
 
     private fun setData(sessionModel: RouteSessionModel) {
@@ -169,7 +203,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
             when (sessionModel.state) {
                 RouteStateConstants.ROUTE_TYPE_DEFAULT -> {
                     _state.value = RouteState.Default
-
                 }
                 RouteStateConstants.ROUTE_TYPE_PENDING -> {
                     _state.value = RouteState.Pending
@@ -259,14 +292,20 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 if (completablePoint.photos.size < 2) {
                     handleFailure(PhotosNotEnoughError())
                 } else {
-                    routeSessionInteractor.completePoint(session, completablePointId).fold(::handleFailure) {
-                        setData(it)
-//                        //Update current pos
-                        val completedPos = it.points.first { it.pointId == completablePointId }
-                        setStopData(completedPos)
-
-                        Unit
-                    }
+                    _loadingStopCompletion.postValue(true)
+                    routeSessionInteractor.completePoint(session, completablePointId).fold(
+                            {
+                                _loadingStopCompletion.postValue(false)
+                                handleFailure(it)
+                            },
+                            {
+                                setData(it)
+                                //Update current pos
+                                val completedPos = it.points.first { it.pointId == completablePointId }
+                                setStopData(completedPos)
+                                _loadingStopCompletion.postValue(false)
+                                Unit
+                            })
                 }
 
             } else {
@@ -433,5 +472,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         distance = Math.pow(distance, 2.0) + Math.pow(height, 2.0)
         return Math.sqrt(distance)
     }
+
 
 }
