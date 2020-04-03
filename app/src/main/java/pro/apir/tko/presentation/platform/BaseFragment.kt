@@ -41,11 +41,11 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 
     internal val globalState: GlobalState by activityViewModels()
 
-    private val failureObserver by lazy {
+    internal open val failureObserver by lazy {
         Observer<Failure> {
             when (it) {
                 is Failure.FeatureFailure ->  throw NotImplementedError("You should override failureObserver to handle FeatureFailure")
-                Failure.NetworkConnection -> alert(getString(R.string.error_network_connection))
+                Failure.NetworkConnection -> alert(R.string.error_network_connection)
                 is Failure.ServerError -> {
                     if(it.message != null){
                         alert(it.message)
