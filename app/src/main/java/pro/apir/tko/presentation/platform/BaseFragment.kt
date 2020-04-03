@@ -15,6 +15,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import pro.apir.tko.App
+import pro.apir.tko.R
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.di.ViewModelFactory
 import pro.apir.tko.di.component.AppComponent
@@ -28,7 +29,6 @@ import javax.inject.Inject
  *
  * @see Fragment
  */
-//TODO LOADING HANDLING
 abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 
     abstract fun layoutId(): Int
@@ -41,11 +41,11 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 
     internal val globalState: GlobalState by activityViewModels()
 
-    private val failureObserver by lazy {
+    internal open val failureObserver by lazy {
         Observer<Failure> {
             when (it) {
-                is Failure.FeatureFailure -> TODO()
-                Failure.NetworkConnection -> TODO()
+                is Failure.FeatureFailure ->  throw NotImplementedError("You should override failureObserver to handle FeatureFailure")
+                Failure.NetworkConnection -> alert(R.string.error_network_connection)
                 is Failure.ServerError -> {
                     if(it.message != null){
                         alert(it.message)

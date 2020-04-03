@@ -8,10 +8,13 @@ import pro.apir.tko.data.framework.network.model.response.routetracking.data.Per
  * Date: 20.03.2020
  * Project: tko-android
  */
-data class RouteTrackingResponse(
-        val id: Long,
-        val route: Long,
-        val user: Long,
+data class RouteTrackingInfoResponse(
+        @SerializedName("id")
+        val sessionId: Long,
+        @SerializedName("route")
+        val routeId: Long,
+        @SerializedName("user")
+        val userId: Long,
         val period: PeriodData,
         @SerializedName("created_at")
         val createdAt: String,

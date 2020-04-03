@@ -17,7 +17,8 @@ data class PhotoEntity(
         @ColumnInfo(name = "point_id")
         val pointId: Long,
 
-        val type: String,
+        @ColumnInfo(name = "session_id")
+        val sessionId: Long,
 
         val path: String
 

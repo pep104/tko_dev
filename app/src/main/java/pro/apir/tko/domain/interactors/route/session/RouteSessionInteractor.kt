@@ -1,9 +1,11 @@
 package pro.apir.tko.domain.interactors.route.session
 
+import kotlinx.coroutines.flow.Flow
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RouteSessionModel
+import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 
 /**
  * Created by Антон Сарматин
@@ -12,17 +14,16 @@ import pro.apir.tko.domain.model.RouteSessionModel
  */
 interface RouteSessionInteractor {
 
-    suspend fun getExistingSessionRouteId(): Either<Failure, Int?>
+    suspend fun getCurrentTrackingInfo(): Either<Failure, RouteTrackingInfoModel?>
 
-    suspend fun getInitialSessionFromRoute(routeModel: RouteModel): Either<Failure, RouteSessionModel>
+
+    suspend fun getSessionFromRoute(routeModel: RouteModel): Flow<Either<Failure, RouteSessionModel>>
 
     suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
 
+    suspend fun finishSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
+
     suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>>
-
-    suspend fun updateSession(routeSessionModel: RouteSessionModel): RouteSessionModel
-
-    suspend fun startPoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
 
     suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
 

@@ -16,6 +16,6 @@ class RouteSource @Inject constructor(private val retrofit: Retrofit) : RouteApi
     override suspend fun getRoutesList(page: Int, pageSize: Int) =
             api.getRoutesList(page, pageSize)
 
-    override suspend fun getRoute(id: Int) =
+    override suspend fun getRoute(id: Long) =
             api.getRoute(id)
 }

@@ -25,7 +25,11 @@ interface PhotoDao {
     fun delete(point: PhotoEntity)
 
     @Transaction
-    @Query("SELECT * FROM photo_table where point_id LIKE :pointId")
-    fun selectAllPhotosByPoint(pointId: Long): List<PhotoEntity>
+    @Query("SELECT * FROM photo_table where session_id LIKE :sessionId and point_id LIKE :pointId")
+    fun selectAllPhotosByPoint(sessionId: Long, pointId: Long): List<PhotoEntity>
+
+    @Transaction
+    @Query("SELECT * FROM photo_table where session_id = :sessionId")
+    fun selectAllPhotosBySession(sessionId: Long): List<PhotoEntity>
 
 }

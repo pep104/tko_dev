@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,6 +15,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import kotlinx.android.synthetic.main.item_route_photo.view.*
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.PhotoModel
+import pro.apir.tko.domain.model.RouteStateConstants
 import pro.apir.tko.presentation.extension.dpToPx
 import java.io.File
 
@@ -40,24 +42,19 @@ class RoutePointPhotoAttachAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    fun setPhoto(list: List<PhotoModel>) {
-        val dataList = arrayListOf<ListItem>()
-        list.forEach {
-            dataList.add(ListItem.Image(it))
-        }
-        setData(dataList)
+    fun setPhoto(list: List<PhotoModel>, pointType: Int?) {
+        setData(list.map { ListItem.Image(it) }, pointType)
     }
 
-    private fun setData(list: List<ListItem>) {
+    private fun setData(list: List<ListItem>, pointType: Int?) {
         val newList = list.filter { it is ListItem.Image }.toMutableList()
-        newList.add(ListItem.AddButton)
+        if (pointType != RouteStateConstants.POINT_TYPE_COMPLETED)
+            newList.add(ListItem.AddButton)
         val diffCallback = PhotoAttachDiffCallback(this.data, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.data.clear()
         this.data.addAll(newList)
         diffResult.dispatchUpdatesTo(this)
-
-
     }
 
     fun setListener(listener: AttachInteractionListener?) {
@@ -108,17 +105,16 @@ class RoutePointPhotoAttachAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
 
         fun bind(image: ListItem.Image) {
 
+            deleteView.isVisible = image.photo.type == PhotoModel.Type.LOCAL
 
             val glide = when (image.photo.type) {
                 PhotoModel.Type.LOCAL -> {
                     Glide.with(imageView)
                             .load(File(image.photo.path))
-
                 }
                 PhotoModel.Type.REMOTE -> {
                     Glide.with(imageView)
-                            .load(image.photo.path)
-
+                            .load(imageView.context.getString(R.string.url_file, image.photo.path))
                 }
             }
 

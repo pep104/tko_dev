@@ -30,10 +30,10 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
     override suspend fun updateContainer(model: ContainerAreaShortModel, photos: List<ImageModel>?, newPhotos: List<File>?): Either<Failure, ContainerAreaShortModel> {
         return withContext(dispatcher) {
             //Upload new photos
-            val uploaded = mutableListOf<UploadedFileModel>()
+            val uploaded = mutableListOf<AttachmentModel>()
             newPhotos?.forEach { newPhoto ->
                 attachmentRepository.uploadFile(newPhoto).fold({}, {
-                    it.forEach { photo -> uploaded.add(UploadedFileModel(photo.id)) }
+                    uploaded.addAll(it)
                 })
             }
 

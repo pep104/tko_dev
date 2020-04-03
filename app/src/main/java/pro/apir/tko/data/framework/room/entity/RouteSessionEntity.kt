@@ -28,7 +28,7 @@ data class RouteSessionEntity(
         @ColumnInfo(name = "route_id")
         val routeId: Int,
 
-        val dateLong: Long,
+        val date: String,
 
         @ColumnInfo(name = "is_completed")
         val isCompleted: Boolean

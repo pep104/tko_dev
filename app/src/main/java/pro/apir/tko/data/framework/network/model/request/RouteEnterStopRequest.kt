@@ -5,4 +5,4 @@ package pro.apir.tko.data.framework.network.model.request
  * Date: 20.03.2020
  * Project: tko-android
  */
-data class RouteEnterStopRequest(val stop: Int)
+data class RouteEnterStopRequest(val stop: Long)

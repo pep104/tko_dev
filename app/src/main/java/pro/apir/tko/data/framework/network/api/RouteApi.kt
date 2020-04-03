@@ -18,6 +18,6 @@ interface RouteApi {
     suspend fun getRoutesList(@Query("page") page: Int, @Query("page_size") pageSize: Int): Response<RouteListResponse>
 
     @GET("fleet/routes/{id}")
-    suspend fun getRoute(@Path("id") id: Int): Response<RouteData>
+    suspend fun getRoute(@Path("id") id: Long): Response<RouteData>
 
 }

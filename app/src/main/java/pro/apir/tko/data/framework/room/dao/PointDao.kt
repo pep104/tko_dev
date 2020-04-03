@@ -1,9 +1,6 @@
 package pro.apir.tko.data.framework.room.dao
 
-import androidx.room.Dao
-import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.Update
+import androidx.room.*
 import pro.apir.tko.data.framework.room.entity.PointEntity
 
 /**
@@ -21,5 +18,11 @@ interface PointDao {
     //Update
     @Update
     fun updatePoint(point: PointEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPoint(point: PointEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPoints(points: List<PointEntity>): List<Long>
 
 }

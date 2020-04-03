@@ -5,4 +5,4 @@ package pro.apir.tko.domain.model
  * Date: 28.01.2020
  * Project: tko-android
  */
-data class UploadedFileModel(val id: Int)
+data class AttachmentModel(val id: Int, val url: String)

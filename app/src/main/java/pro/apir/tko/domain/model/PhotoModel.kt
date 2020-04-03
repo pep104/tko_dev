@@ -15,4 +15,6 @@ data class PhotoModel(val id: Long?, val type: Type, val path: String) : Parcela
         LOCAL, REMOTE
     }
 
+
+    constructor(model: PhotoCacheModel) : this(model.id, Type.LOCAL, model.path)
 }

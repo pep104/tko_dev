@@ -113,6 +113,17 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val currentStopStickyCoordinates: LiveData<CoordinatesModel>
         get() = _currentStopStickyCoordinates
 
+    private val _loadingStopCompletion = handle.getLiveData<Boolean>("loadingStopCompletion")
+    val loadingStopCompletion: LiveData<Boolean>
+        get() = _loadingStopCompletion
+
+    private val _loadingTrackingCompletion = handle.getLiveData<Boolean>("loadingTrackingCompletion")
+    val loadingTrackingCompletion: LiveData<Boolean>
+        get() = _loadingTrackingCompletion
+
+    private val _eventTrackingCompletion = MutableLiveData<Boolean>()
+    val eventTrackingCompletion: LiveData<Boolean>
+        get() = _eventTrackingCompletion
 
     //Location
 
@@ -138,20 +149,45 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     fun init(route: RouteModel) {
         viewModelScope.launch(Dispatchers.IO) {
             if (_routeSession.value == null) {
-                routeSessionInteractor.getInitialSessionFromRoute(route).fold(::handleFailure, ::setData)
+                routeSessionInteractor.getSessionFromRoute(route).collect {
+                    it.fold(::handleFailure, ::setData)
+                }
             }
         }
     }
 
     //Btn Start/Resume
-    fun start() {
+    fun startTracking() {
         if (_state.value == RouteState.Default || _state.value == RouteState.Pending)
-            viewModelScope.launch(Dispatchers.IO) {
-                _routeSession.value?.let {
-                    routeSessionInteractor.startSession(it).fold(::handleFailure, ::setData)
+            viewModelScope.launch {
+                _loadingTrackingCompletion.postValue(true)
+                _routeSession.value?.let { sessionModel ->
+                    routeSessionInteractor.startSession(sessionModel).fold({
+                        _loadingTrackingCompletion.postValue(false)
+                        handleFailure(it)
+                    }, {
+                        _loadingTrackingCompletion.postValue(false)
+                        setData(it)
+                    })
                 }
             }
+    }
 
+    fun finishTracking() {
+        if (_state.value == RouteState.Completed) {
+            viewModelScope.launch {
+                _routeSession.value?.let {
+                    _loadingTrackingCompletion.postValue(true)
+                    routeSessionInteractor.finishSession(it).fold({
+                        _loadingTrackingCompletion.postValue(false)
+                        handleFailure(it)
+                    }, {
+                        _loadingTrackingCompletion.postValue(false)
+                        _eventTrackingCompletion.postValue(true)
+                    })
+                }
+            }
+        }
     }
 
     private fun setData(sessionModel: RouteSessionModel) {
@@ -167,7 +203,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
             when (sessionModel.state) {
                 RouteStateConstants.ROUTE_TYPE_DEFAULT -> {
                     _state.value = RouteState.Default
-
                 }
                 RouteStateConstants.ROUTE_TYPE_PENDING -> {
                     _state.value = RouteState.Pending
@@ -250,21 +285,27 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         viewModelScope.launch {
             val session = _routeSession.value
             val completablePoint = _currentStop.value
-            val completablePointId = _currentStop.value?.id
+            val completablePointId = _currentStop.value?.pointId
 
             if (session != null && completablePointId != null && completablePoint != null) {
 
                 if (completablePoint.photos.size < 2) {
                     handleFailure(PhotosNotEnoughError())
                 } else {
-                    routeSessionInteractor.completePoint(session, completablePointId).fold(::handleFailure) {
-                        setData(it)
-//                        //Update current pos
-                        val completedPos = it.points.first { it.id == completablePointId }
-                        setStopData(completedPos)
-
-                        Unit
-                    }
+                    _loadingStopCompletion.postValue(true)
+                    routeSessionInteractor.completePoint(session, completablePointId).fold(
+                            {
+                                _loadingStopCompletion.postValue(false)
+                                handleFailure(it)
+                            },
+                            {
+                                setData(it)
+                                //Update current pos
+                                val completedPos = it.points.first { it.pointId == completablePointId }
+                                setStopData(completedPos)
+                                _loadingStopCompletion.postValue(false)
+                                Unit
+                            })
                 }
 
             } else {
@@ -278,16 +319,30 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     fun addPhotos(filePaths: List<String>) {
         viewModelScope.launch {
             val session = _routeSession.value
-            val currentStopId = _currentStop.value?.id
+            val currentStopId = _currentStop.value?.pointId
             if (session != null && currentStopId != null) {
                 val res = routePhotosInteractor.createPhotos(session, filePaths, currentStopId)
                 setData(res)
-
-                val addedPos = res.points.first { it.id == currentStopId }
-                setStopData(addedPos)
-
+                refreshCurrent(res, currentStopId)
             }
         }
+    }
+
+    fun deletePhoto(photoModel: PhotoModel) {
+        viewModelScope.launch {
+            val session = _routeSession.value
+            val currentStopId = _currentStop.value?.pointId
+            if (session != null && currentStopId != null) {
+                val res = routePhotosInteractor.deletePhoto(session, photoModel, currentStopId)
+                refreshCurrent(res, currentStopId)
+            }
+        }
+    }
+
+    private fun refreshCurrent(sessionModel: RouteSessionModel, pointId: Long) {
+        setData(sessionModel)
+        val addedPos = sessionModel.points.first { it.pointId == pointId }
+        setStopData(addedPos)
     }
 
     //controls
@@ -339,48 +394,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     private fun collectLocations() {
         viewModelScope.launch(Dispatchers.IO) {
             locationManager.getLocationFlow().collect { location ->
-                //                //Count distance for all route stops
-//                val routeStops = _routeStops.value
-//                val result = arrayListOf<RoutePointModel>()
-//                routeStops?.forEach {
-//                    val locationRoutePoint = it.coordinates
-//                    if (locationRoutePoint != null) {
-//                        val dist = calcDistance(
-//                                location.lat,
-//                                location.lon,
-//                                it.coordinates.lat,
-//                                it.coordinates.lng
-//                        )
-//                        result.add(RoutePointModel(dist.toInt().roundUpNearest(10), it))
-//                    } else {
-//                        result.add(it)
-//                    }
-//                }
-//                _routeStops.postValue(result)
-//
-//                //Count distance for current nav stop
-//                val currentNavStop = _currentStop.value
-//                currentNavStop?.let { it ->
-//                    kotlin.runCatching {
-//                        currentStopLocationJob?.cancel()
-//                        currentStopLocationJob = viewModelScope.launch {
-//                            val locationRoutePoint = it.coordinates
-//                            if (locationRoutePoint != null) {
-//                                val dist = calcDistance(
-//                                        location.lat,
-//                                        location.lon,
-//                                        it.coordinates.lat,
-//                                        it.coordinates.lng
-//                                )
-//                                _currentStop.postValue(RoutePointModel(dist.toInt().roundUpNearest(10), it))
-//                            }
-//                        }
-//                    }
-//                }
-
-                //todo map dist via field
                 lastUserLocation = location
-
             }
         }
     }
@@ -407,7 +421,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 if (it.coordinates != null) {
                     val dist = calcDistance(it.coordinates, lastUserLocation)
 
-                    //todo update current!
                     withContext(Dispatchers.Main) {
                         _currentStop.value = RoutePointModel(dist?.toInt()?.roundUpNearest(10), it)
                     }
@@ -459,5 +472,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         distance = Math.pow(distance, 2.0) + Math.pow(height, 2.0)
         return Math.sqrt(distance)
     }
+
 
 }

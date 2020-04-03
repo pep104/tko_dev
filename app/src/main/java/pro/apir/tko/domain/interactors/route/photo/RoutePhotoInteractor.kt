@@ -10,12 +10,8 @@ import pro.apir.tko.domain.model.RouteSessionModel
  */
 interface RoutePhotoInteractor {
 
-    suspend fun createPhoto(routeSessionModel: RouteSessionModel,path: String, pointId: Long): RouteSessionModel
+    suspend fun createPhotos(sessionModel: RouteSessionModel, photoPaths: List<String>, pointId: Long): RouteSessionModel
 
-    suspend fun createPhotos(routeSessionModel: RouteSessionModel,paths: List<String>, pointId: Long): RouteSessionModel
-
-    suspend fun deletePhoto(routeSessionModel: RouteSessionModel,photoModel: PhotoModel): RouteSessionModel
-
-    suspend fun updatePhoto(routeSessionModel: RouteSessionModel,id: Long, remotePath: String): RouteSessionModel
+    suspend fun deletePhoto(sessionModel: RouteSessionModel, photoModel: PhotoModel, pointId: Long): RouteSessionModel
 
 }

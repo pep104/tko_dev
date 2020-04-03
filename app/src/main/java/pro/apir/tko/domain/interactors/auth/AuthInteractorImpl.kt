@@ -6,7 +6,6 @@ import kotlinx.coroutines.withContext
 import pro.apir.tko.core.constant.KEY_USER_ID
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.core.functional.onRight
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.repository.auth.AuthRepository
@@ -25,9 +24,12 @@ class AuthInteractorImpl @Inject constructor(private val authRepository: AuthRep
             tokenManager.saveRefreshToken(result.b.refresh)
             tokenManager.saveAccessToken(result.b.access)
             val userResult = userRepository.getUser()
-            userResult.onRight {
-                Log.e("userId", it.id.toString())
-                preferencesManager.saveInt(KEY_USER_ID, it.id)
+            when(userResult){
+                is Either.Left -> return@withContext Either.Left(userResult.a)
+                is Either.Right -> {
+                    Log.e("userId", userResult.b.id.toString())
+                    preferencesManager.saveInt(KEY_USER_ID, userResult.b.id)
+                }
             }
         }
 

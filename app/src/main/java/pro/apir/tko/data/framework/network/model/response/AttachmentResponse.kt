@@ -1,15 +1,18 @@
 package pro.apir.tko.data.framework.network.model.response
 
 import pro.apir.tko.data.framework.network.model.BaseResponse
-import pro.apir.tko.domain.model.UploadedFileModel
+import pro.apir.tko.domain.model.AttachmentModel
 
 /**
  * Created by Антон Сарматин
  * Date: 28.01.2020
  * Project: tko-android
  */
-class UploadFileResponse(val id: Int) : BaseResponse() {
+class AttachmentResponse(
+        val id: Int,
+        val url: String
+) : BaseResponse() {
 
-    fun toModel() = UploadedFileModel(id)
+    fun toModel() = AttachmentModel(id, url)
 
 }

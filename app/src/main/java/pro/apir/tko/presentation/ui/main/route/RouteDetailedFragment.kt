@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -21,6 +23,7 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.bottomsheet_route_detailed.view.*
 import kotlinx.android.synthetic.main.content_map_detailed.view.*
 import kotlinx.android.synthetic.main.fragment_route_detailed.view.*
+import kotlinx.android.synthetic.main.include_loading.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -64,6 +67,8 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
     private lateinit var bottomSheetLayout: ConstraintLayout
     private lateinit var contentLayout: ConstraintLayout
 
+    private lateinit var frameLoading: FrameLayout
+
     private lateinit var textHeader: TextView
 
     private lateinit var recyclerView: RecyclerView
@@ -99,6 +104,8 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
         textHeader = view.textHeader
 
+        frameLoading = view.frameLoading
+
         recyclerView = view.recyclerView
         stopAdapter = RoutePointsAdapter().apply { setListener(this@RouteDetailedFragment) }
 
@@ -119,7 +126,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
         }
 
         btnStart.setOnClickListener {
-            viewModel.start()
+            viewModel.startTracking()
         }
 
         view.btnBack.setOnClickListener(::back)
@@ -137,7 +144,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
     override fun onResume() {
         super.onResume()
         viewModel.isFollowEnabled.value?.let {
-            if(it){
+            if (it) {
                 myLocationOverlay?.enableMyLocation()
             }
         }
@@ -196,6 +203,9 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
         })
 
+        viewModel.loadingTrackingCompletion.observe(viewLifecycleOwner, Observer {
+            frameLoading.isVisible = it
+        })
 
         //controls etc
         viewModel.isFollowEnabled.observe(viewLifecycleOwner, Observer {
@@ -296,7 +306,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
                     val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
 
-                    when(it.type){
+                    when (it.type) {
                         RouteStateConstants.POINT_TYPE_PENDING -> {
                             marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin_pending)
                             marker.setAnchor(Marker.ANCHOR_CENTER, 0.88f)

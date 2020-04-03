@@ -1,6 +1,5 @@
 package pro.apir.tko.domain.interactors.route.photo
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
@@ -13,28 +12,25 @@ class RoutePhotoInteractorImpl @Inject constructor(private val routePhotoReposit
 
     private val dispatcher = Dispatchers.IO
 
-    override suspend fun createPhoto(routeSessionModel: RouteSessionModel, path: String, pointId: Long): RouteSessionModel = withContext(dispatcher) {
-        routeSessionInteractor.updateSession(routeSessionModel)
-    }
+    override suspend fun createPhotos(sessionModel: RouteSessionModel, photoPaths: List<String>, pointId: Long) = withContext(dispatcher) {
 
-    override suspend fun createPhotos(routeSessionModel: RouteSessionModel, paths: List<String>, pointId: Long): RouteSessionModel = withContext(dispatcher) {
-        paths.forEach {
-            val id = routePhotoRepository.createPhoto(it, pointId)
-            Log.d("photo", "created $id")
+        if (sessionModel.sessionId != null) {
+            val createdPhotos = arrayListOf<PhotoModel>()
+            photoPaths.forEach {
+                val cacheModel = routePhotoRepository.createPhoto(it, sessionModel.sessionId, pointId)
+                createdPhotos.add(PhotoModel(cacheModel))
+            }
+            sessionModel.points.findLast { it.pointId == pointId }?.let { point -> point.photos.addAll(createdPhotos) }
         }
-        routePhotoRepository.getPhotos(pointId)
-        routeSessionInteractor.updateSession(routeSessionModel)
+        return@withContext sessionModel
     }
 
-    override suspend fun deletePhoto(routeSessionModel: RouteSessionModel, photoModel: PhotoModel): RouteSessionModel = withContext(dispatcher) {
-        routePhotoRepository.deletePhoto(photoModel)
-        routeSessionInteractor.updateSession(routeSessionModel)
+    override suspend fun deletePhoto(sessionModel: RouteSessionModel, photoModel: PhotoModel, pointId: Long): RouteSessionModel = withContext(dispatcher) {
+        if (photoModel.id != null)
+            routePhotoRepository.deletePhoto(photoModel.id)
+
+        sessionModel.points.findLast { it.pointId == pointId }?.let { point -> point.photos.remove(photoModel) }
+
+        return@withContext sessionModel
     }
-
-    override suspend fun updatePhoto(routeSessionModel: RouteSessionModel, id: Long, remotePath: String): RouteSessionModel = withContext(dispatcher) {
-        routePhotoRepository.updatePhoto(id, remotePath)
-        routeSessionInteractor.updateSession(routeSessionModel)
-    }
-
-
 }

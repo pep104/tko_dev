@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -101,6 +102,10 @@ fun Fragment.alert(msg: String?) {
 
 }
 
+fun Fragment.alert(@StringRes id: Int) {
+    alert(getString(id))
+}
+
 fun View.afterLayout(what: () -> Unit) {
     if (isLaidOut) {
         what.invoke()
@@ -124,7 +129,7 @@ fun FragmentActivity.hideKeyborad() {
     imm.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun Fragment.hideKeyboard(){
+fun Fragment.hideKeyboard() {
     val imm = context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
     var view = this.view?.rootView

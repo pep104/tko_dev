@@ -4,11 +4,12 @@ import pro.apir.tko.data.framework.network.model.request.RouteEnterStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteLeaveStopRequest
 import pro.apir.tko.data.framework.network.model.request.RouteTrackingStartRequest
 import pro.apir.tko.data.framework.network.model.response.routetracking.RouteStopTrackingResponse
-import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingResponse
+import pro.apir.tko.data.framework.network.model.response.routetracking.RouteTrackingDetailedResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 /**
  * Created by Антон Сарматин
@@ -17,16 +18,21 @@ import retrofit2.http.POST
  */
 interface RouteTrackApi {
 
+    //
+    @GET("/fleet/tracks/{id}/")
+    suspend fun getRouteById(@Path("id") id: Long): Response<RouteTrackingDetailedResponse>
+
+
     //Route
     @GET("fleet/tracks/current/")
-    suspend fun getCurrentRoute(): Response<RouteTrackingResponse>
+    suspend fun getCurrentRoute(): Response<RouteTrackingDetailedResponse>
 
 
     @POST("fleet/tracks/start/")
-    suspend fun startRouteTracking(@Body request: RouteTrackingStartRequest): Response<RouteTrackingResponse>
+    suspend fun startRouteTracking(@Body request: RouteTrackingStartRequest): Response<RouteTrackingDetailedResponse>
 
     @POST("fleet/tracks/finish/")
-    suspend fun finishRouteTracking(): Response<RouteTrackingResponse>
+    suspend fun finishRouteTracking(): Response<RouteTrackingDetailedResponse>
 
     //Stops
     @POST("fleet/tracks/enter-stop/")

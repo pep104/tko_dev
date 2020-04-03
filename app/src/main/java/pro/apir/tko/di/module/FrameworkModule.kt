@@ -32,6 +32,8 @@ import pro.apir.tko.data.framework.source.inventory.InventorySource
 import pro.apir.tko.data.framework.source.route.RouteSource
 import pro.apir.tko.data.framework.source.route.RouteTrackSource
 import pro.apir.tko.data.framework.source.user.UserSource
+import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
+import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
 import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.dict.OptionsDictionariesManagerImpl
 import retrofit2.Retrofit
@@ -242,5 +244,11 @@ class FrameworkModule(private val application: Application) {
     @Provides
     @Singleton
     fun provideDictManager(context: Context): OptionsDictionariesManager = OptionsDictionariesManagerImpl(context)
+
+    //Mapper
+
+    @Provides
+    @Singleton
+    fun trackingFailureMapper(): TrackingFailureCodeMapper = TrackingFailureCodeMapperImpl()
 
 }
