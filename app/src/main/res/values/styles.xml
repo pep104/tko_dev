@@ -227,4 +227,10 @@
         <item name="android:textColor">@color/green</item>
     </style>
 
+    <style name="FrameLayoutLoading">
+        <item name="android:background">@color/loadingBackgroundFill</item>
+        <item name="android:elevation">14dp</item>
+        <item name="android:clickable">true</item>
+    </style>
+
 </resources>

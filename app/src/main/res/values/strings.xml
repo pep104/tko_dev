@@ -75,6 +75,8 @@
     <string name="btn_route_action_next">Далее</string>
     <string name="btn_finish_route">Завершить</string>
 
+    <string name="text_loading_placeholder">Операция выполняется</string>
+
     //Errors
     <string name="error_network_connection">Ошибка подключения к интернету</string>
 
