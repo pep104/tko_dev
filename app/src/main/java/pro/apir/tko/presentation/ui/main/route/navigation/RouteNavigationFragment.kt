@@ -540,7 +540,6 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
     }
 
-    //TODO CLEAR AND ADD NEW
     private fun setMarkers(list: List<RoutePointModel>) {
 
         mapJob?.cancel()

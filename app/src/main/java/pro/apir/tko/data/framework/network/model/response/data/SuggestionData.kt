@@ -14,7 +14,6 @@ data class SuggestionData(
         val unrestrictedValue: String,
         val data: SuggestionAddressData
 ){
-    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = AddressModel(value, unrestrictedValue, data.lat, data.lng)
 
 }

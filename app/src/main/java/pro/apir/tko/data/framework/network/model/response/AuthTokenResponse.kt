@@ -10,7 +10,6 @@ import pro.apir.tko.domain.model.AuthTokenModel
  */
 data class AuthTokenResponse(val refresh: String, val access: String) : BaseResponse(){
 
-    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = AuthTokenModel(refresh, access)
 
 }

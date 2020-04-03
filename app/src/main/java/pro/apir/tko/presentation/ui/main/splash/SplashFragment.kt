@@ -32,7 +32,6 @@ class SplashFragment : BaseFragment() {
 //        setStatusBarLightMode(false)
     }
 
-    //TODO HANDLE AUTH STATE AND TOKEN REFRESH
     private fun observeViewModel(){
         viewModel.state.observe(viewLifecycleOwner, Observer {
             when(it){

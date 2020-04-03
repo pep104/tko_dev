@@ -223,7 +223,6 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 updateCurrentStopDistance(it)
             }
 
-            //todo set pending to current if current null
         }
     }
     //Route Navigation

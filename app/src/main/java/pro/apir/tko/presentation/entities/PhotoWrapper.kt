@@ -10,8 +10,7 @@ import java.io.File
  * Date: 28.01.2020
  * Project: tko-android
  */
-//TODO file or path?
-//TODO AS EITHER?
+//TODO REFACTOR TO routes photo handling way
 @Parcelize
 data class PhotoWrapper(val uploaded: ImageModel?, val new: File?): Parcelable {
 

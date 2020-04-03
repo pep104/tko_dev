@@ -10,7 +10,6 @@ import pro.apir.tko.domain.model.ImageModel
 data class ImageData(val image: Int,
                      val url: String) {
 
-    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel() = ImageModel( image, url)
 
 }

@@ -10,7 +10,6 @@ import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT
  * Project: tko-android
  */
 
-//TODO REFACTOR MODEL DUE TO REMOVE DB ID
 @Parcelize
 data class RoutePointModel(
         val pointId: Long,

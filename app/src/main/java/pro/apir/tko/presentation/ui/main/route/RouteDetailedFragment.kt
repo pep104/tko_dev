@@ -270,7 +270,6 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
         findNavController().navigate(R.id.action_routeDetailedFragment_to_routeNavigationFragment)
     }
 
-    //TEMP fixme ???
     //todo попробовать предзагрузку тайлов по маршруту?
     private fun setPath(list: List<CoordinatesModel>) {
         if (list.isNotEmpty()) {
@@ -292,7 +291,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
     }
 
-    //TODO to base vm and background task
+    //TODO to base vm
     private fun setMarkers(list: List<RoutePointModel>) {
         val markers = arrayListOf<Marker>()
         mapJob?.cancel()

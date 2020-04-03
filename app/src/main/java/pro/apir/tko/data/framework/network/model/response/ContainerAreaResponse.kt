@@ -62,7 +62,6 @@ data class ContainerAreaResponse(
         val width: Double?,
         val photos: List<ImageData>?
 ) {
-    //TODO EXTRACT MAPPERS FROM MODEL TO MAPPER CLASS
     fun toModel(): ContainerAreaShortModel {
         val coordinates = coordinates?.toModel()
         return ContainerAreaShortModel(
