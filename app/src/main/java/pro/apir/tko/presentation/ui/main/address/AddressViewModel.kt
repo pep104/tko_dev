@@ -37,6 +37,15 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     val suggestions: LiveData<List<AddressModel>>
         get() = _suggestions
 
+
+    private val _viewType = handle.getLiveData<ViewType>("viewType", ViewType.BOTTOM_CARD)
+    val viewType: LiveData<ViewType>
+        get() = _viewType
+
+    fun setViewType(type: ViewType) {
+        _viewType.postValue(type)
+    }
+
     fun query(query: String) {
         if (query.length > 3) {
             queryJob?.cancel()
@@ -52,6 +61,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     fun setChoosed(addressModel: AddressModel) {
         if (addressModel.lat != null && addressModel.lng != null) {
             _address.postValue(addressModel)
+            _viewType.postValue(ViewType.BOTTOM_CARD)
         } else {
             fetchDetailed(addressModel)
         }
@@ -64,10 +74,18 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
                 if (it.isNotEmpty() && it.first().lat != null && it.first().lng != null) {
                     setChoosed(it.first())
                 } else {
+                    //Зациклится же? Или так надо?
                     setChoosed(addressModel)
                 }
             })
         }
+    }
+
+
+    enum class ViewType {
+        BOTTOM_CARD,
+        SEARCH,
+        LOCATION
     }
 
 }

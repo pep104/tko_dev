@@ -152,6 +152,10 @@ fun EditText.focusWithKeyboard() {
     imm?.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
 }
 
+fun EditText.placeCursorToEnd() {
+    this.setSelection(this.text.length)
+}
+
 fun View.addViewObserver(function: () -> Unit) {
     val view = this
     view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {

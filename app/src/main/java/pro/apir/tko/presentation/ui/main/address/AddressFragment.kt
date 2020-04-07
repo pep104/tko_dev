@@ -1,6 +1,5 @@
 package pro.apir.tko.presentation.ui.main.address
 
-import android.graphics.Typeface
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
@@ -24,6 +23,7 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -64,6 +64,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     private lateinit var mapView: MapView
     private var myLocationOverlay: MyLocationNewOverlay? = null
+
+    private var addressPointOverlay: FolderOverlay? = null
 
     private val addressWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -113,18 +115,18 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         mapView = view.map
         setMap(mapView)
 
-        etAddress.addTextChangedListener(addressWatcher)
+
 
         btnClearAddress.setOnClickListener {
             etAddress.setText("")
         }
 
         view.btnSearch.setOnClickListener {
-            setViewState(1)
+            viewModel.setViewType(AddressViewModel.ViewType.SEARCH)
         }
 
         view.textAddress.setOnClickListener {
-            setViewState(1)
+            viewModel.setViewType(AddressViewModel.ViewType.SEARCH)
         }
 
         view.btnSave.setOnClickListener {
@@ -146,7 +148,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                             findNavController().navigateUp()
                         } else {
                             //Else show bottom card
-                            setViewState(0)
+                            viewModel.setViewType(AddressViewModel.ViewType.BOTTOM_CARD)
                         }
                     }
                 }
@@ -175,6 +177,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         viewModel.address.observe(viewLifecycleOwner, Observer {
             textAddress.isEnabled = true
             textAddress.text = it.value
+            etAddress.setText(it.value)
             if (it.lat != null && it.lng != null) {
                 textCoordinates.isEnabled = true
                 textCoordinates.text = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
@@ -185,6 +188,31 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 textCoordinates.text = getString(R.string.text_coordinates_not_found)
             }
         })
+
+        viewModel.viewType.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                AddressViewModel.ViewType.BOTTOM_CARD -> {
+                    etAddress.removeTextChangedListener(addressWatcher)
+                    hideKeyboard()
+                    cardSearch.gone()
+                    btnSave.visible()
+                    cardBottom.visible()
+                }
+                AddressViewModel.ViewType.SEARCH -> {
+                    etAddress.addTextChangedListener(addressWatcher)
+                    cardBottom.gone()
+                    btnSave.gone()
+                    cardSearch.visible()
+                    etAddress.focusWithKeyboard()
+                    etAddress.placeCursorToEnd()
+
+                }
+                AddressViewModel.ViewType.LOCATION -> {
+                    //TODO Location pick card
+                }
+            }
+        })
+
     }
 
     //Configure map view
@@ -203,47 +231,27 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     //Set current map point from coordinates
     private fun setMapPoint(lat: Double, lng: Double) {
-        //
-        //FIXME Clears user location
-        mapView.overlays.clear()
+
         mapView.controller.animateTo(GeoPoint(lat, lng))
+
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)
-        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_pin)
+        marker.setAnchor(Marker.ANCHOR_CENTER, 0.88f)
         marker.position = location
-        mapView.overlays.add(marker)
+
+        val newOverlay = FolderOverlay().apply { add(marker) }
+
+        mapView.overlayManager.remove(addressPointOverlay)
+        mapView.overlayManager.add(newOverlay)
+        addressPointOverlay = newOverlay
+
     }
 
     //Suggestion RecyclerView callback
     override fun onSuggestionSelected(data: AddressModel) {
         //Set selected suggestion to VM
         viewModel.setChoosed(data)
-        setViewState(0)
-    }
-
-    //TODO VM based
-    private fun setViewState(type: Int) {
-        when (type) {
-            //Bottom card visible
-            0 -> {
-                cardSearch.gone()
-                btnSave.visible()
-                cardBottom.visible()
-                hideKeyboard()
-            }
-            //Search card visible
-            1 -> {
-                cardBottom.gone()
-                btnSave.gone()
-                cardSearch.visible()
-                etAddress.focusWithKeyboard()
-            }
-            //Location card visible
-            2 -> {
-                //TODO Location pick card
-            }
-        }
     }
 
     companion object {
