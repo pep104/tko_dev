@@ -1,16 +1,19 @@
 package pro.apir.tko.presentation.ui.main.address
 
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -19,9 +22,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.fragment_address.view.*
+import kotlinx.android.synthetic.main.fragment_address.view.btnBack
+import kotlinx.android.synthetic.main.fragment_address.view.btnSearch
+import kotlinx.android.synthetic.main.fragment_address.view.map
+import kotlinx.android.synthetic.main.fragment_route_navigation.view.*
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.DelayedMapListener
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.Marker
@@ -66,6 +78,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
     private var addressPointOverlay: FolderOverlay? = null
+
+    private lateinit var btnZoomIn: ImageButton
+    private lateinit var btnZoomOut: ImageButton
+    private lateinit var btnGeoSwitch: ImageButton
 
     private val addressWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -113,12 +129,19 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         btnSave = view.btnSave
         mapView = view.map
-        setMap(mapView)
+        btnZoomIn = view.btnZoomIn
+        btnZoomOut = view.btnZoomOut
+        btnGeoSwitch = view.btnGeoSwitch
 
+        setMap(mapView)
 
 
         btnClearAddress.setOnClickListener {
             etAddress.setText("")
+        }
+
+        btnGeoSwitch.setOnClickListener {
+            viewModel.switchFollow()
         }
 
         view.btnSearch.setOnClickListener {
@@ -159,8 +182,22 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     override fun onResume() {
         super.onResume()
+        viewModel.isFollowEnabled.value?.let {
+            if (it) {
+                myLocationOverlay?.enableMyLocation()
+            }
+        }
+
         mapView.onResume()
-        myLocationOverlay?.enableMyLocation()
+
+        viewModel.zoomLevel?.let {
+            mapView.controller.zoomTo(it, 0L)
+        }
+
+        //TODO
+//        viewModel.lastPosition?.let {
+//            mapView.controller.setCenter(it)
+//        }
     }
 
     override fun onPause() {
@@ -213,20 +250,72 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             }
         })
 
+
+        //controls etc
+        viewModel.isFollowEnabled.observe(viewLifecycleOwner, Observer { isFollowEnabled ->
+            isFollowEnabled?.let { enabled ->
+
+                if (enabled) {
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.blueMain), PorterDuff.Mode.SRC_IN)
+                    myLocationOverlay?.enableFollowLocation()
+                } else {
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black), PorterDuff.Mode.SRC_IN)
+                    myLocationOverlay?.disableFollowLocation()
+
+                    val point = viewModel.address.value
+                    point?.let {
+                        if (it.lat != null && it.lng != null)
+                            setMapPoint(it.lat, it.lng)
+                    }
+
+                }
+
+            }
+        })
+
     }
 
     //Configure map view
     private fun setMap(mapView: MapView) {
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mapView.setMultiTouchControls(true)
+        mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         mapView.controller.zoomTo(12.0, 0L)
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
+        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
 
-        if (viewModel.address.value == null) myLocationOverlay?.enableFollowLocation()
+
+        if (viewModel.address.value == null) {
+            myLocationOverlay?.enableFollowLocation()
+            viewModel.enableFollow()
+        }
 
         mapView.overlayManager.add(myLocationOverlay)
+
+        btnZoomIn.setOnClickListener {
+            mapView.controller.zoomIn(200)
+        }
+        btnZoomOut.setOnClickListener {
+            mapView.controller.zoomOut(150)
+        }
+
+        mapView.addMapListener(DelayedMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?): Boolean {
+                if (myLocationOverlay?.isFollowLocationEnabled == false) {
+                    viewModel.disableFollow()
+                }
+                return true
+            }
+
+            override fun onZoom(event: ZoomEvent?): Boolean {
+                viewModel.setZoomLevel(mapView.zoomLevelDouble)
+                return false
+            }
+        }))
+
     }
 
     //Set current map point from coordinates

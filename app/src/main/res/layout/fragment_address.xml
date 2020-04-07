@@ -12,6 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <FrameLayout
+        android:id="@+id/frameControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBack" >
+
+        <include
+            layout="@layout/include_map_controls" />
+
+    </FrameLayout>
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardSearch"
