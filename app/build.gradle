@@ -135,7 +135,7 @@ dependencies {
     implementation 'com.shawnlin:number-picker:2.4.8'
 
     //Mobble
-    implementation 'ru.sarmatin.mobble:utils:1.0.2'
+    implementation 'ru.sarmatin.mobble:utils:1.0.3'
 
 
 
