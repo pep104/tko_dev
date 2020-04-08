@@ -1,6 +1,7 @@
 package pro.apir.tko.data.framework.network.model.response.data
 
 import com.google.gson.annotations.SerializedName
+import pro.apir.tko.core.extension.round
 import pro.apir.tko.domain.model.AddressModel
 
 /**
@@ -14,6 +15,6 @@ data class SuggestionData(
         val unrestrictedValue: String,
         val data: SuggestionAddressData
 ){
-    fun toModel() = AddressModel(value, unrestrictedValue, data.lat, data.lng)
+    fun toModel() = AddressModel(value, unrestrictedValue, data.lat?.round(6), data.lng?.round(6))
 
 }
