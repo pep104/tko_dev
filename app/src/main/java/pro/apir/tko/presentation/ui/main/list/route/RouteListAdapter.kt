@@ -95,6 +95,10 @@ class RouteListAdapter(dictionariesManager: OptionsDictionariesManager) : Recycl
                 textRouteInfo.setTextColor(ContextCompat.getColor(itemView.context, R.color.black))
             }
 
+            itemView.setOnClickListener{
+                radio.performClick()
+            }
+
 
             radio.setOnCheckedChangeListener { buttonView, isChecked ->
 
