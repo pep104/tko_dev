@@ -50,6 +50,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
     private val sharedAddressViewModel: AddressSharedViewModel by activityViewModels()
     private val sharedCameraViewModel: CameraSharedViewModel by activityViewModels()
     private val sharedEditViewModel: InventoryEditSharedViewModel by activityViewModels()
+    private val sharedEditListViewModel: InventoryEditListSharedViewModel by activityViewModels()
 
     override fun layoutId() = R.layout.fragment_inventory_edit
 
@@ -359,7 +360,16 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
 
         viewModel.isSaved.observe(viewLifecycleOwner, Observer {
             it?.let { result ->
-                sharedEditViewModel.setContainer(result)
+
+                //Если площадка создана, то обновляем только List Shared VM,
+                // если обновлена, то обе Shared VM
+                if(result is EditResultEvent.Created){
+                    sharedEditListViewModel.setResult(result)
+                }else{
+                    sharedEditListViewModel.setResult(result)
+                    sharedEditViewModel.setResult(result)
+                }
+
                 findNavController().navigateUp()
             }
         })

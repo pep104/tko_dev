@@ -41,8 +41,8 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
     val isNewMode: LiveData<Boolean>
         get() = _isNewMode
 
-    private val _isSaved = LiveEvent<ContainerAreaShortModel>()
-    val isSaved: LiveData<ContainerAreaShortModel>
+    private val _isSaved = LiveEvent<EditResultEvent>()
+    val isSaved: LiveData<EditResultEvent>
         get() = _isSaved
 
 
@@ -235,7 +235,12 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
 
             inventoryInteractor.updateContainer(newModel, oldPhotos, newPhotos)
                     .fold(::handleFailure) {
-                        _isSaved.postValue(it)
+                        val result = if (isNewMode.value == true) {
+                            EditResultEvent.Created(it)
+                        } else {
+                            EditResultEvent.Edited(it)
+                        }
+                        _isSaved.postValue(result)
                     }
         }
     }

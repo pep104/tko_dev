@@ -45,6 +45,7 @@ import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditSharedViewModel
+import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
 
 /**
  * Created by antonsarmatin
@@ -203,11 +204,8 @@ class InventoryDetailedFragment : BaseFragment() {
             }
         })
 
-        sharedEditViewModel.containerArea.observe(viewLifecycleOwner, Observer {
-            it?.let { container ->
-                viewModel.setEditedData(container)
-                sharedEditViewModel.consume()
-            }
+        sharedEditViewModel.resultEvent.observe(viewLifecycleOwner, ConsumableObserver {
+            viewModel.setEditedData(it.model)
         })
 
     }

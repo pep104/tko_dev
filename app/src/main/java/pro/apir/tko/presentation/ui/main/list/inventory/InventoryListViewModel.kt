@@ -6,6 +6,7 @@ import com.squareup.inject.assisted.AssistedInject
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
+import pro.apir.tko.presentation.ui.main.inventory.edit.EditResultEvent
 import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
 
 class InventoryListViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
@@ -15,5 +16,19 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted private val h
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<InventoryListViewModel>
 
+
+    fun handleEditResult(result: EditResultEvent){
+        when(result){
+            is EditResultEvent.Edited -> {
+                TODO()
+                //FIND SAME CONTAINER MODEL
+                //UPD
+            }
+            is EditResultEvent.Created -> {
+                TODO()
+                //INSERT TO START
+            }
+        }
+    }
 
 }
