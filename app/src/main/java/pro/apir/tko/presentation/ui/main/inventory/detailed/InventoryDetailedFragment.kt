@@ -259,6 +259,7 @@ class InventoryDetailedFragment : BaseFragment() {
         marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_pin)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.position = location
+        marker.infoWindow = null
         mapView.overlays.add(marker)
         mapView.overlayManager.add(myLocationOverlay)
     }

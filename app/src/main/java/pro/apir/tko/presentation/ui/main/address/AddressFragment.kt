@@ -328,6 +328,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_pin)
         marker.setAnchor(Marker.ANCHOR_CENTER, 0.88f)
         marker.position = location
+        marker.infoWindow = null
 
         val newOverlay = FolderOverlay().apply { add(marker) }
 

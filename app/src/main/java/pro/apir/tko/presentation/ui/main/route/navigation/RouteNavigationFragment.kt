@@ -571,6 +571,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                     }
 
                     marker.position = location
+                    marker.infoWindow = null
                     newFolderOverlay.add(marker)
                 }
             }

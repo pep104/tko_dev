@@ -321,6 +321,7 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
                     }
 
                     marker.position = location
+                    marker.infoWindow = null
                     markers.add(marker)
 
                 }
