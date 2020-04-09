@@ -1,6 +1,8 @@
 package pro.apir.tko.presentation.extension
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
@@ -19,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import pro.apir.tko.R
 
 
 fun View.isVisible() = this.visibility == View.VISIBLE
@@ -137,6 +140,17 @@ fun Fragment.hideKeyboard() {
         view = View(context)
 
     imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun Fragment.copyToClipboard(str: String, label: String = "tko") {
+    activity?.copyToClipboard(str, label)
+}
+
+fun Activity.copyToClipboard(str: String, label: String = "tko") {
+    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val data = ClipData.newPlainText(label, str)
+    clipboard.primaryClip = data
+    toast(getString(R.string.toast_copy_done))
 }
 
 val Int.dpToPx: Int

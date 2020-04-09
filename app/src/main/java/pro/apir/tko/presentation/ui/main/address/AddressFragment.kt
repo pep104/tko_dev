@@ -162,6 +162,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             activity?.onBackPressed()
         }
 
+        view.btnCopy.setOnClickListener {
+            copyToClipboard(etAddress.getTextValue())
+        }
+
         requireActivity()
                 .onBackPressedDispatcher
                 .addCallback(this, object : OnBackPressedCallback(true) {

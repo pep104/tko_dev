@@ -82,6 +82,7 @@
     <string name="error_default">Произошла ошибка</string>
     <string name="error_route_tracking_not_exist">Сессия данного маршрута не найдена</string>
     <string name="error_route_not_completed">Точки маршрута не выполнены</string>
+    <string name="toast_copy_done">Скопировано в буфер обмена</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
