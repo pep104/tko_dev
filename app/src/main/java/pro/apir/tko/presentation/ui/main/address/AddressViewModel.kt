@@ -92,7 +92,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     fun query(query: String) {
         if (query.length > 3) {
             queryJob?.cancel()
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 delay(300)
                 addressInteractor.getAddressSuggestions(query).fold(::handleFailure) {
                     _suggestions.postValue(it)
