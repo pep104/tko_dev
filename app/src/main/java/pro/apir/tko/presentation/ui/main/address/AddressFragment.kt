@@ -61,6 +61,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     private lateinit var cardBottom: CardView
     private lateinit var cardSearch: CardView
+    private lateinit var cardCoordinates: CardView
 
     private lateinit var textAddress: TextView
     private lateinit var textCoordinates: TextView
@@ -71,8 +72,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     private lateinit var suggestionAdapter: AddressSearchAdapter
 
     private lateinit var btnSave: MaterialButton
+    private lateinit var btnEditCoordinates: ImageView
+    private lateinit var btnCopy: ImageView
     private lateinit var btnClearAddress: ImageView
+
+    private lateinit var etCoordinates: EditText
     private lateinit var btnClearCoordinates: ImageView
+    private lateinit var dividerCoordinatesEt: View
 
     private lateinit var mapView: MapView
     private var myLocationOverlay: MyLocationNewOverlay? = null
@@ -113,6 +119,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         cardBottom = view.cardBottom
         cardSearch = view.cardSearch
+        cardCoordinates = view.cardCoordinates
 
         //Search card
         etAddress = view.etAddress
@@ -126,8 +133,17 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         //Bottom card
         textAddress = view.textAddress
         textCoordinates = view.textCoordinates
+        btnEditCoordinates = view.btnEdit
+        btnCopy = view.btnCopy
+
+        //Coordinates card
+        etCoordinates = view.etCoordinatesCard
+        btnClearCoordinates = view.btnClearCoordinates
+        dividerCoordinatesEt = view.dividerCoordinatesEt
 
         btnSave = view.btnSave
+
+
         mapView = view.map
         btnZoomIn = view.btnZoomIn
         btnZoomOut = view.btnZoomOut
@@ -138,6 +154,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         btnClearAddress.setOnClickListener {
             etAddress.setText("")
+        }
+
+        btnEditCoordinates.setOnClickListener {
+            viewModel.setViewType(AddressViewModel.ViewType.LOCATION_COORDINATES)
         }
 
         btnGeoSwitch.setOnClickListener {
@@ -162,7 +182,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             activity?.onBackPressed()
         }
 
-        view.btnCopy.setOnClickListener {
+        btnCopy.setOnClickListener {
             copyToClipboard(etAddress.getTextValue())
         }
 
@@ -223,11 +243,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 textCoordinates.isEnabled = true
                 textCoordinates.text = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
                 myLocationOverlay?.disableFollowLocation()
+                btnCopy.visible()
                 setMapPoint(it.lat, it.lng)
             } else {
                 textCoordinates.isEnabled = false
                 textCoordinates.text = getString(R.string.text_coordinates_not_found)
             }
+            btnEditCoordinates.visible()
         })
 
         viewModel.viewType.observe(viewLifecycleOwner, Observer {
@@ -236,6 +258,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     etAddress.removeTextChangedListener(addressWatcher)
                     hideKeyboard()
                     cardSearch.gone()
+                    cardCoordinates.gone()
                     btnSave.visible()
                     cardBottom.visible()
                 }
@@ -248,8 +271,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     etAddress.placeCursorToEnd()
 
                 }
-                AddressViewModel.ViewType.LOCATION -> {
-                    //TODO Location pick card
+                AddressViewModel.ViewType.LOCATION_COORDINATES -> {
+                    btnSave.gone()
+                    cardBottom.gone()
+                    cardCoordinates.visible()
                 }
             }
         })

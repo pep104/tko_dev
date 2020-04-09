@@ -31,8 +31,6 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddressViewModel>
 
-    //TODO VIEW STATE (SHOW, EDIT, LOCATION)
-
     private var queryJob: Job? = null
 
     private val _address = handle.getLiveData<AddressModel>("address")
@@ -156,7 +154,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     enum class ViewType {
         BOTTOM_CARD,
         SEARCH,
-        LOCATION
+        LOCATION_COORDINATES
     }
 
 }
