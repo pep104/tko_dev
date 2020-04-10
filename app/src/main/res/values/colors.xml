@@ -28,6 +28,8 @@
     <color name="chipBackgroundColor">#E7EDF5</color>
 
     <color name="green">#92BD34</color>
+    <color name="red">#F23047</color>
+    <color name="redError">@color/red</color>
 
     <color name="textPointHeaderGrey">#4D4D4D</color>
     <color name="textPointHeaderWhite">#FFFFFF</color>

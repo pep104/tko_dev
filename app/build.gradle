@@ -134,6 +134,9 @@ dependencies {
     //Horizontal Number Picker
     implementation 'com.shawnlin:number-picker:2.4.8'
 
+    //InputMask
+    implementation 'com.redmadrobot:input-mask-android:6.0.0'
+
     //Mobble
     implementation 'ru.sarmatin.mobble:utils:1.0.3'
 

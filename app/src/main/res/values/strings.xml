@@ -83,6 +83,8 @@
     <string name="error_route_tracking_not_exist">Сессия данного маршрута не найдена</string>
     <string name="error_route_not_completed">Точки маршрута не выполнены</string>
     <string name="toast_copy_done">Скопировано в буфер обмена</string>
+    <string name="mask_coordinates">[m][09]{.}[099999]{, }[m][099]{.}[099999]</string>
+    <string name="text_error_coordinates_not_valid">Введите верные координаты</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

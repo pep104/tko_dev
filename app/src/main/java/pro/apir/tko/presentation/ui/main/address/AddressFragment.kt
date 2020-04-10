@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -21,6 +22,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.redmadrobot.inputmask.MaskedTextChangedListener
+import com.redmadrobot.inputmask.helper.AffinityCalculationStrategy
+import com.redmadrobot.inputmask.model.Notation
 import kotlinx.android.synthetic.main.fragment_address.view.*
 import kotlinx.android.synthetic.main.fragment_address.view.btnBack
 import kotlinx.android.synthetic.main.fragment_address.view.btnSearch
@@ -79,6 +83,24 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     private lateinit var etCoordinates: EditText
     private lateinit var btnClearCoordinates: ImageView
     private lateinit var dividerCoordinatesEt: View
+    private lateinit var textErrorCoordinates: TextView
+
+    val maskedListener: MaskedTextChangedListener by lazy {
+        MaskedTextChangedListener(
+                field = etCoordinates,
+                primaryFormat = getString(R.string.mask_coordinates),
+                affineFormats = emptyList(),
+                customNotations = listOf(Notation('m', "-", true)),
+                affinityCalculationStrategy = AffinityCalculationStrategy.WHOLE_STRING,
+                autocomplete = true,
+                autoskip = false,
+                listener = null,
+                valueListener = object : MaskedTextChangedListener.ValueListener {
+                    override fun onTextChanged(maskFilled: Boolean, extractedValue: String, formattedValue: String) {
+                        viewModel.processInput(extractedValue)
+                    }
+                })
+    }
 
     private lateinit var mapView: MapView
     private var myLocationOverlay: MyLocationNewOverlay? = null
@@ -100,6 +122,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,6 +163,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         etCoordinates = view.etCoordinatesCard
         btnClearCoordinates = view.btnClearCoordinates
         dividerCoordinatesEt = view.dividerCoordinatesEt
+        textErrorCoordinates = view.textErrorCoordinates
 
         btnSave = view.btnSave
 
@@ -153,7 +177,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
 
         btnClearAddress.setOnClickListener {
-            etAddress.setText("")
+            etCoordinates.setText("")
         }
 
         btnEditCoordinates.setOnClickListener {
@@ -241,18 +265,23 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             etAddress.setText(it.value)
             if (it.lat != null && it.lng != null) {
                 textCoordinates.isEnabled = true
-                textCoordinates.text = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
+                val coordinatesText = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
+                textCoordinates.text = coordinatesText
                 myLocationOverlay?.disableFollowLocation()
                 btnCopy.visible()
                 setMapPoint(it.lat, it.lng)
             } else {
                 textCoordinates.isEnabled = false
                 textCoordinates.text = getString(R.string.text_coordinates_not_found)
+                etCoordinates.setText("")
             }
             btnEditCoordinates.visible()
         })
 
         viewModel.viewType.observe(viewLifecycleOwner, Observer {
+            etCoordinates.removeTextChangedListener(maskedListener)
+            etCoordinates.onFocusChangeListener = null
+
             when (it) {
                 AddressViewModel.ViewType.BOTTOM_CARD -> {
                     etAddress.removeTextChangedListener(addressWatcher)
@@ -275,8 +304,17 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     btnSave.gone()
                     cardBottom.gone()
                     cardCoordinates.visible()
+                    etCoordinates.setText(textCoordinates.text)
+                    etCoordinates.hint = textCoordinates.text
+                    etCoordinates.addTextChangedListener(maskedListener)
+                    etCoordinates.onFocusChangeListener = maskedListener
                 }
             }
+        })
+
+        //coordinates edit
+        viewModel.errorCoordinates.observe(viewLifecycleOwner, Observer { isError ->
+            textErrorCoordinates.isVisible = isError
         })
 
 
@@ -303,6 +341,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         })
 
     }
+
 
     //Configure map view
     private fun setMap(mapView: MapView) {

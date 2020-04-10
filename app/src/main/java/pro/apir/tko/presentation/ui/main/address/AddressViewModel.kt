@@ -1,5 +1,6 @@
 package pro.apir.tko.presentation.ui.main.address
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -18,6 +19,7 @@ import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.geoPointFromLocationModel
+import kotlin.system.measureNanoTime
 
 /**
  * Created by Антон Сарматин
@@ -33,6 +35,8 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     private var queryJob: Job? = null
 
+    private var addressCoordinatesJob: Job? = null
+
     private val _address = handle.getLiveData<AddressModel>("address")
     val address: LiveData<AddressModel>
         get() = _address
@@ -45,6 +49,12 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     private val _viewType = handle.getLiveData<ViewType>("viewType", ViewType.BOTTOM_CARD)
     val viewType: LiveData<ViewType>
         get() = _viewType
+
+    //Coordinates edit
+
+    private val _errorCoordinates = handle.getLiveData<Boolean>("errorCoordinates")
+    val errorCoordinates: LiveData<Boolean>
+        get() = _errorCoordinates
 
     //Map
 
@@ -119,6 +129,65 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
                     setChoosed(addressModel)
                 }
             })
+        }
+    }
+
+    //edit coordinates
+
+    fun processInput(input: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            val time = measureNanoTime {
+
+                if (input.isNullOrBlank()) {
+                    _errorCoordinates.postValue(false)
+                } else {
+                    val divider = ','
+                    val dot = '.'
+                    val inputSolid = input.replace(" ", "")
+                    val coordinates = inputSolid.split(divider)
+                    if (coordinates.size != 2) {
+                        _errorCoordinates.postValue(true)
+                    } else {
+                        _errorCoordinates.postValue(false)
+                        val latString = coordinates[0]
+                        val lonString = coordinates[1]
+
+                        val latDouble = latString.toDoubleOrNull()
+                        val lonDouble = lonString.toDoubleOrNull()
+
+                        if (latDouble != null && lonDouble != null) {
+                            when {
+                                latDouble in -90.0..90.0 && lonDouble in -180.0..180.0 -> {
+                                    _errorCoordinates.postValue(false)
+                                    updateCoordinates(latDouble, lonDouble)
+                                }
+                                else -> {
+                                    _errorCoordinates.postValue(true)
+                                }
+                            }
+
+                        } else {
+                            _errorCoordinates.postValue(true)
+                        }
+
+                    }
+                }
+
+
+            }
+            Log.e("mask","time: $time")
+        }
+    }
+
+    private fun updateCoordinates(lat: Double, lon: Double) {
+        addressCoordinatesJob?.cancel()
+        addressCoordinatesJob = viewModelScope.launch {
+            delay(400)
+            val addressModel = _address.value
+            if (addressModel != null && (addressModel.lat != lat || addressModel.lng != lon)) {
+                val newAddressModel = AddressModel(addressModel.value, addressModel.unrestrictedValue, lat, lon)
+                _address.postValue(newAddressModel)
+            }
         }
     }
 
