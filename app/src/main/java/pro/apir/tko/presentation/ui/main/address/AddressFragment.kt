@@ -293,16 +293,16 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 }
                 AddressViewModel.ViewType.SEARCH -> {
                     etAddress.addTextChangedListener(addressWatcher)
-                    cardBottom.gone()
-                    btnSave.gone()
+                    cardBottom.invisible()
+                    btnSave.invisible()
                     cardSearch.visible()
                     etAddress.focusWithKeyboard()
                     etAddress.placeCursorToEnd()
 
                 }
                 AddressViewModel.ViewType.LOCATION_COORDINATES -> {
-                    btnSave.gone()
-                    cardBottom.gone()
+                    btnSave.invisible()
+                    cardBottom.invisible()
                     cardCoordinates.visible()
                     etCoordinates.setText(textCoordinates.text)
                     etCoordinates.hint = textCoordinates.text
