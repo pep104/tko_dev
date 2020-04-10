@@ -50,7 +50,7 @@
     <string name="text_count">Количество</string>
     <string name="text_container_volume">Объем контейнера, м³</string>
     <string name="text_container_type">Тип контейнера</string>
-    <string name="btn_add_container">Добавить контейнер</string>
+    <string name="btn_add_container">Добавить площадку</string>
     <string name="text_count_short">Кол-во</string>
     <string name="text_route_list_header">Маршруты</string>
     <string name="btn_choose_route">Выбрать маршрут</string>
