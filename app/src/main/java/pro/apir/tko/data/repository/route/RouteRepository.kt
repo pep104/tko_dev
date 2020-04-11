@@ -13,6 +13,8 @@ interface RouteRepository {
 
     suspend fun getRoutesList(page: Int, pageSize: Int): Either<Failure, List<RouteModel>>
 
+    suspend fun searchRoutes(search: String): Either<Failure, List<RouteModel>>
+
     suspend fun getRoute(id: Long): Either<Failure, RouteModel>
 
 }

@@ -17,6 +17,9 @@ interface RouteApi {
     @GET("fleet/routes/")
     suspend fun getRoutesList(@Query("page") page: Int, @Query("page_size") pageSize: Int): Response<RouteListResponse>
 
+    @GET("fleet/routes/")
+    suspend fun searchRoutesList(@Query("search") search: String): Response<RouteListResponse>
+
     @GET("fleet/routes/{id}")
     suspend fun getRoute(@Path("id") id: Long): Response<RouteData>
 
