@@ -87,13 +87,15 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         }
     }
 
-    fun query(query: String) {
+    abstract fun searchQuery(string: String)
+
+    protected fun query(function: () -> Unit) {
         val current = _searchMode.value
         if (current != null && current) {
             searchJob?.cancel()
             searchJob = viewModelScope.launch(Dispatchers.IO) {
                 delay(200)
-                //TODO
+                function.invoke()
             }
         }
     }

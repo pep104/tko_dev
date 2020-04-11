@@ -49,4 +49,7 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
+    override fun searchQuery(string: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

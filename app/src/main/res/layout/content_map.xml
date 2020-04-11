@@ -24,8 +24,9 @@
     <ImageView
         android:id="@+id/btnSearch"
         style="@style/AppBarIconStyle"
+        android:layout_marginEnd="8dp"
         android:src="@drawable/ic_search_black"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        tools:visibility="invisible">
 
         <EditText
             android:id="@+id/etSearch"
@@ -52,6 +53,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
+            android:inputType="text"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
             android:hint="Поиск"
             app:layout_constraintEnd_toStartOf="@+id/iconSearch"
             app:layout_constraintStart_toStartOf="parent" />

@@ -68,17 +68,6 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
         loading(true)
         loadMore()
 
-        //TODO REMOVE
-        val testJob = viewModelScope.launch {
-//            routeTrackApi.startRouteTracking(RouteTrackingStartRequest(32))
-//            routeTrackApi.getCurrentRoute()
-//            routeTrackApi.enterStop(RouteEnterStopRequest(232))
-//            routeTrackApi.leaveStop(RouteLeaveStopRequest(emptyList()))
-//            routeTrackApi.getCurrentRoute()
-//            routeTrackApi.finishRouteTracking()
-//            val result = routeSessionDao.getSession(222)
-//            Log.e("routetest","${result?.id}")
-        }
     }
 
     //???
@@ -122,6 +111,10 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
             }
         }
 
+    }
+
+    override fun searchQuery(string: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
