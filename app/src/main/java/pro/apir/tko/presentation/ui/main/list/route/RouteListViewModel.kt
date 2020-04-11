@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
@@ -26,7 +27,7 @@ import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
  * Project: tko-android
  */
 class RouteListViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                     inventoryInteractor: InventoryInteractor,
+                                                     private val inventoryInteractor: InventoryInteractor,
                                                      private val routeInteractor: RouteInteractor,
                                                      private val routeSessionInteractor: RouteSessionInteractor,
                                                      private val locationManager: LocationManager,
@@ -60,6 +61,10 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
     val routes: LiveData<List<RouteModel>>
         get() = Transformations.map(_routes) { it.toList() }
 
+    private val _searchRoutes = handle.getLiveData<MutableList<RouteModel>>("searchRoutes")
+    val searchRoutes: LiveData<List<RouteModel>>
+        get() = Transformations.map(_searchRoutes) { it.toList() }
+
     private val _choosenRoute = handle.getLiveData<RouteModel?>("choosenRoute", null)
     val choosenRoute: LiveData<RouteModel?>
         get() = _choosenRoute
@@ -67,7 +72,6 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
     init {
         loading(true)
         loadMore()
-
     }
 
     //???
@@ -111,6 +115,28 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
         }
     }
 
+    override fun searchQuery(string: String) {
+        if (string.isBlank()) {
+            _searchContainersResults.postValue(emptyList())
+        } else {
+            query {
+                _searchLoading.postValue(true)
+                val inventory = it.async {
+                    inventoryInteractor.searchContainerArea(string).fold(::handleFailure) {
+                        _searchContainersResults.postValue(it)
+                    }
+                }
+                val route = it.async {
+                    routeInteractor.searchRoutes(string).fold(::handleFailure) {
+                        _searchRoutes.postValue(it.toMutableList())
+                    }
+                }
+                inventory.await()
+                route.await()
+                _searchLoading.postValue(false)
+            }
+        }
+    }
 
 
 }

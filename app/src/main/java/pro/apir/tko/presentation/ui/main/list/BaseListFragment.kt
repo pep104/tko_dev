@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -211,6 +212,16 @@ abstract class BaseListFragment : BaseFragment() {
             }
 
         })
+
+        etSearch.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel().searchQuery(etSearch.getTextValue())
+                hideKeyboard()
+                true
+            } else {
+                false
+            }
+        }
 
         requireActivity()
                 .onBackPressedDispatcher

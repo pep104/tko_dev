@@ -2,7 +2,6 @@ package pro.apir.tko.presentation.ui.main.list.inventory
 
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -11,9 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaListModel
-import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.extension.goneWithFade
-import pro.apir.tko.presentation.extension.hideKeyboard
 import pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditListSharedViewModel
 import pro.apir.tko.presentation.ui.main.list.BaseListFragment
@@ -54,16 +51,6 @@ class InventoryListFragment : BaseListFragment(), ContainerListAdapter.OnItemCli
         containerListAdapter = ContainerListAdapter().apply { setListener(this@InventoryListFragment) }
         recyclerView.adapter = containerListAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-
-        etSearch.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel.searchQuery(etSearch.getTextValue())
-                hideKeyboard()
-                true
-            } else {
-                false
-            }
-        }
 
         setInventoryType()
         observeViewModel()

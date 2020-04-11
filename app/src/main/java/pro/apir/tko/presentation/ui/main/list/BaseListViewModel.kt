@@ -3,10 +3,7 @@ package pro.apir.tko.presentation.ui.main.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
 import pro.apir.tko.data.framework.manager.location.LocationManager
@@ -31,7 +28,7 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
     val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
 
-    private val _searchContainersResults = handle.getLiveData<List<ContainerAreaListModel>>("searchResults")
+    protected val _searchContainersResults = handle.getLiveData<List<ContainerAreaListModel>>("searchResults")
     val searchContainersResults: LiveData<List<ContainerAreaListModel>>
         get() = _searchContainersResults
 
@@ -97,7 +94,7 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         }
     }
 
-    fun searchQuery(string: String) {
+    open fun searchQuery(string: String) {
         if (string.isNullOrBlank()) {
             _searchContainersResults.postValue(emptyList())
         } else {
@@ -111,13 +108,13 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         }
     }
 
-    private fun query(function: suspend () -> Unit) {
+    protected fun query(function: suspend (scope: CoroutineScope) -> Unit) {
         if (_searchMode.value == true) {
             fetchJob?.cancel()
             searchJob?.cancel()
             searchJob = viewModelScope.launch(Dispatchers.IO) {
                 delay(200)
-                function.invoke()
+                function.invoke(this)
             }
         }
     }

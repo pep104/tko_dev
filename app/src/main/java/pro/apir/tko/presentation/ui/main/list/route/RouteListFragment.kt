@@ -42,6 +42,7 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectRouteListFragment(this)
@@ -75,6 +76,25 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
 
     private fun observeViewModel() {
         viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
+
+        viewModel.searchRoutes.observe(viewLifecycleOwner, Observer<List<RouteModel>?> {
+            if (it.isNullOrEmpty()) {
+
+            } else {
+                viewModel.routes.removeObserver(routesListObserver)
+                viewModel.searchRoutes.observe(viewLifecycleOwner, routesListObserver)
+            }
+        })
+
+        viewModel.searchMode.observe(viewLifecycleOwner, Observer {
+            if (it) {
+
+            } else {
+                viewModel.searchRoutes.removeObserver(routesListObserver)
+                viewModel.routes.observe(viewLifecycleOwner, routesListObserver)
+            }
+        })
+
         viewModel.loading.observe(viewLifecycleOwner, Observer {
             if (it) {
                 loadingList.visible()
