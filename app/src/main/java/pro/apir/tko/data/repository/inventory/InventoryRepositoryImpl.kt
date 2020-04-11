@@ -62,4 +62,14 @@ class InventoryRepositoryImpl @Inject constructor(private val tokenManager: Toke
     override suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Either<Failure, List<ContainerAreaListModel>> {
         return request({ inventoryApi.getContainerAreasByBoundingBox(lngMin.toString(), latMin.toString(), lngMax.toString(), latMax.toString(), page, pageSize) }, { it.results.map { resp -> resp.toModel() } })
     }
+
+    override suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>> {
+        return request(
+                call = {
+                    inventoryApi.searchContainer(search)
+                },
+                transform = {
+                    it.results.map { res -> res.toModel() }
+                })
+    }
 }

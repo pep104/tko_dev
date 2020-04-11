@@ -5,16 +5,20 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
@@ -61,6 +65,8 @@ abstract class BaseListFragment : BaseFragment() {
 
     protected lateinit var layoutSearch: ConstraintLayout
     protected lateinit var etSearch: EditText
+    protected lateinit var iconSearch: ImageView
+    protected lateinit var progressSearch: ProgressBar
 
     protected lateinit var loadingList: ProgressBar
     protected lateinit var recyclerView: RecyclerView
@@ -77,6 +83,14 @@ abstract class BaseListFragment : BaseFragment() {
 
     private var myLocationOverlay: MyLocationNewOverlay? = null
     private var markerOverlay: FolderOverlay? = null
+
+
+    private val containersObserver = Observer<List<ContainerAreaListModel>> {
+        Log.e("observer", "container base list")
+        if (!it.isNullOrEmpty()) {
+            setMarkers(it)
+        }
+    }
 
     protected fun setMap(mapView: MapView) {
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
@@ -116,6 +130,8 @@ abstract class BaseListFragment : BaseFragment() {
 
         layoutSearch = view.layoutSearch
         etSearch = view.etSearch
+        iconSearch = view.iconSearch
+        progressSearch = view.progressSearch
 
         recyclerView = view.recyclerView
         loadingList = view.loadingList
@@ -151,9 +167,24 @@ abstract class BaseListFragment : BaseFragment() {
         }
 
 
-        viewModel().containers.observe(viewLifecycleOwner, Observer {
-            if (!it.isNullOrEmpty()) {
-                setMarkers(it)
+        viewModel().containers.observe(viewLifecycleOwner, containersObserver)
+
+        viewModel().searchContainersResults.observe(viewLifecycleOwner, Observer {
+            if (it.isNullOrEmpty()) {
+
+            } else {
+                viewModel().containers.removeObserver(containersObserver)
+                setMarkers(it, true)
+            }
+        })
+
+        viewModel().searchLoading.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                iconSearch.gone()
+                progressSearch.visible()
+            } else {
+                progressSearch.gone()
+                iconSearch.visible()
             }
         })
 
@@ -163,6 +194,7 @@ abstract class BaseListFragment : BaseFragment() {
             if (it) {
                 etSearch.focusWithKeyboard()
             } else {
+                viewModel().containers.observe(viewLifecycleOwner, containersObserver)
                 hideKeyboard()
             }
         })
@@ -180,6 +212,29 @@ abstract class BaseListFragment : BaseFragment() {
             }
 
         })
+
+        etSearch.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel().searchQuery(etSearch.getTextValue())
+                hideKeyboard()
+                true
+            } else {
+                false
+            }
+        }
+
+        requireActivity()
+                .onBackPressedDispatcher
+                .addCallback(this, object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        if (!layoutSearch.isVisible) {
+                            findNavController().navigateUp()
+                        } else {
+                            viewModel().switchSearchMode()
+                        }
+                    }
+                }
+                )
 
     }
 
@@ -209,7 +264,7 @@ abstract class BaseListFragment : BaseFragment() {
 
 
     //TODO to base vm and background task
-    private fun setMarkers(list: List<ContainerAreaListModel>) {
+    protected fun setMarkers(list: List<ContainerAreaListModel>, fromSearch: Boolean = false) {
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
             Log.e("mapMarkers", "job start")
@@ -222,7 +277,11 @@ abstract class BaseListFragment : BaseFragment() {
                         && coordinates.lat in -85.05..85.05) {
                     val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
-                    marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+                    marker.icon = if (fromSearch) {
+                        ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle_orange)
+                    } else {
+                        ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+                    }
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                     marker.position = location
                     marker.infoWindow = null

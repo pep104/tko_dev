@@ -22,5 +22,6 @@ interface InventoryInteractor {
 
     suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int,  pageSize: Int): Either<Failure, List<ContainerAreaListModel>>
 
+    suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>>
 
 }

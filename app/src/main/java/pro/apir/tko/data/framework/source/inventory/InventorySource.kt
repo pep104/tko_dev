@@ -36,4 +36,8 @@ class InventorySource @Inject constructor(retrofit: Retrofit) : InventoryApi {
     override suspend fun getContainerAreasByBoundingBox(lngMin: String, latMin: String, lngMax: String, latMax: String, page: Int, pageSize: Int): Response<ContainerAreaListResponse> {
         return  api.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
     }
+
+    override suspend fun searchContainer(search: String): Response<ContainerAreaListResponse> {
+        return api.searchContainer(search)
+    }
 }

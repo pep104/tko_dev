@@ -25,4 +25,7 @@ interface InventoryApi {
     @GET("waste-area/")
     suspend fun getContainerAreasByBoundingBox(@Query("lng_min") lngMin: String, @Query("lat_min") latMin: String, @Query("lng_max") lngMax: String, @Query("lat_max") latMax: String, @Query("page") page: Int, @Query("page_size") pageSize: Int): Response<ContainerAreaListResponse>
 
+    @GET("waste-area/")
+    suspend fun searchContainer(@Query("search") search: String): Response<ContainerAreaListResponse>
+
 }

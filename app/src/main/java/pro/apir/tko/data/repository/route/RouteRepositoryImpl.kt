@@ -9,6 +9,16 @@ import pro.apir.tko.domain.model.RouteModel
 import javax.inject.Inject
 
 class RouteRepositoryImpl @Inject constructor(private val tokenManager: TokenManager, private val routeApi: RouteApi) : RouteRepository, BaseRepository(tokenManager) {
+
     override suspend fun getRoutesList(page: Int, pageSize: Int) = request({ routeApi.getRoutesList(page, pageSize) }, { it.results.map { item -> item.toModel() } })
+
+    override suspend fun searchRoutes(search: String): Either<Failure, List<RouteModel>> = request(
+            {
+                routeApi.searchRoutesList(search)
+            },
+            {
+                it.results.map { item -> item.toModel() }
+            })
+
     override suspend fun getRoute(id: Long): Either<Failure, RouteModel> = request({ routeApi.getRoute(id) }, { it.toModel() })
 }

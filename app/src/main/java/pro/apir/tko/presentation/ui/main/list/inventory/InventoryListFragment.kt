@@ -63,14 +63,35 @@ class InventoryListFragment : BaseListFragment(), ContainerListAdapter.OnItemCli
 
     private fun observeViewModel() {
 
+        viewModel.containers.observe(viewLifecycleOwner, containersListObserver)
+
+        viewModel.searchContainersResults.observe(viewLifecycleOwner, Observer {
+            if (it.isNullOrEmpty()) {
+
+            } else {
+                viewModel.containers.removeObserver(containersListObserver)
+                viewModel.searchContainersResults.observe(viewLifecycleOwner, containersListObserver)
+            }
+        })
+
+        viewModel.searchMode.observe(viewLifecycleOwner, Observer {
+            if (it) {
+
+            } else {
+                viewModel.searchContainersResults.removeObserver(containersListObserver)
+                viewModel.containers.observe(viewLifecycleOwner, containersListObserver)
+            }
+        })
 
         //EDIT or CREATE result
         sharedEditListViewModel.resultEvent.observe(
                 viewLifecycleOwner,
-                ConsumableObserver {
+                ConsumableObserver
+                {
                     viewModel.handleEditResult(it)
                 }
         )
+
     }
 
 
@@ -78,7 +99,6 @@ class InventoryListFragment : BaseListFragment(), ContainerListAdapter.OnItemCli
         textBottomHeader.text = getString(R.string.text_inventory_list_header)
         btnAction.text = getString(R.string.btn_add_container)
         btnAction.setOnClickListener { findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryEditFragment) }
-        viewModel.containers.observe(viewLifecycleOwner, containersListObserver)
     }
 
 

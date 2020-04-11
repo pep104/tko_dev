@@ -21,6 +21,8 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted private val h
     interface Factory : ViewModelAssistedFactory<InventoryListViewModel>
 
 
+
+
     fun handleEditResult(result: EditResultEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             when (result) {
