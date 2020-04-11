@@ -69,11 +69,23 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         return withContext(dispatcher) {
             val result = inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
 
-            if (result is Either.Right) {
-                Either.Right(result.b.filter { it.resourceType == "ContainerWasteArea" })
-            } else {
-                result
-            }
+            return@withContext filterContainerArea(result)
+        }
+    }
+
+    override suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>> {
+        return withContext(dispatcher) {
+            val result = inventoryRepository.searchContainerArea(search)
+
+            return@withContext filterContainerArea(result)
+        }
+    }
+
+    private fun filterContainerArea(result: Either<Failure, List<ContainerAreaListModel>>): Either<Failure, List<ContainerAreaListModel>> {
+        return if (result is Either.Right) {
+            Either.Right(result.b.filter { it.resourceType == "ContainerWasteArea" })
+        } else {
+            result
         }
     }
 }
