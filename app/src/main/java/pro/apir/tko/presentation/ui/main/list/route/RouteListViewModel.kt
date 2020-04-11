@@ -91,7 +91,6 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
                     _routes.postValue(it.toMutableList())
                 }
             }
-
         }
     }
 
@@ -110,11 +109,8 @@ class RouteListViewModel @AssistedInject constructor(@Assisted private val handl
 
             }
         }
-
     }
 
-    override fun searchQuery(string: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+
 
 }

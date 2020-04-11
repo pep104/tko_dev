@@ -21,6 +21,8 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted private val h
     interface Factory : ViewModelAssistedFactory<InventoryListViewModel>
 
 
+
+
     fun handleEditResult(result: EditResultEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             when (result) {
@@ -49,7 +51,4 @@ class InventoryListViewModel @AssistedInject constructor(@Assisted private val h
         }
     }
 
-    override fun searchQuery(string: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }

@@ -31,23 +31,31 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
     val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
 
+    private val _searchContainersResults = handle.getLiveData<List<ContainerAreaListModel>>("searchResults")
+    val searchContainersResults: LiveData<List<ContainerAreaListModel>>
+        get() = _searchContainersResults
+
+    protected val _searchLoading = handle.getLiveData<Boolean>("searchLoading")
+    val searchLoading: LiveData<Boolean>
+        get() = _searchLoading
+
     protected var _lastPosition = handle.get<IGeoPoint>("bbox")
-    set(value) {
-        handle.set("bbox", value)
-        if (value != null) {
-            locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+        set(value) {
+            handle.set("bbox", value)
+            if (value != null) {
+                locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+            }
+            field = value
         }
-        field = value
-    }
 
     val lastPosition: IGeoPoint?
         get() = _lastPosition
 
     protected var _zoomLevel = handle.get<Double>("zoomLevel")
-    set(value) {
-        handle.set("zoomLevel", value)
-        field = value
-    }
+        set(value) {
+            handle.set("zoomLevel", value)
+            field = value
+        }
 
     val zoomLevel: Double?
         get() = _zoomLevel
@@ -70,9 +78,11 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
 
     fun fetchContainerAreas(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double) {
         fetchJob?.cancel()
-        fetchJob = viewModelScope.launch(Dispatchers.IO) {
-            inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500).fold(::handleFailure) {
-                combineAreas(it)
+        if (_searchMode.value != true) {
+            fetchJob = viewModelScope.launch(Dispatchers.IO) {
+                inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500).fold(::handleFailure) {
+                    combineAreas(it)
+                }
             }
         }
     }
@@ -87,11 +97,23 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         }
     }
 
-    abstract fun searchQuery(string: String)
+    fun searchQuery(string: String) {
+        if (string.isNullOrBlank()) {
+            _searchContainersResults.postValue(emptyList())
+        } else {
+            query {
+                _searchLoading.postValue(true)
+                inventoryInteractor.searchContainerArea(string).fold(::handleFailure) {
+                    _searchContainersResults.postValue(it)
+                    _searchLoading.postValue(false)
+                }
+            }
+        }
+    }
 
-    protected fun query(function: () -> Unit) {
-        val current = _searchMode.value
-        if (current != null && current) {
+    private fun query(function: suspend () -> Unit) {
+        if (_searchMode.value == true) {
+            fetchJob?.cancel()
             searchJob?.cancel()
             searchJob = viewModelScope.launch(Dispatchers.IO) {
                 delay(200)
