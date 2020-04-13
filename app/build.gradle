@@ -10,6 +10,11 @@ apply plugin: 'com.google.gms.google-services'
 
 apply plugin: 'com.google.firebase.crashlytics'
 
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 androidExtensions {
     experimental = true
 }
@@ -40,6 +45,16 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
     }
+
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
 
     buildTypes {
         release {
@@ -107,6 +122,7 @@ dependencies {
     compileOnly 'org.glassfish:javax.annotation:3.1.1'
     compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.5.2")
     kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.5.2")
+    compileOnly 'com.github.pengrad:jdk9-deps:1.0'
 
     //Java8 Time API backport
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
