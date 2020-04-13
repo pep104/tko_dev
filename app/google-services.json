@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "970273977574",
+    "firebase_url": "https://tko-temp.firebaseio.com",
+    "project_id": "tko-temp",
+    "storage_bucket": "tko-temp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970273977574:android:fba27eeca1310ba61e3727",
+        "android_client_info": {
+          "package_name": "pro.apir.tko"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970273977574-sj60bm8hf7fjp5qn23pqr037km9q93jn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCz9eFetdAm53xPbtvCW0W1T-mRsGTdDXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970273977574-sj60bm8hf7fjp5qn23pqr037km9q93jn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
