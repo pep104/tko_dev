@@ -83,8 +83,8 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
             }
         }
 
-        locationClient.lastLocation.addOnSuccessListener {
-            offer(LocationModel(lat = it.latitude, lon = it.longitude))
+        locationClient.lastLocation.addOnSuccessListener {location ->
+            location?.let { offer(LocationModel(lat = it.latitude, lon = it.longitude)) }
         }
         withContext(Dispatchers.Main) {
             locationClient.requestLocationUpdates(flowRequest, locationCallback, Looper.myLooper())
