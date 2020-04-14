@@ -2,11 +2,13 @@ package pro.apir.tko.data.framework.network.model.request
 
 
 import com.google.gson.annotations.SerializedName
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
 import pro.apir.tko.data.framework.network.model.response.data.ContainerData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
+import java.util.*
 
 /**
  * Created by Антон Сарматин
@@ -41,6 +43,7 @@ data class ContainerAreaDetailedRequest(
 
     //Особенность API - посылаем время изменения на сервер всегда.
     @SerializedName("last_update_at")
-    val lastUpdateAt: String = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+//    val lastUpdateAt: String = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+    val lastUpdateAt: String = OffsetDateTime.now(ZoneId.of(TimeZone.getDefault().id)).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
 }
