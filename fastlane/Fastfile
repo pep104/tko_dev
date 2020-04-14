@@ -34,7 +34,7 @@ platform :android do
     firebase_app_distribution(
         app: "1:970273977574:android:fba27eeca1310ba61e3727",
         groups: "apir-test",
-        release_notes: "Location return when not null for last known location",
+        release_notes: "TimeZone offset to container update/create request added",
         firebase_cli_path: "/usr/local/bin/firebase"
     )
 

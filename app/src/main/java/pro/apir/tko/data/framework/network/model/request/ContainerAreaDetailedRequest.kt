@@ -43,7 +43,6 @@ data class ContainerAreaDetailedRequest(
 
     //Особенность API - посылаем время изменения на сервер всегда.
     @SerializedName("last_update_at")
-//    val lastUpdateAt: String = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
     val lastUpdateAt: String = OffsetDateTime.now(ZoneId.of(TimeZone.getDefault().id)).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
 }
