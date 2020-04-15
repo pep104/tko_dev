@@ -15,4 +15,6 @@ interface AddressInteractor {
 
     suspend fun getAddressDetailed(query: String): Either<Failure, List<AddressModel>>
 
+    suspend fun getAddressDetailed(addressModel: AddressModel): Either<Failure, AddressModel>
+
 }

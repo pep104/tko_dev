@@ -64,6 +64,10 @@ fun EditText.getTextValue(): String {
     return this.text.toString().trim()
 }
 
+fun EditText.clearInput() {
+    this.setText("")
+}
+
 fun Fragment?.toast(text: String?) {
     if (this?.context != null) {
         Toast.makeText(this.context, text ?: "", Toast.LENGTH_SHORT).show()

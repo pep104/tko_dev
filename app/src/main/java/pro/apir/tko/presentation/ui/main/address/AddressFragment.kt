@@ -177,11 +177,15 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
 
         btnClearAddress.setOnClickListener {
-            etCoordinates.setText("")
+            etAddress.clearInput()
         }
 
         btnEditCoordinates.setOnClickListener {
             viewModel.setViewType(AddressViewModel.ViewType.LOCATION_COORDINATES)
+        }
+
+        btnClearCoordinates.setOnClickListener {
+            etCoordinates.clearInput()
         }
 
         btnGeoSwitch.setOnClickListener {
@@ -212,7 +216,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         requireActivity()
                 .onBackPressedDispatcher
-                .addCallback(this, object : OnBackPressedCallback(true) {
+                .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         //Close this fragment only if state is 0 (bottom card visible)
                         if (cardBottom.isVisible()) {
@@ -262,7 +266,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         viewModel.address.observe(viewLifecycleOwner, Observer {
             textAddress.isEnabled = true
             textAddress.text = it.value
-            etAddress.setText(it.value)
+//            etAddress.setText(it.value)
             if (it.lat != null && it.lng != null) {
                 textCoordinates.isEnabled = true
                 val coordinatesText = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
@@ -293,6 +297,11 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 }
                 AddressViewModel.ViewType.SEARCH -> {
                     etAddress.addTextChangedListener(addressWatcher)
+
+                    viewModel.address.value?.let { addressModel ->
+                        etAddress.setText(addressModel.value)
+                    }
+
                     cardBottom.invisible()
                     btnSave.invisible()
                     cardSearch.visible()
@@ -393,7 +402,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)
-        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_pin)
+        marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin)
         marker.setAnchor(Marker.ANCHOR_CENTER, 0.88f)
         marker.position = location
         marker.infoWindow = null

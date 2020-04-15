@@ -5,4 +5,4 @@ package pro.apir.tko.data.framework.network.model.request
  * Date: 2020-01-23
  * Project: tko-android
  */
-data class SuggestionRequest(val query: String, val count: Int)
+data class SuggestionRequest(val query: String, val count: Int? = null)

@@ -98,10 +98,11 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     }
 
     fun query(query: String) {
-        if (query.length > 3) {
+        if (query.length > 2) {
             queryJob?.cancel()
             viewModelScope.launch {
                 delay(300)
+                Log.e("http","query: $query")
                 addressInteractor.getAddressSuggestions(query).fold(::handleFailure) {
                     _suggestions.postValue(it)
                 }
@@ -111,25 +112,38 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     fun setChoosed(addressModel: AddressModel) {
         if (addressModel.lat != null && addressModel.lng != null) {
-            _address.postValue(addressModel)
-            _viewType.postValue(ViewType.BOTTOM_CARD)
+           setAddress(addressModel)
         } else {
-            fetchDetailed(addressModel)
+            fetchDetailedTest(addressModel)
         }
     }
 
     private fun fetchDetailed(addressModel: AddressModel) {
         queryJob?.cancel()
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch() {
             addressInteractor.getAddressDetailed(addressModel.value).fold({}, {
                 if (it.isNotEmpty() && it.first().lat != null && it.first().lng != null) {
-                    setChoosed(it.first())
+                    setAddress(it.first())
                 } else {
                     //Зациклится же? Или так надо?
                     setChoosed(addressModel)
                 }
             })
         }
+    }
+
+    private fun fetchDetailedTest(addressModel: AddressModel) {
+        queryJob?.cancel()
+        viewModelScope.launch {
+            addressInteractor.getAddressDetailed(addressModel).fold({},{
+                setAddress(it)
+            })
+        }
+    }
+
+    private fun setAddress(addressModel: AddressModel){
+        _address.postValue(addressModel)
+        _viewType.postValue(ViewType.BOTTOM_CARD)
     }
 
     //edit coordinates

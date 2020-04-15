@@ -12,7 +12,7 @@ import javax.inject.Inject
 class AddressRepositoryImpl @Inject constructor(private val suggestionApi: SuggestionApi, private val suggestionDetailedApi: SuggestionDetailedApi) : AddressRepository, BaseRepository(null, TokenStrategy.NO_AUTH) {
 
     override suspend fun getAddressSuggestions(query: String): Either<Failure, List<AddressModel>> {
-        val request = SuggestionRequest(query, 1)
+        val request = SuggestionRequest(query)
         return request({ suggestionApi.getAddressSuggestions(request) }, { it.suggestions.map { it.toModel() } })
     }
 
