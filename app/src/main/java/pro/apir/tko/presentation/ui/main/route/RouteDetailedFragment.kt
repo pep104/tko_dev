@@ -1,6 +1,6 @@
 package pro.apir.tko.presentation.ui.main.route
 
-import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -37,6 +37,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.FolderOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -81,6 +82,9 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
     private lateinit var btnZoomIn: ImageButton
     private lateinit var btnZoomOut: ImageButton
     private lateinit var btnGeoSwitch: ImageButton
+
+    private var pathOverlay: FolderOverlay? = null
+    private var markersOverlay: FolderOverlay? = null
 
     private lateinit var btnStart: MaterialButton
 
@@ -280,22 +284,27 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
             list.forEach { points.add(GeoPoint(it.lat, it.lng)) }
 
             val polyline = Polyline()
-            polyline.outlinePaint.color = Color.parseColor("#3469A8")
-            polyline.outlinePaint.alpha = 196
             polyline.setPoints(points)
+            polyline.outlinePaint.color = ContextCompat.getColor(requireContext(), R.color.bluePath)
+            polyline.outlinePaint.isAntiAlias = true
+            polyline.outlinePaint.strokeJoin = Paint.Join.ROUND
+            polyline.outlinePaint.strokeCap = Paint.Cap.ROUND
+            polyline.outlinePaint.strokeWidth = 13f
 
+            val newFolderOverlay = FolderOverlay().apply { add(polyline) }
 
-            mapView.overlayManager.add(polyline)
-
+            mapView.overlayManager.remove(pathOverlay)
+            mapView.overlayManager.add(newFolderOverlay)
+            pathOverlay = newFolderOverlay
         }
 
     }
 
     //TODO to base vm
     private fun setMarkers(list: List<RoutePointModel>) {
-        val markers = arrayListOf<Marker>()
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
+            val newFolderOverlay = FolderOverlay()
             list.forEach {
 
                 val coordinates = it.coordinates
@@ -322,12 +331,14 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
                     marker.position = location
                     marker.infoWindow = null
-                    markers.add(marker)
+                    newFolderOverlay.add(marker)
 
                 }
             }
             withContext(Dispatchers.Main) {
-                mapView.overlayManager.addAll(markers)
+                mapView.overlayManager.remove(markersOverlay)
+                mapView.overlayManager.add(newFolderOverlay)
+                markersOverlay = newFolderOverlay
             }
         }
 

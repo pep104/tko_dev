@@ -1,6 +1,6 @@
 package pro.apir.tko.presentation.ui.main.route.navigation
 
-import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -527,9 +527,12 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
             list.forEach { points.add(GeoPoint(it.lat, it.lng)) }
 
             val polyline = Polyline()
-            polyline.outlinePaint.color = Color.parseColor("#3469A8")
-            polyline.outlinePaint.alpha = 196
             polyline.setPoints(points)
+            polyline.outlinePaint.color = ContextCompat.getColor(requireContext(), R.color.bluePath)
+            polyline.outlinePaint.isAntiAlias = true
+            polyline.outlinePaint.strokeJoin = Paint.Join.ROUND
+            polyline.outlinePaint.strokeCap = Paint.Cap.ROUND
+            polyline.outlinePaint.strokeWidth = 13f
 
             val newFolderOverlay = FolderOverlay().apply { add(polyline) }
 
