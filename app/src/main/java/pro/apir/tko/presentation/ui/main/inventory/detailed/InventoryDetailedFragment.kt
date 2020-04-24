@@ -194,10 +194,10 @@ class InventoryDetailedFragment : BaseFragment() {
             it?.let { enabled ->
 
                 if (enabled) {
-                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(context!!, R.color.blueMain), PorterDuff.Mode.SRC_IN)
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.blueMain), PorterDuff.Mode.SRC_IN)
                     myLocationOverlay?.enableFollowLocation()
                 } else {
-                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(context!!, R.color.black), PorterDuff.Mode.SRC_IN)
+                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black), PorterDuff.Mode.SRC_IN)
                     myLocationOverlay?.disableFollowLocation()
                 }
 
@@ -219,7 +219,7 @@ class InventoryDetailedFragment : BaseFragment() {
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_arrow)?.toBitmap())
+        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
 
 
         mapView.overlayManager.add(myLocationOverlay)
@@ -254,7 +254,7 @@ class InventoryDetailedFragment : BaseFragment() {
         mapView.controller.setCenter(GeoPoint(lat, lng))
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)
-        marker.icon = ContextCompat.getDrawable(context!!, R.drawable.ic_map_pin)
+        marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin)
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.position = location
         marker.infoWindow = null
