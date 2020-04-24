@@ -209,13 +209,12 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             val newPhotos = _images.value?.filter { it.new != null }?.map { it.new!! }
 
             //Mapping fields to model
-            //TODO FIELD CHECKS
 
             val coordinatesModel = CoordinatesModel(
                     _address.value?.lng ?: 0.0,
                     _address.value?.lat ?: 0.0
             )
-
+            //FIXME исправить эту дичь с кучей моделей
             val newModel = ContainerAreaShortModel(
                     _id,
                     area,

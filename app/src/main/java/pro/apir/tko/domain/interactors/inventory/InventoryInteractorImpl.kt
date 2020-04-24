@@ -43,6 +43,10 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                 photosCombined.addAll(photos.map { ImageUploadModel(it.image) })
             photosCombined.addAll(uploaded.map { ImageUploadModel(it.id) })
 
+
+            //FIXME исправить эту дичь с кучей моделей
+            val regNumber = if(model.registryNumber.isNullOrBlank()) null else model.registryNumber
+
             //Create edit model
             val edit = ContainerAreaEditModel(
                     id = model.id,
@@ -51,7 +55,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                     containers = model.containers,
                     coordinates = model.coordinates,
                     location = model.location,
-                    registryNumber = model.registryNumber,
+                    registryNumber = regNumber,
                     photos = photosCombined,
                     hasCover = model.hasCover,
                     infoPlate = model.infoPlate,
