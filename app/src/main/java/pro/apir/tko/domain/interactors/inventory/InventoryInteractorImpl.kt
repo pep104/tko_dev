@@ -4,9 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.functional.map
 import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.inventory.InventoryRepository
 import pro.apir.tko.domain.model.*
+import pro.apir.tko.domain.utils.REGION_PREFIXES
 import java.io.File
 import javax.inject.Inject
 
@@ -16,13 +18,36 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
 
     override suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerAreaListModel>> {
         return withContext(dispatcher) {
-            inventoryRepository.getContainerAreas(page, pageSize, location)
+            val data = inventoryRepository.getContainerAreas(page, pageSize, location)
+
+            return@withContext data.map {
+                it.map {
+                    if (REGION_PREFIXES.contains(it.location)) {
+                        ContainerAreaListModel(
+                                it.id,
+                                it.identifier,
+                                it.registryNumber,
+                                it.location.substringAfter(","),
+                                it.status,
+                                it.coordinates,
+                                it.containersCount,
+                                it.area,
+                                it.resourceType
+                        )
+                    } else {
+                        it
+                    }
+                }
+            }
+
         }
     }
 
     override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaShortModel> {
         return withContext(dispatcher) {
-            inventoryRepository.getContainerArea(id)
+            val data = inventoryRepository.getContainerArea(id)
+
+            TODO()
         }
     }
 
@@ -45,7 +70,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
 
 
             //FIXME исправить эту дичь с кучей моделей
-            val regNumber = if(model.registryNumber.isNullOrBlank()) null else model.registryNumber
+            val regNumber = if (model.registryNumber.isNullOrBlank()) null else model.registryNumber
 
             //Create edit model
             val edit = ContainerAreaEditModel(
