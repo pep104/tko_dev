@@ -1,5 +1,6 @@
 package pro.apir.tko.domain.interactors.inventory
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
@@ -20,25 +21,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         return withContext(dispatcher) {
             val data = inventoryRepository.getContainerAreas(page, pageSize, location)
 
-            return@withContext data.map {
-                it.map {
-                    if (REGION_PREFIXES.contains(it.location)) {
-                        ContainerAreaListModel(
-                                it.id,
-                                it.identifier,
-                                it.registryNumber,
-                                it.location.substringAfter(","),
-                                it.status,
-                                it.coordinates,
-                                it.containersCount,
-                                it.area,
-                                it.resourceType
-                        )
-                    } else {
-                        it
-                    }
-                }
-            }
+            return@withContext filterContainerArea(data)
 
         }
     }
@@ -47,7 +30,28 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         return withContext(dispatcher) {
             val data = inventoryRepository.getContainerArea(id)
 
-            TODO()
+            return@withContext data.map {
+                if(isLocationContainsPrefix(it.location)){
+                    ContainerAreaShortModel(
+                            it.id,
+                            it.area,
+                            it.containersCount,
+                            it.containers,
+                            it.coordinates,
+                            it.location?.substringAfter(','),
+                            it.registryNumber,
+                            it.photos,
+                            it.hasCover,
+                            it.infoPlate,
+                            it.access,
+                            it.fence,
+                            it.coverage,
+                            it.kgo
+                    )
+                }else{
+                    it
+                }
+            }
         }
     }
 
@@ -112,9 +116,37 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
 
     private fun filterContainerArea(result: Either<Failure, List<ContainerAreaListModel>>): Either<Failure, List<ContainerAreaListModel>> {
         return if (result is Either.Right) {
-            Either.Right(result.b.filter { it.resourceType == "ContainerWasteArea" })
+            Either.Right(
+                    result.b.filter { it.resourceType == "ContainerWasteArea" }.map {
+                        Log.e("area", "Location: ${it.location}")
+                        if (isLocationContainsPrefix(it.location)) {
+                            ContainerAreaListModel(
+                                    it.id,
+                                    it.identifier,
+                                    it.registryNumber,
+                                    it.location.substringAfter(","),
+                                    it.status,
+                                    it.coordinates,
+                                    it.containersCount,
+                                    it.area,
+                                    it.resourceType
+                            )
+                        } else {
+                            it
+                        }
+                    })
         } else {
             result
         }
+    }
+
+
+    private fun isLocationContainsPrefix(location: String?): Boolean {
+
+
+        val match = REGION_PREFIXES.filter { location?.contains(it, true) == true}
+
+        return match.isNotEmpty()
+
     }
 }
