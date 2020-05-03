@@ -6,3 +6,4 @@ package pro.apir.tko.domain.utils
  * Project: tko-android
  */
 val REGION_PREFIXES = listOf("республика", "край", "область", "ао", "автономная", "автономный","респ","обл")
+val LOCAL_AREA_PREFIXES = listOf("р-н")
