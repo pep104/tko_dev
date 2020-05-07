@@ -150,7 +150,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
             for (index in 0 until substringTimes) {
                 res = res?.substringAfter(',')
             }
-            return res
+            return res?.trim()
         } else {
             location
         }
