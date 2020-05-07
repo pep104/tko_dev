@@ -90,7 +90,26 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                     kgo = model.kgo
             )
 
-            inventoryRepository.updateContainer(edit)
+            val result = inventoryRepository.updateContainer(edit)
+
+            return@withContext result.map {
+                ContainerAreaShortModel(
+                        it.id,
+                        it.area,
+                        it.containersCount,
+                        it.containers,
+                        it.coordinates,
+                        substringLocationPrefix(it.location),
+                        it.registryNumber,
+                        it.photos,
+                        it.hasCover,
+                        it.infoPlate,
+                        it.access,
+                        it.fence,
+                        it.coverage,
+                        it.kgo
+                )
+            }
         }
     }
 
