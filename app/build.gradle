@@ -168,3 +168,13 @@ dependencies {
 
 }
 
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        def product = applicationId
+        def versionName = variant.versionName
+        def versionCode = variant.versionCode
+        def buildType = variant.buildType.name
+        outputFileName = "${product}-${versionName}-${versionCode}-${buildType}.apk"
+    }
+}
+
