@@ -1,6 +1,8 @@
 package pro.apir.tko.domain.interactors.inventory
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
@@ -15,15 +17,6 @@ import javax.inject.Inject
 class InventoryInteractorImpl @Inject constructor(private val inventoryRepository: InventoryRepository, private val attachmentRepository: AttachmentRepository) : InventoryInteractor {
 
     private val dispatcher = Dispatchers.IO
-
-    override suspend fun getContainerAreas(page: Int, pageSize: Int, location: String): Either<Failure, List<ContainerAreaListModel>> {
-        return withContext(dispatcher) {
-            val data = inventoryRepository.getContainerAreas(page, pageSize, location)
-
-            return@withContext filterContainerArea(data)
-
-        }
-    }
 
     override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaShortModel> {
         return withContext(dispatcher) {
@@ -112,12 +105,9 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         }
     }
 
-    override suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Either<Failure, List<ContainerAreaListModel>> {
-        return withContext(dispatcher) {
-            val result = inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
-
-            return@withContext filterContainerArea(result)
-        }
+    override suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Flow<Either<Failure, List<ContainerAreaListModel>>> = withContext(dispatcher){
+        val result = inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
+        return@withContext result.map { filterContainerArea(it) }
     }
 
     override suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>> {

@@ -101,7 +101,7 @@ abstract class BaseListFragment : BaseFragment() {
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(context!!, R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_arrow)?.toBitmap())
+        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(context!!, R.drawable.ic_map_arrow)?.toBitmap())
         if (viewModel().lastPosition == null) {
             myLocationOverlay?.enableFollowLocation()
         }
@@ -225,7 +225,7 @@ abstract class BaseListFragment : BaseFragment() {
 
         requireActivity()
                 .onBackPressedDispatcher
-                .addCallback(this, object : OnBackPressedCallback(true) {
+                .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         if (!layoutSearch.isVisible) {
                             findNavController().navigateUp()
@@ -278,9 +278,9 @@ abstract class BaseListFragment : BaseFragment() {
                     val location = GeoPoint(coordinates.lat, coordinates.lng)
                     val marker = Marker(mapView)
                     marker.icon = if (fromSearch) {
-                        ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle_orange)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle_orange)
                     } else {
-                        ContextCompat.getDrawable(context!!, R.drawable.ic_map_marker_circle)
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
                     }
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
                     marker.position = location

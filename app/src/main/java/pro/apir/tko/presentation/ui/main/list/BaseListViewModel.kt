@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
 import pro.apir.tko.data.framework.manager.location.LocationManager
@@ -77,9 +78,12 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         fetchJob?.cancel()
         if (_searchMode.value != true) {
             fetchJob = viewModelScope.launch(Dispatchers.IO) {
-                inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500).fold(::handleFailure) {
-                    combineAreas(it)
-                }
+                inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500)
+                        .collect {
+                            it.fold(::handleFailure) {
+                                combineAreas(it)
+                            }
+                        }
             }
         }
     }

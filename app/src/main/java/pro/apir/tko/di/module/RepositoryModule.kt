@@ -2,6 +2,7 @@ package pro.apir.tko.di.module
 
 import dagger.Module
 import dagger.Provides
+import pro.apir.tko.data.cache.ContainerAreaListCache
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.TokenManager
 import pro.apir.tko.data.framework.network.api.*
@@ -35,7 +36,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun inventoryRepository(tokenManager: TokenManager, inventoryApi: InventoryApi): InventoryRepository = InventoryRepositoryImpl(tokenManager, inventoryApi)
+    fun inventoryRepository(tokenManager: TokenManager, inventoryApi: InventoryApi, containerAreaListCache: ContainerAreaListCache): InventoryRepository = InventoryRepositoryImpl(tokenManager, inventoryApi, containerAreaListCache)
 
     @Provides
     @Singleton
@@ -74,5 +75,11 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun userRepository(tokenManager: TokenManager, userApi: UserApi, preferencesManager: PreferencesManager): UserRepository = UserRepositoryImpl(tokenManager, userApi, preferencesManager)
+
+    //Cache
+
+    @Provides
+    @Singleton
+    fun cacheContainerShortModel(): ContainerAreaListCache = ContainerAreaListCache()
 
 }
