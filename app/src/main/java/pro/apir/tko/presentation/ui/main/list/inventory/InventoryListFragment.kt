@@ -97,7 +97,7 @@ class InventoryListFragment : BaseListFragment(), ContainerListAdapter.OnItemCli
 
     fun setInventoryType() {
         textBottomHeader.text = getString(R.string.text_inventory_list_header)
-        btnAction.text = getString(R.string.btn_add_container)
+        btnAction.text = getString(R.string.btn_add_waste_are)
         btnAction.setOnClickListener { findNavController().navigate(R.id.action_inventoryListFragment_to_inventoryEditFragment) }
     }
 

@@ -50,7 +50,7 @@
     <string name="text_count">Количество</string>
     <string name="text_container_volume">Объем контейнера, м³</string>
     <string name="text_container_type">Тип контейнера</string>
-    <string name="btn_add_container">Добавить площадку</string>
+    <string name="btn_add_container">Добавить контейнер</string>
     <string name="text_count_short">Кол-во</string>
     <string name="text_route_list_header">Маршруты</string>
     <string name="btn_choose_route">Выбрать маршрут</string>
@@ -85,6 +85,7 @@
     <string name="toast_copy_done">Скопировано в буфер обмена</string>
     <string name="mask_coordinates">[m][09]{.}[099999]{, }[m][099]{.}[099999]</string>
     <string name="text_error_coordinates_not_valid">Введите верные координаты</string>
+    <string name="btn_add_waste_are">Добавить площадку</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>
