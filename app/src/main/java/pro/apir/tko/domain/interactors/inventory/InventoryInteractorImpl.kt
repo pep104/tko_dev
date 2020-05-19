@@ -8,8 +8,7 @@ import pro.apir.tko.core.functional.map
 import pro.apir.tko.data.repository.attachment.AttachmentRepository
 import pro.apir.tko.data.repository.inventory.InventoryRepository
 import pro.apir.tko.domain.model.*
-import pro.apir.tko.domain.utils.LOCAL_AREA_PREFIXES
-import pro.apir.tko.domain.utils.REGION_PREFIXES
+import pro.apir.tko.domain.utils.substringLocationPrefixRecursively
 import java.io.File
 import javax.inject.Inject
 
@@ -37,7 +36,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                         it.containersCount,
                         it.containers,
                         it.coordinates,
-                        substringLocationPrefix(it.location),
+                        substringLocationPrefixRecursively(it.location),
                         it.registryNumber,
                         it.photos,
                         it.hasCover,
@@ -79,7 +78,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                     containersCount = model.containersCount,
                     containers = model.containers,
                     coordinates = model.coordinates,
-                    location = substringLocationPrefix(model.location),
+                    location = substringLocationPrefixRecursively(model.location),
                     registryNumber = regNumber,
                     photos = photosCombined,
                     hasCover = model.hasCover,
@@ -99,7 +98,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                         it.containersCount,
                         it.containers,
                         it.coordinates,
-                        substringLocationPrefix(it.location),
+                        substringLocationPrefixRecursively(it.location),
                         it.registryNumber,
                         it.photos,
                         it.hasCover,
@@ -138,7 +137,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
                                 it.id,
                                 it.identifier,
                                 it.registryNumber,
-                                substringLocationPrefix(it.location) ?: "",
+                                substringLocationPrefixRecursively(it.location) ?: "",
                                 it.status,
                                 it.coordinates,
                                 it.containersCount,
@@ -153,26 +152,4 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
     }
 
 
-    private fun substringLocationPrefix(location: String?): String? {
-        val regionMatch = REGION_PREFIXES.filter { location?.contains(it, true) == true }
-        val localMatch = LOCAL_AREA_PREFIXES.filter { location?.contains(it, true) == true }
-
-        val substringTimes = when (true) {
-            regionMatch.isNotEmpty() && localMatch.isNotEmpty() -> 2
-            regionMatch.isNotEmpty() && localMatch.isEmpty() -> 1
-            regionMatch.isEmpty() && localMatch.isNotEmpty() -> 1
-            else -> 0
-        }
-
-        return if (substringTimes != 0) {
-            var res: String? = location
-            for (index in 0 until substringTimes) {
-                res = res?.substringAfter(',')
-            }
-            return res?.trim()
-        } else {
-            location
-        }
-
-    }
 }

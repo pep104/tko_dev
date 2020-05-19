@@ -5,5 +5,17 @@ package pro.apir.tko.domain.utils
  * Date: 2020-05-02
  * Project: tko-android
  */
-val REGION_PREFIXES = listOf("республика", "край", "область", "ао", "автономная", "автономный","респ","обл")
+val REGION_PREFIXES = listOf("республика", "край", "область", "ао", "автономная", "автономный", "респ", "обл")
 val LOCAL_AREA_PREFIXES = listOf("р-н")
+
+fun substringLocationPrefixRecursively(location: String?): String? {
+    val regionMatch = REGION_PREFIXES.filter { location?.contains(it, true) == true }
+    val localMatch = LOCAL_AREA_PREFIXES.filter { location?.contains(it, true) == true }
+
+    if (regionMatch.isNotEmpty() || localMatch.isNotEmpty()){
+        return substringLocationPrefixRecursively(location?.substringAfter(',')?.trim())
+    }
+    return location?.trim()
+}
+
+fun String.substringLocationPrefix() = substringLocationPrefixRecursively(this)
