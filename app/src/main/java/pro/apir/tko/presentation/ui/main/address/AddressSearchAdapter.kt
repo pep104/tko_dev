@@ -61,7 +61,7 @@ class AddressSearchAdapter : RecyclerView.Adapter<AddressSearchAdapter.Suggestio
 
         fun bind(item: AddressModel) {
 
-            textAddress.text = item.value
+            textAddress.text = item.unrestrictedValue
 
             if (item.lat != null && item.lng != null) {
                 textCoordinates.text = textCoordinates.context.getString(R.string.text_coordinates_placeholder, item.lat.toString(), item.lng.toString())

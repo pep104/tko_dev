@@ -54,14 +54,13 @@
 
             <EditText
                 android:id="@+id/etAddress"
-                style="@style/EditTextContainer"
+                style="@style/EditTextContainerAddress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="4dp"
                 android:background="@android:color/transparent"
                 android:hint="@string/hint_address_search"
-                android:maxLines="1"
                 app:layout_constraintEnd_toStartOf="@+id/btnClearAddress"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textHeaderAddressSearch" />
@@ -280,11 +279,13 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    android:layout_marginBottom="16dp"
                     android:enabled="false"
                     android:fontFamily="sans-serif-light"
                     android:text="@string/text_address_choose_placeholder"
                     android:textColor="@color/selector_text_address_coordinates"
                     android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btnCopy"
                     app:layout_constraintStart_toStartOf="@+id/textHeaderCoordinates"
                     app:layout_constraintTop_toBottomOf="@+id/textHeaderCoordinates" />
