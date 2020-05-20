@@ -196,7 +196,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             viewModel.setViewType(AddressViewModel.ViewType.SEARCH)
         }
 
-        view.textAddress.setOnClickListener {
+        textAddress.setOnClickListener {
             viewModel.setViewType(AddressViewModel.ViewType.SEARCH)
         }
 
@@ -416,9 +416,15 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     }
 
     //Suggestion RecyclerView callback
-    override fun onSuggestionSelected(data: AddressModel) {
+    override fun onSuggestionClicked(data: AddressModel) {
         //Set selected suggestion to VM
         viewModel.setChoosed(data)
+    }
+
+    override fun onSuggestionLongClicked(data: AddressModel) {
+        //Set selected suggestion to EditText for completion
+        etAddress.setText(data.value)
+        etAddress.setSelection(data.value.length)
     }
 
     companion object {

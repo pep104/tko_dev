@@ -23,7 +23,9 @@ class AddressSearchAdapter : RecyclerView.Adapter<AddressSearchAdapter.Suggestio
 
     interface OnItemClickListener {
 
-        fun onSuggestionSelected(data: AddressModel)
+        fun onSuggestionClicked(data: AddressModel)
+
+        fun onSuggestionLongClicked(data: AddressModel)
 
     }
 
@@ -61,7 +63,7 @@ class AddressSearchAdapter : RecyclerView.Adapter<AddressSearchAdapter.Suggestio
 
         fun bind(item: AddressModel) {
 
-            textAddress.text = item.unrestrictedValue
+            textAddress.text = item.value
 
             if (item.lat != null && item.lng != null) {
                 textCoordinates.text = textCoordinates.context.getString(R.string.text_coordinates_placeholder, item.lat.toString(), item.lng.toString())
@@ -69,7 +71,14 @@ class AddressSearchAdapter : RecyclerView.Adapter<AddressSearchAdapter.Suggestio
                 textCoordinates.text = ""
             }
 
-            itemView.setOnClickListener { listener?.onSuggestionSelected(item) }
+            itemView.setOnLongClickListener {
+                listener?.onSuggestionLongClicked(item)
+                true
+            }
+
+            itemView.setOnClickListener {
+                listener?.onSuggestionClicked(item)
+            }
 
         }
 
