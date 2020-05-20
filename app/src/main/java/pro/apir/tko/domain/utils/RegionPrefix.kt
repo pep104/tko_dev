@@ -1,5 +1,7 @@
 package pro.apir.tko.domain.utils
 
+import android.util.Log
+
 /**
  * Created by antonsarmatin
  * Date: 2020-05-02
@@ -11,8 +13,10 @@ val LOCAL_AREA_PREFIXES = listOf("р-н")
 fun substringLocationPrefixRecursively(location: String?): String? {
     val regionMatch = REGION_PREFIXES.filter { location?.contains(it, true) == true }
     val localMatch = LOCAL_AREA_PREFIXES.filter { location?.contains(it, true) == true }
+    val delimiterMatch = location?.contains(',', true) == true
 
-    if (regionMatch.isNotEmpty() || localMatch.isNotEmpty()){
+    if ((regionMatch.isNotEmpty() || localMatch.isNotEmpty()) && delimiterMatch){
+        Log.e("http","$location --- region: $regionMatch, local: $localMatch, delimiter: $delimiterMatch")
         return substringLocationPrefixRecursively(location?.substringAfter(',')?.trim())
     }
     return location?.trim()
