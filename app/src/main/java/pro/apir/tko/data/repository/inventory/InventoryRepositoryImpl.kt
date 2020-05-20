@@ -45,7 +45,7 @@ class InventoryRepositoryImpl @Inject constructor(
         emit(result)
         result.onRight {
             it.forEach {
-                cache.put(it.toString(), it)
+                cache.put(it.id.toString(), it)
             }
         }
     }
@@ -91,9 +91,9 @@ class InventoryRepositoryImpl @Inject constructor(
                 { it.toModel() }
         )
 
-//        result.onRight {
-//            cache.put(it.toString(), it)
-//        }
+        result.onRight {
+            cache.remove(it.id.toString())
+        }
 
         return result
     }

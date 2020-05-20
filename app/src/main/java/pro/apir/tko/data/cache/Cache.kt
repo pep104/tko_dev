@@ -22,6 +22,12 @@ open class Cache<T> {
         }
     }
 
+    fun remove(key: String) {
+        synchronized(data){
+            data.remove(key)
+        }
+    }
+
     fun getAll(): List<T>? {
         synchronized(data) {
             return data.toList().map { it.second }
