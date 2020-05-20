@@ -20,6 +20,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import kotlinx.android.synthetic.main.fragment_inventory_edit.*
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
@@ -207,12 +208,13 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
                 viewModel.area = it.toString().toDouble()
         }
 
-        view.llAddress.setOnClickListener {
+        llAddress.setOnClickListener {
             openAddressFragment()
         }
 
-        etAddress.setOnClickListener {
-            openAddressFragment()
+        with(etAddress){
+            movementMethod = null
+            keyListener = null
         }
 
         view.btnAddContainer.setOnClickListener {

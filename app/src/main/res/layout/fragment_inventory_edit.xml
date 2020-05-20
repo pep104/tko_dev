@@ -84,6 +84,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginEnd="16dp"
+                android:focusable="true"
+                android:clickable="true"
                 android:orientation="vertical">
 
                 <TextView
@@ -101,6 +103,9 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="8dp"
+                    android:focusable="false"
+                    android:clickable="false"
+                    android:focusableInTouchMode="false"
                     android:background="@android:color/transparent"
                     android:hint="@string/hint_area"
                     android:imeOptions="actionNext"

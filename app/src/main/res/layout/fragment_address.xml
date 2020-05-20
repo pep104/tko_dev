@@ -108,9 +108,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutBottom"
-        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.cardview.widget.CardView
@@ -250,6 +250,14 @@
                     app:layout_constraintBottom_toBottomOf="@+id/textAddress"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textAddress" />
+
+                <View
+                    android:id="@+id/viewAddressOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:minHeight="36dp"
+                    app:layout_constraintBottom_toBottomOf="@id/textAddress"
+                    app:layout_constraintTop_toTopOf="@id/textAddress" />
 
                 <View
                     android:id="@+id/divider"

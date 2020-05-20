@@ -196,7 +196,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             viewModel.setViewType(AddressViewModel.ViewType.SEARCH)
         }
 
-        textAddress.setOnClickListener {
+        view.viewAddressOverlay.setOnClickListener {
             viewModel.setViewType(AddressViewModel.ViewType.SEARCH)
         }
 
