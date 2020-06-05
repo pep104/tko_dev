@@ -369,22 +369,29 @@ class CameraFragment : BaseFragment() {
         }
 
 
-        controls.findViewById<TextView>(R.id.btnAction).setOnClickListener {
+        controls.findViewById<ImageButton>(R.id.btnAction).setOnClickListener {
+            acceptPhotos()
+        }
+
+        controls.findViewById<ImageButton>(R.id.btnExit).setOnClickListener {
             findNavController().navigateUp()
         }
 
         // Listener for button used to view last photo
         controls.findViewById<ImageButton>(R.id.imagePreview).setOnClickListener {
-            val data = viewModel.photos.value
-            if (data != null){
-                sharedViewModel.setImages(data)
-                sharedViewModel2.setData(data)
-            }
-
-            findNavController().navigateUp()
+            acceptPhotos()
         }
     }
 
+    private fun acceptPhotos() {
+        val data = viewModel.photos.value
+        if (data != null) {
+            sharedViewModel.setImages(data)
+            sharedViewModel2.setData(data)
+        }
+
+        findNavController().navigateUp()
+    }
 
     /**
      * Our custom image analysis class.
