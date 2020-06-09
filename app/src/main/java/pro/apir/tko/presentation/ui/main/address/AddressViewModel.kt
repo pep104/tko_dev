@@ -193,6 +193,10 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
         }
     }
 
+    fun updateCoordinatesOnDragEvent(lat: Double, lon: Double){
+        updateCoordinates(lat, lon)
+    }
+
     private fun updateCoordinates(lat: Double, lon: Double) {
         addressCoordinatesJob?.cancel()
         addressCoordinatesJob = viewModelScope.launch {
