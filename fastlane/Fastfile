@@ -34,7 +34,7 @@ platform :android do
     firebase_app_distribution(
         app: "1:970273977574:android:fba27eeca1310ba61e3727",
         groups: "apir-test",
-        release_notes: "Исправлена ошибка выделения (фокуса) поля в редактировании контейнерной площадки",
+        release_notes: "Редактирование координат перемещением карты",
         firebase_cli_path: "/usr/local/bin/firebase"
     )
 
