@@ -82,6 +82,10 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                 is RouteTrackingNotCompleted -> {
                     alert(R.string.error_route_not_completed)
                 }
+                else -> {
+                    alert(R.string.error_default)
+                    Log.e("error", "${it.javaClass.simpleName}")
+                }
             }
         } else super.failureObserver
     }
@@ -449,6 +453,8 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                 } else {
                     if (isNewPoint) {
                         disablePhotoRecycler()
+                    }else{
+                        btnAction.text = getString(R.string.btn_route_action_add_photos)
                     }
                 }
             }

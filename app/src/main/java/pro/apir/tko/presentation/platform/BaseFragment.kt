@@ -44,7 +44,7 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
     internal open val failureObserver by lazy {
         Observer<Failure> {
             when (it) {
-                is Failure.FeatureFailure ->  throw NotImplementedError("You should override failureObserver to handle FeatureFailure")
+                is Failure.FeatureFailure ->  throw NotImplementedError("You should override failureObserver to handle FeatureFailure - ${it.javaClass.simpleName}")
                 Failure.NetworkConnection -> alert(R.string.error_network_connection)
                 is Failure.ServerError -> {
                     if(it.message != null){

@@ -75,17 +75,23 @@
     <string name="btn_route_action_next">Далее</string>
     <string name="btn_finish_route">Завершить</string>
 
+    <string name="btn_add_waste_are">Добавить площадку</string>
+    <string name="btn_submit">Подтвердить</string>
+
     <string name="text_loading_placeholder">Операция выполняется</string>
+
+    <string name="mask_coordinates">[m][09]{.}[099999]{, }[m][099]{.}[099999]</string>
 
     //Errors
     <string name="error_network_connection">Ошибка подключения к интернету</string>
     <string name="error_default">Произошла ошибка</string>
     <string name="error_route_tracking_not_exist">Сессия данного маршрута не найдена</string>
     <string name="error_route_not_completed">Точки маршрута не выполнены</string>
-    <string name="toast_copy_done">Скопировано в буфер обмена</string>
-    <string name="mask_coordinates">[m][09]{.}[099999]{, }[m][099]{.}[099999]</string>
     <string name="text_error_coordinates_not_valid">Введите верные координаты</string>
-    <string name="btn_add_waste_are">Добавить площадку</string>
+
+    //Toast
+    <string name="toast_copy_done">Скопировано в буфер обмена</string>
+    <string name="btn_coordinates_by_user_location">Моя геопозиция</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

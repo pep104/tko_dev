@@ -8,16 +8,30 @@
     android:layoutDirection="ltr"
     tools:background="@color/black">
 
-    <TextView
+    <ImageButton
+        android:id="@+id/btnExit"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/transparent"
+        android:cropToPadding="false"
+        android:elevation="8dp"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_close_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
         android:id="@+id/btnAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="24dp"
         android:background="@android:color/transparent"
-        android:fontFamily="sans-serif-medium"
+        android:cropToPadding="false"
+        android:elevation="8dp"
         android:scaleType="fitCenter"
-        android:text="@string/btn_camera_dismiss"
-        android:textColor="@color/white"
+        android:src="@drawable/ic_send_action"
         app:layout_constraintBottom_toBottomOf="@+id/btnShutter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnShutter" />

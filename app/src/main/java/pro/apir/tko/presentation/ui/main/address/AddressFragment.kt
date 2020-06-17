@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
@@ -44,6 +45,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
+import pro.apir.tko.core.extension.round
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -84,6 +86,25 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     private lateinit var btnClearCoordinates: ImageView
     private lateinit var dividerCoordinatesEt: View
     private lateinit var textErrorCoordinates: TextView
+    private lateinit var btnSubmitCoordinates: MaterialButton
+
+    private val mapListener: MapListener = object : MapListener {
+        override fun onScroll(event: ScrollEvent?): Boolean {
+            val lat = mapView.mapCenter.latitude.round(6)
+            val lon = mapView.mapCenter.longitude.round(6)
+            Log.e("map", "$lat $lon")
+            viewModel.updateCoordinatesOnDragEvent(lat, lon)
+            setMapPoint(lat, lon, false)
+            removeCoordinatesMaskedTextListener()
+            etCoordinates.setText(getString(R.string.text_coordinates_placeholder, lat.toString(), lon.toString()))
+            setCoordinatesMaskedTextListener()
+            return false
+        }
+
+        override fun onZoom(event: ZoomEvent?): Boolean {
+            return false
+        }
+    }
 
     val maskedListener: MaskedTextChangedListener by lazy {
         MaskedTextChangedListener(
@@ -101,6 +122,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     }
                 })
     }
+
 
     private lateinit var mapView: MapView
     private var myLocationOverlay: MyLocationNewOverlay? = null
@@ -164,6 +186,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         btnClearCoordinates = view.btnClearCoordinates
         dividerCoordinatesEt = view.dividerCoordinatesEt
         textErrorCoordinates = view.textErrorCoordinates
+        btnSubmitCoordinates = view.btnSubmitCoordinates
 
         btnSave = view.btnSave
 
@@ -186,6 +209,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         btnClearCoordinates.setOnClickListener {
             etCoordinates.clearInput()
+        }
+
+        btnSubmitCoordinates.setOnClickListener {
+            viewModel.setViewType(AddressViewModel.ViewType.BOTTOM_CARD)
         }
 
         btnGeoSwitch.setOnClickListener {
@@ -283,8 +310,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         })
 
         viewModel.viewType.observe(viewLifecycleOwner, Observer {
-            etCoordinates.removeTextChangedListener(maskedListener)
-            etCoordinates.onFocusChangeListener = null
+            removeCoordinatesMaskedTextListener()
+            mapView.removeMapListener(mapListener)
 
             when (it) {
                 AddressViewModel.ViewType.BOTTOM_CARD -> {
@@ -310,13 +337,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
                 }
                 AddressViewModel.ViewType.LOCATION_COORDINATES -> {
+                    mapView.addMapListener(mapListener)
                     btnSave.invisible()
                     cardBottom.invisible()
                     cardCoordinates.visible()
                     etCoordinates.setText(textCoordinates.text)
                     etCoordinates.hint = textCoordinates.text
-                    etCoordinates.addTextChangedListener(maskedListener)
-                    etCoordinates.onFocusChangeListener = maskedListener
+                    setCoordinatesMaskedTextListener()
                 }
             }
         })
@@ -396,9 +423,9 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     }
 
     //Set current map point from coordinates
-    private fun setMapPoint(lat: Double, lng: Double) {
-
-        mapView.controller.animateTo(GeoPoint(lat, lng))
+    private fun setMapPoint(lat: Double, lng: Double, move: Boolean = true) {
+        if (move)
+            mapView.controller.animateTo(GeoPoint(lat, lng))
 
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)
@@ -413,6 +440,16 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         mapView.overlayManager.add(newOverlay)
         addressPointOverlay = newOverlay
 
+    }
+
+    private fun setCoordinatesMaskedTextListener() {
+        etCoordinates.addTextChangedListener(maskedListener)
+        etCoordinates.onFocusChangeListener = maskedListener
+    }
+
+    private fun removeCoordinatesMaskedTextListener() {
+        etCoordinates.removeTextChangedListener(maskedListener)
+        etCoordinates.onFocusChangeListener = null
     }
 
     //Suggestion RecyclerView callback
