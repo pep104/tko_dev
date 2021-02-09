@@ -72,6 +72,10 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 
 dependencies {
+    implementation project(':domain')
+    implementation project(':data')
+    implementation project(':core')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
@@ -131,8 +135,8 @@ dependencies {
     implementation 'android.arch.paging:runtime:1.0.1'
 
     // Coroutines
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.0"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.0'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
@@ -163,8 +167,6 @@ dependencies {
 
     //Mobble
     implementation 'ru.sarmatin.mobble:utils:1.0.3'
-
-
 
 }
 

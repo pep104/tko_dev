@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.item_route_point_completed.view.*
 import kotlinx.android.synthetic.main.item_route_point_default.view.*
 import kotlinx.android.synthetic.main.item_route_point_pending.view.*
 import pro.apir.tko.R
-import pro.apir.tko.core.extension.round
+import pro.apir.tko.core.constant.extension.round
 import pro.apir.tko.domain.model.RoutePointModel
 import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_COMPLETED
 import pro.apir.tko.domain.model.RouteStateConstants.POINT_TYPE_DEFAULT

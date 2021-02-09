@@ -43,8 +43,8 @@ import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
+import pro.apir.tko.core.constant.extension.round
 import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.extension.round
 import pro.apir.tko.domain.failure.RouteTrackingNotCompleted
 import pro.apir.tko.domain.failure.RouteTrackingNotExist
 import pro.apir.tko.domain.model.CoordinatesModel
