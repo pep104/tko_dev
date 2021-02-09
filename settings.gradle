@@ -1,2 +1,5 @@
+include ':core'
+include ':data'
+include ':domain'
 include ':app'
-rootProject.name='android-template'
+rootProject.name='tko'
