@@ -91,11 +91,9 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
     }
 
     internal fun setStatusBarColor(@ColorRes color: Int){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val startColor = activity?.window?.statusBarColor
-            val endColor = ContextCompat.getColor(context!!,color)
+            val endColor = ContextCompat.getColor(requireContext(),color)
             ObjectAnimator.ofArgb(activity?.window, "statusBarColor", startColor!!, endColor).start()
-        }
     }
 
     internal fun setStatusBarLightMode(isLight: Boolean){

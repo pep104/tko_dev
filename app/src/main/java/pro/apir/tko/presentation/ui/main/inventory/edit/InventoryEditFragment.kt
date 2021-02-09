@@ -151,8 +151,9 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
 
         arguments?.let { bundle ->
             if (bundle.containsKey(KEY_CONTAINER)) {
-                val container: ContainerAreaShortModel? = bundle.getParcelable(KEY_CONTAINER) as ContainerAreaShortModel
-                container?.let { viewModel.setEditData(it) }
+                bundle.getParcelable<ContainerAreaShortModel>(KEY_CONTAINER)?.let {
+                    viewModel.setEditData(it)
+                }
             }
         }
     }
@@ -212,7 +213,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
             openAddressFragment()
         }
 
-        with(etAddress){
+        with(etAddress) {
             movementMethod = null
             keyListener = null
         }
@@ -262,7 +263,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         })
 
         viewModel.accessOptions.observe(viewLifecycleOwner, Observer {
-            adapterAccess = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+            adapterAccess = ArrayAdapter(requireContext(), R.layout.spinner_item, it.values.toList())
                     .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
             with(spinnerAccess) {
                 adapter = adapterAccess
@@ -276,7 +277,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         })
 
         viewModel.fenceOptions.observe(viewLifecycleOwner, Observer {
-            adapterFence = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+            adapterFence = ArrayAdapter(requireContext(), R.layout.spinner_item, it.values.toList())
                     .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
             with(spinnerFence) {
                 adapter = adapterFence
@@ -289,7 +290,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         })
 
         viewModel.coverageOptions.observe(viewLifecycleOwner, Observer {
-            adapterCoverage = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+            adapterCoverage = ArrayAdapter(requireContext(), R.layout.spinner_item, it.values.toList())
                     .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
             with(spinnerCoverage) {
                 adapter = adapterCoverage
@@ -302,7 +303,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         })
 
         viewModel.kgoOptions.observe(viewLifecycleOwner, Observer {
-            adapterKgo = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+            adapterKgo = ArrayAdapter(requireContext(), R.layout.spinner_item, it.values.toList())
                     .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
             with(spinnerKgo) {
                 adapter = adapterKgo
@@ -315,7 +316,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         })
 
         viewModel.hasCoverOptions.observe(viewLifecycleOwner, Observer {
-            adapterHasCover = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+            adapterHasCover = ArrayAdapter(requireContext(), R.layout.spinner_item, it.values.toList())
                     .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
             with(spinnerHasCover) {
                 adapter = adapterHasCover
@@ -328,7 +329,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         })
 
         viewModel.infoPlateOptions.observe(viewLifecycleOwner, Observer {
-            adapterInfoPlate = ArrayAdapter(context, R.layout.spinner_item, it.values.toList())
+            adapterInfoPlate = ArrayAdapter(requireContext(), R.layout.spinner_item, it.values.toList())
                     .apply { setDropDownViewResource(R.layout.spinner_item_dropdown) }
             with(spinnerInfoPlate) {
                 adapter = adapterInfoPlate
@@ -365,9 +366,9 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
 
                 //Если площадка создана, то обновляем только List Shared VM,
                 // если обновлена, то обе Shared VM
-                if(result is EditResultEvent.Created){
+                if (result is EditResultEvent.Created) {
                     sharedEditListViewModel.setResult(result)
-                }else{
+                } else {
                     sharedEditListViewModel.setResult(result)
                     sharedEditViewModel.setResult(result)
                 }

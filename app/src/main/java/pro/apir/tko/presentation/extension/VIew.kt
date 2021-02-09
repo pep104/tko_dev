@@ -153,7 +153,7 @@ fun Fragment.copyToClipboard(str: String, label: String = "tko") {
 fun Activity.copyToClipboard(str: String, label: String = "tko") {
     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val data = ClipData.newPlainText(label, str)
-    clipboard.primaryClip = data
+    clipboard.setPrimaryClip(data)
     toast(getString(R.string.toast_copy_done))
 }
 

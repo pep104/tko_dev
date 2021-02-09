@@ -18,7 +18,7 @@ class PreferencesManagerImpl @Inject constructor(context: Context) : Preferences
         sp.edit().putString(key, value).apply()
     }
 
-    override fun getString(key: String): String = sp.getString(key, "")
+    override fun getString(key: String): String = sp.getString(key, "") ?: ""
 
     override fun saveInt(key: String, value: Int) {
         sp.edit().putInt(key, value).apply()
