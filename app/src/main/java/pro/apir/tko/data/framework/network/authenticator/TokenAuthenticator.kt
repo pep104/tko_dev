@@ -25,7 +25,7 @@ class TokenAuthenticator @Inject constructor(private val tokenManager: TokenMana
             val newToken = ref.body()!!.accessRefreshed
             Log.e("authenticator", "new token: $newToken")
             tokenManager.saveAccessToken(newToken)
-            response.request().newBuilder().header("Authorization", "Bearer $newToken").build()
+            response.request.newBuilder().header("Authorization", "Bearer $newToken").build()
         } else {
             Log.e("authenticator", "refresh failure")
             null
