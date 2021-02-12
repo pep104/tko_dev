@@ -16,5 +16,9 @@ interface CredentialsManager {
     fun getAccessToken(): String
 
     fun getRefreshToken(): String
+
+    fun saveUserId(id: Int)
+
+    fun getUserId(): Int
     
 }

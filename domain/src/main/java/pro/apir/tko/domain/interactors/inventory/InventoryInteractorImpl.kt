@@ -2,12 +2,14 @@ package pro.apir.tko.domain.interactors.inventory
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.data.repository.attachment.AttachmentRepository
-import pro.apir.tko.data.repository.inventory.InventoryRepository
+import pro.apir.tko.core.functional.map
 import pro.apir.tko.domain.model.*
+import pro.apir.tko.domain.repository.attachment.AttachmentRepository
+import pro.apir.tko.domain.repository.inventory.InventoryRepository
 import pro.apir.tko.domain.utils.substringLocationPrefixRecursively
 import java.io.File
 import javax.inject.Inject

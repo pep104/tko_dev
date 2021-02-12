@@ -1,14 +1,7 @@
 package pro.apir.tko.data.di
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import pro.apir.tko.data.cache.ContainerAreaListCache
-import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
-import pro.apir.tko.data.framework.network.api.*
-import pro.apir.tko.data.framework.room.dao.PhotoDao
-import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
-import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.attachment.AttachmentRepositoryImpl
 import pro.apir.tko.data.repository.auth.AuthRepositoryImpl
@@ -30,62 +23,48 @@ import pro.apir.tko.domain.repository.user.UserRepository
 import javax.inject.Singleton
 
 @Module
-class RepositoryModule {
+abstract class RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun authRepository(authApi: AuthApi, credentialsManager: CredentialsManager): AuthRepository = AuthRepositoryImpl(authApi, credentialsManager)
+    abstract fun authRepository(impl: AuthRepositoryImpl): AuthRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun inventoryRepository(credentialsManager: CredentialsManager, inventoryApi: InventoryApi, containerAreaListCache: ContainerAreaListCache): InventoryRepository = InventoryRepositoryImpl(credentialsManager, inventoryApi, containerAreaListCache)
+    abstract fun inventoryRepository(impl: InventoryRepositoryImpl): InventoryRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun routeRepository(credentialsManager: CredentialsManager, routeApi: RouteApi): RouteRepository = RouteRepositoryImpl(credentialsManager, routeApi)
+    abstract fun routeRepository(impl: RouteRepositoryImpl): RouteRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun addressRepository(suggestionApi: SuggestionApi, suggestionDetailedApi: SuggestionDetailedApi): AddressRepository = AddressRepositoryImpl(suggestionApi, suggestionDetailedApi)
+    abstract fun addressRepository(impl: AddressRepositoryImpl): AddressRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun attachmentRepository(credentialsManager: CredentialsManager, attachmentApi: IAttachmentSource): AttachmentRepository = AttachmentRepositoryImpl(credentialsManager, attachmentApi)
+    abstract fun attachmentRepository(impl: AttachmentRepositoryImpl): AttachmentRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun routeSessionRepository(
-            routePhotoRepository: RoutePhotoRepository,
-            routeRepository: RouteRepository,
-            routeTrackApi: RouteTrackApi,
-            userRepository: UserRepository,
-            trackingFailureCodeMapper: TrackingFailureCodeMapper,
-            credentialsManager: CredentialsManager
-    ): RouteSessionRepository = RouteSessionRepositoryImpl(
-            routePhotoRepository,
-            routeRepository,
-            routeTrackApi,
-            userRepository,
-            trackingFailureCodeMapper,
-            credentialsManager
-    )
+    abstract fun routeSessionRepository(impl: RouteSessionRepositoryImpl): RouteSessionRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun routePhotoRepository(photoDao: PhotoDao): RoutePhotoRepository = RoutePhotoRepositoryImpl(photoDao)
+    abstract fun routePhotoRepository(impl: RoutePhotoRepositoryImpl): RoutePhotoRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun userRepository(credentialsManager: CredentialsManager, userApi: UserApi, preferencesManager: PreferencesManager): UserRepository = UserRepositoryImpl(credentialsManager, userApi, preferencesManager)
+    abstract fun userRepository(impl: UserRepositoryImpl): UserRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun credentialsRepository(): CredentialsRepository = CredentialsRepositoryImpl()
+    abstract fun credentialsRepository(impl: CredentialsRepositoryImpl): CredentialsRepository
 
     //Cache
 
-    @Provides
-    @Singleton
-    fun cacheContainerShortModel(): ContainerAreaListCache = ContainerAreaListCache()
+//    @Binds
+//    @Singleton
+//    abstract fun cacheContainerShortModel(impl: ContainerAreaListCache): ContainerAreaListCache
 
 }

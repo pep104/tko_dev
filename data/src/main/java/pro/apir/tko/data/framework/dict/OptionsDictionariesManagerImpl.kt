@@ -1,4 +1,4 @@
-package pro.apir.tko.presentation.dict
+package pro.apir.tko.data.framework.dict
 
 import android.content.Context
 import pro.apir.tko.core.types.Dictionary

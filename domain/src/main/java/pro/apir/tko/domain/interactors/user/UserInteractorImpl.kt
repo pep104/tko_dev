@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.data.repository.user.UserRepository
 import pro.apir.tko.domain.model.UserModel
+import pro.apir.tko.domain.repository.user.UserRepository
 import javax.inject.Inject
 
 class UserInteractorImpl @Inject constructor(private val userRepository: UserRepository) : UserInteractor {

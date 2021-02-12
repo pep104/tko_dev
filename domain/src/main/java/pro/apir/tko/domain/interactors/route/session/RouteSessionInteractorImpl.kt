@@ -10,15 +10,16 @@ import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
 import pro.apir.tko.core.functional.map
-import pro.apir.tko.data.repository.attachment.AttachmentRepository
-import pro.apir.tko.data.repository.route.RouteSessionRepository
-import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
-import pro.apir.tko.data.repository.user.UserRepository
+import pro.apir.tko.core.functional.onRight
 import pro.apir.tko.domain.failure.RouteTrackingFailure
 import pro.apir.tko.domain.failure.RouteTrackingNotExist
 import pro.apir.tko.domain.failure.TrackingFailureCode
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
+import pro.apir.tko.domain.repository.attachment.AttachmentRepository
+import pro.apir.tko.domain.repository.route.RouteSessionRepository
+import pro.apir.tko.domain.repository.route.photo.RoutePhotoRepository
+import pro.apir.tko.domain.repository.user.UserRepository
 import java.io.File
 import javax.inject.Inject
 
@@ -68,8 +69,8 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
                 is Either.Left -> existingTrackingInfo
                 is Either.Right -> {
                     when (true) {
-                        existingTrackingInfo.b != null && existingTrackingInfo.b.routeId == routeModel.id.toLong() -> {
-                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingTrackingInfo.b)
+                        existingTrackingInfo.b != null && existingTrackingInfo.b!!.routeId == routeModel.id.toLong() -> {
+                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingTrackingInfo.b!!)
                             Either.Right(session)
                         }
                         existingTrackingInfo.b == null -> {
@@ -99,7 +100,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
             val existingSession = sessionRepository.getCurrentRouteTrackingInfo()
             if (existingSession is Either.Right && existingSession.b != null) {
-                val session = mapSessionWithInfo(routeSessionModel, existingSession.b).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                val session = mapSessionWithInfo(routeSessionModel, existingSession.b!!).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
                 Either.Right(session)
             } else {
                 //NOT EXISTS -> START ROUTE TRACKING
@@ -155,7 +156,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
                     when (true) {
 
                         enterResult.a is RouteTrackingFailure
-                                && enterResult.a.code == TrackingFailureCode.ALREADY_ENTERED -> completePointRequest(routeSessionModel, routePointId, this)
+                                && (enterResult.a as RouteTrackingFailure).code == TrackingFailureCode.ALREADY_ENTERED -> completePointRequest(routeSessionModel, routePointId, this)
 
                         else -> Either.Left(enterResult.a)
 
@@ -199,7 +200,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         return when (info) {
             is Either.Left -> Either.Left(info.a)
             is Either.Right -> {
-                return if (info.b != null) Either.Right(mapSessionWithInfo(sessionModel, info.b)) else Either.Right(sessionModel)
+                return if (info.b != null) Either.Right(mapSessionWithInfo(sessionModel, info.b!!)) else Either.Right(sessionModel)
             }
         }
     }

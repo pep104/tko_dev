@@ -24,9 +24,9 @@ import kotlinx.android.synthetic.main.fragment_inventory_edit.*
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.platform.BaseFragment

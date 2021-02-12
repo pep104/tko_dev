@@ -4,8 +4,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
-import pro.apir.tko.data.repository.address.AddressRepository
+import pro.apir.tko.core.functional.map
 import pro.apir.tko.domain.model.AddressModel
+import pro.apir.tko.domain.repository.address.AddressRepository
 import pro.apir.tko.domain.utils.substringLocationPrefix
 import javax.inject.Inject
 

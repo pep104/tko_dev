@@ -10,6 +10,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import pro.apir.tko.core.constant.BASE_URL
 import pro.apir.tko.core.constant.SUGGESTION_DETAILED_URL
 import pro.apir.tko.core.constant.SUGGESTION_URL
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManagerImpl
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.data.framework.manager.location.LocationManagerImpl
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
@@ -34,8 +36,6 @@ import pro.apir.tko.data.framework.source.route.RouteTrackSource
 import pro.apir.tko.data.framework.source.user.UserSource
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
-import pro.apir.tko.presentation.dict.OptionsDictionariesManagerImpl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit

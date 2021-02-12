@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.functional.onRight
 import pro.apir.tko.data.cache.ContainerAreaListCache
 import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.InventoryApi
@@ -85,7 +86,7 @@ class InventoryRepositoryImpl @Inject constructor(
                     if (model.id == null) {
                         inventoryApi.createContainerArea(req)
                     } else {
-                        inventoryApi.updateContainerArea(model.id.toLong(), req)
+                        inventoryApi.updateContainerArea(model.id!!.toLong(), req)
                     }
                 },
                 { it.toModel() }

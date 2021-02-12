@@ -1,5 +1,6 @@
 package pro.apir.tko.data.repository.credentials
 
+import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.domain.repository.credentials.CredentialsRepository
 import javax.inject.Inject
 
@@ -8,33 +9,19 @@ import javax.inject.Inject
  * Date: 09/02/2021
  * Project: tko
  */
-class CredentialsRepositoryImpl @Inject constructor() : CredentialsRepository {
+class CredentialsRepositoryImpl @Inject constructor(private val credentialsManager: CredentialsManager) : CredentialsRepository {
 
-    override fun isRefreshTokenExpired(): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun isRefreshTokenExpired(): Boolean = credentialsManager.isRefreshTokenExpired()
 
-    override fun saveRefreshToken(refreshToken: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun saveRefreshToken(refreshToken: String): Boolean = credentialsManager.saveRefreshToken(refreshToken)
 
-    override fun saveAccessToken(accessToken: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun saveAccessToken(accessToken: String): Boolean = credentialsManager.saveAccessToken(accessToken)
 
-    override fun getAccessToken(): String {
-        TODO("Not yet implemented")
-    }
+    override fun getAccessToken(): String = credentialsManager.getAccessToken()
 
-    override fun getRefreshToken(): String {
-        TODO("Not yet implemented")
-    }
+    override fun getRefreshToken(): String = credentialsManager.getRefreshToken()
 
-    override fun saveUserId(id: Int) {
-        TODO("Not yet implemented")
-    }
+    override fun saveUserId(id: Int) = credentialsManager.saveUserId(id)
 
-    override fun getUserId(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getUserId(): Int = credentialsManager.getUserId()
 }

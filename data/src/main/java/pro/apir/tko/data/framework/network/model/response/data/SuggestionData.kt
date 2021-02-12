@@ -1,7 +1,7 @@
 package pro.apir.tko.data.framework.network.model.response.data
 
 import com.google.gson.annotations.SerializedName
-import pro.apir.tko.core.extension.round
+import pro.apir.tko.core.constant.extension.round
 import pro.apir.tko.domain.model.AddressModel
 
 /**

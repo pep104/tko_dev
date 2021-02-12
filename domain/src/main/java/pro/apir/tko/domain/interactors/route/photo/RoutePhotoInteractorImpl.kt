@@ -2,10 +2,10 @@ package pro.apir.tko.domain.interactors.route.photo
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import pro.apir.tko.data.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import pro.apir.tko.domain.model.PhotoModel
 import pro.apir.tko.domain.model.RouteSessionModel
+import pro.apir.tko.domain.repository.route.photo.RoutePhotoRepository
 import javax.inject.Inject
 
 class RoutePhotoInteractorImpl @Inject constructor(private val routePhotoRepository: RoutePhotoRepository, private val routeSessionInteractor: RouteSessionInteractor) : RoutePhotoInteractor {

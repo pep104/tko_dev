@@ -1,5 +1,6 @@
 package pro.apir.tko.data.framework.room.dao
 
+import androidx.room.*
 import pro.apir.tko.data.framework.room.entity.PointEntity
 
 /**

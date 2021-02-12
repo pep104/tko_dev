@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.radiobutton.MaterialRadioButton
 import kotlinx.android.synthetic.main.item_route_list.view.*
 import pro.apir.tko.R
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.domain.model.RouteModel
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 
 /**
  * Created by Антон Сарматин

@@ -1,5 +1,6 @@
 package pro.apir.tko.data.framework.manager.location
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import android.util.Log
@@ -11,7 +12,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import pro.apir.tko.BuildConfig
+import pro.apir.tko.data.BuildConfig
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.domain.model.LocationModel
 import javax.inject.Inject
@@ -43,6 +44,7 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
         }
     }
 
+    @SuppressLint("MissingPermission")
     override suspend fun getCurrentLocation(): LocationModel = suspendCoroutine { continuation ->
 
         val locationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -71,6 +73,7 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
     }
 
 
+    @SuppressLint("MissingPermission")
     @ExperimentalCoroutinesApi
     override fun getLocationFlow(): Flow<LocationModel> = channelFlow {
 
