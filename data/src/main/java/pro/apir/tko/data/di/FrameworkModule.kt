@@ -25,15 +25,6 @@ import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestIntercept
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
 import pro.apir.tko.data.framework.room.AppDatabase
-import pro.apir.tko.data.framework.source.address.SuggestionDetailedSource
-import pro.apir.tko.data.framework.source.address.SuggestionSource
-import pro.apir.tko.data.framework.source.attachment.AttachmentSource
-import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
-import pro.apir.tko.data.framework.source.auth.AuthSource
-import pro.apir.tko.data.framework.source.inventory.InventorySource
-import pro.apir.tko.data.framework.source.route.RouteSource
-import pro.apir.tko.data.framework.source.route.RouteTrackSource
-import pro.apir.tko.data.framework.source.user.UserSource
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
 import retrofit2.Retrofit
@@ -138,13 +129,6 @@ class FrameworkModule(private val application: Application) {
     }
 
 
-//    @Singleton
-//    @Provides
-//    fun provideMainGetApi(retrofit: Retrofit) = retrofit.create(InventoryApi::class.java)
-//
-//    @Singleton
-//    @Provides
-//    fun provideAuthApi(@Named("auth") retrofit: Retrofit) = retrofit.create(AuthApi::class.java)
 
     //Managers
 
@@ -188,35 +172,35 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun inventoryApi(retrofit: Retrofit): InventoryApi = InventorySource(retrofit)
+    fun inventoryApi(retrofit: Retrofit): InventoryApi = retrofit.create(InventoryApi::class.java)
 
     @Singleton
     @Provides
-    fun routeApi(retrofit: Retrofit): RouteApi = RouteSource(retrofit)
+    fun routeApi(retrofit: Retrofit): RouteApi = retrofit.create(RouteApi::class.java)
 
     @Singleton
     @Provides
-    fun routeTrackApi(retrofit: Retrofit): RouteTrackApi = RouteTrackSource(retrofit)
+    fun routeTrackApi(retrofit: Retrofit): RouteTrackApi = retrofit.create(RouteTrackApi::class.java)
 
     @Singleton
     @Provides
-    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = AuthSource(retrofit)
+    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
     @Singleton
     @Provides
-    fun attachmentApi(retrofit: Retrofit): IAttachmentSource = AttachmentSource(retrofit)
+    fun attachmentApi(retrofit: Retrofit): AttachmentApi = retrofit.create(AttachmentApi::class.java)
 
     @Singleton
     @Provides
-    fun suggestionApi(@Named("suggestion") retrofit: Retrofit): SuggestionApi = SuggestionSource(retrofit)
+    fun suggestionApi(@Named("suggestion") retrofit: Retrofit): SuggestionApi = retrofit.create(SuggestionApi::class.java)
 
     @Singleton
     @Provides
-    fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
+    fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = retrofit.create(SuggestionDetailedApi::class.java)
 
     @Singleton
     @Provides
-    fun userApi(retrofit: Retrofit): UserApi = UserSource(retrofit)
+    fun userApi(retrofit: Retrofit): UserApi = retrofit.create(UserApi::class.java)
 
     //Room
 
