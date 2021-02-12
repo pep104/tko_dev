@@ -12,12 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.core.types.Dictionary
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.domain.model.CoordinatesModel
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.entities.PhotoWrapper
 import pro.apir.tko.presentation.extension.notifyObserver

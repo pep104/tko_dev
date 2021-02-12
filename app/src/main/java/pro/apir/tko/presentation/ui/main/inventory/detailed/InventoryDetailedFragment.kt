@@ -93,11 +93,12 @@ class InventoryDetailedFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         appComponent.createMainComponent().injectInventoryDetailedFragment(this)
 
-        arguments?.let {
-            val id = it.getLong(KEY_ID, 0L)
-            val header = it.getString(KEY_HEADER, "")
-            val coordinates = it.getParcelable<CoordinatesModel>(KEY_COORDINATES)
-            viewModel.fetchInfo(id, header, coordinates)
+        arguments?.let { bundle ->
+            val id = bundle.getLong(KEY_ID, 0L)
+            val header = bundle.getString(KEY_HEADER, "")
+            bundle.getParcelable<CoordinatesModel>(KEY_COORDINATES)?.let {
+                viewModel.fetchInfo(id, header, it)
+            }
         }
 
     }

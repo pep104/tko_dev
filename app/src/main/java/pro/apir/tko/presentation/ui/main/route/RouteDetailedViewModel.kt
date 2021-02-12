@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.api.IGeoPoint
+import pro.apir.tko.core.constant.extension.roundUpNearest
 import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.extension.roundUpNearest
 import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor

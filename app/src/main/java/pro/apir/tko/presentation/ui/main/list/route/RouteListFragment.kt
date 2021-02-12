@@ -8,8 +8,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import pro.apir.tko.R
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.domain.model.RouteModel
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.extension.gone
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible

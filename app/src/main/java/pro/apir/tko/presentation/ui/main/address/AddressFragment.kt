@@ -45,7 +45,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
-import pro.apir.tko.core.extension.round
+import pro.apir.tko.core.constant.extension.round
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
@@ -300,7 +300,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 textCoordinates.text = coordinatesText
                 myLocationOverlay?.disableFollowLocation()
                 btnCopy.visible()
-                setMapPoint(it.lat, it.lng)
+                setMapPoint(it.lat!!, it.lng!!)
             } else {
                 textCoordinates.isEnabled = false
                 textCoordinates.text = getString(R.string.text_coordinates_not_found)
@@ -368,7 +368,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     val point = viewModel.address.value
                     point?.let {
                         if (it.lat != null && it.lng != null)
-                            setMapPoint(it.lat, it.lng)
+                            setMapPoint(it.lat!!, it.lng!!)
                     }
 
                 }

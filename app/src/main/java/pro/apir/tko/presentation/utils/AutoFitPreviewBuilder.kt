@@ -10,17 +10,11 @@ import android.graphics.Matrix
 import android.hardware.display.DisplayManager
 import android.util.Log
 import android.util.Size
-import android.view.Display
-import android.view.Surface
-import android.view.TextureView
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.camera.core.Preview
 import androidx.camera.core.PreviewConfig
-import java.lang.IllegalArgumentException
 import java.lang.ref.WeakReference
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 /**
  * Builder for [Preview] that takes in a [WeakReference] of the view finder and [PreviewConfig],
@@ -93,7 +87,7 @@ class AutoFitPreviewBuilder private constructor(
             parent.addView(viewFinder, 0)
 
             // Update internal texture
-            viewFinder.surfaceTexture = it.surfaceTexture
+            viewFinder.setSurfaceTexture(it.surfaceTexture)
 
             // Apply relevant transformations
             bufferRotation = it.rotationDegrees

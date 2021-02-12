@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_edit_container.view.*
 import pro.apir.tko.R
-import pro.apir.tko.presentation.dict.OptionsDictionariesManager
+import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.ui.main.inventory.edit.diff.ContainerDiffcallback
 
