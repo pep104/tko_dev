@@ -2,9 +2,8 @@ package pro.apir.tko.data.repository.inventory
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
-import pro.apir.tko.core.functional.onRight
+import pro.apir.tko.core.data.Resource
+import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.data.cache.ContainerAreaListCache
 import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.InventoryApi
@@ -25,7 +24,7 @@ class InventoryRepositoryImpl @Inject constructor(
         private val cache: ContainerAreaListCache
 ) : InventoryRepository, BaseRepository(credentialsManager) {
 
-    override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaShortModel> {
+    override suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel> {
         val result = request({ inventoryApi.getContainerArea(id) }, { it.toModel() })
         return result
     }
@@ -37,21 +36,21 @@ class InventoryRepositoryImpl @Inject constructor(
             latMax: Double,
             page: Int,
             pageSize: Int
-    ): Flow<Either<Failure, List<ContainerAreaListModel>>> = flow {
+    ): Flow<Resource<List<ContainerAreaListModel>>> = flow {
         val cached = cache.getAll()
 
-        if (cached != null) emit(Either.Right(cached))
+        if (cached != null) emit(Resource.Success(cached))
 
         val result = request({ inventoryApi.getContainerAreasByBoundingBox(lngMin.toString(), latMin.toString(), lngMax.toString(), latMax.toString(), page, pageSize) }, { it.results.map { resp -> resp.toModel() } })
         emit(result)
-        result.onRight {
+        result.onSuccess {
             it.forEach {
                 cache.put(it.id.toString(), it)
             }
         }
     }
 
-    override suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>> {
+    override suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>> {
         return request(
                 call = {
                     inventoryApi.searchContainer(search)
@@ -61,7 +60,7 @@ class InventoryRepositoryImpl @Inject constructor(
                 })
     }
 
-    override suspend fun updateContainer(model: ContainerAreaEditModel): Either<Failure, ContainerAreaShortModel> {
+    override suspend fun updateContainer(model: ContainerAreaEditModel): Resource<ContainerAreaShortModel> {
         val coordinatesModel = model.coordinates
         val coordinatesData = if (coordinatesModel != null) CoordinatesData(coordinatesModel.lng, coordinatesModel.lat) else null
 
@@ -92,7 +91,7 @@ class InventoryRepositoryImpl @Inject constructor(
                 { it.toModel() }
         )
 
-        result.onRight {
+        result.onSuccess {
             cache.remove(it.id.toString())
         }
 

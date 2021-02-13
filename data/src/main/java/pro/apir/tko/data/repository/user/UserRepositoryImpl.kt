@@ -1,8 +1,7 @@
 package pro.apir.tko.data.repository.user
 
 import pro.apir.tko.core.constant.KEY_USER_ID
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.UserApi
@@ -15,7 +14,7 @@ class UserRepositoryImpl @Inject constructor(private val credentialsManager: Cre
                                              private val userApi: UserApi,
                                              private val preferencesManager: PreferencesManager) : UserRepository, BaseRepository(credentialsManager) {
 
-    override suspend fun getUser(): Either<Failure, UserModel> {
+    override suspend fun getUser(): Resource<UserModel> {
         return request({ userApi.getUser() }, { response -> response.toModel() })
     }
 

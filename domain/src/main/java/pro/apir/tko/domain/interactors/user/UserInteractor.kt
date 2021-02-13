@@ -1,7 +1,6 @@
 package pro.apir.tko.domain.interactors.user
 
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.UserModel
 
 /**
@@ -11,7 +10,7 @@ import pro.apir.tko.domain.model.UserModel
  */
 interface UserInteractor {
 
-    suspend fun getCurrentUser(): Either<Failure, UserModel>
+    suspend fun getCurrentUser(): Resource<UserModel>
 
     suspend fun getCurrentUserId(): Int
 

@@ -1,7 +1,6 @@
 package pro.apir.tko.domain.interactors.auth
 
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.AuthTokenModel
 
 /**
@@ -11,6 +10,6 @@ import pro.apir.tko.domain.model.AuthTokenModel
  */
 interface AuthInteractor {
 
-    suspend fun auth(email: String, password: String): Either<Failure, AuthTokenModel>
+    suspend fun auth(email: String, password: String): Resource<AuthTokenModel>
 
 }

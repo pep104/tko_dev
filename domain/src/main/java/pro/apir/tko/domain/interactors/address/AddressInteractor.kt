@@ -1,7 +1,6 @@
 package pro.apir.tko.domain.interactors.address
 
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.AddressModel
 
 /**
@@ -11,10 +10,10 @@ import pro.apir.tko.domain.model.AddressModel
  */
 interface AddressInteractor {
 
-    suspend fun getAddressSuggestions(query: String): Either<Failure, List<AddressModel>>
+    suspend fun getAddressSuggestions(query: String): Resource<List<AddressModel>>
 
-    suspend fun getAddressDetailed(query: String): Either<Failure, List<AddressModel>>
+    suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>>
 
-    suspend fun getAddressDetailed(addressModel: AddressModel): Either<Failure, AddressModel>
+    suspend fun getAddressDetailed(addressModel: AddressModel): Resource<AddressModel>
 
 }

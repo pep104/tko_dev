@@ -33,9 +33,12 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
+private const val AUTH_RETROFIT = "auth"
+private const val SUGGESTION_RETROFIT = "suggestion"
+private const val SUGGESTION_DETAILED_RETROFIT = "suggestionDetailed"
+
 @Module
 class FrameworkModule(private val application: Application) {
-
 
     //    @Named("main")
     @Singleton
@@ -62,7 +65,7 @@ class FrameworkModule(private val application: Application) {
 
     }
 
-    @Named("auth")
+    @Named(AUTH_RETROFIT)
     @Singleton
     @Provides
     fun provideRetrofitAuth(): Retrofit {
@@ -82,7 +85,7 @@ class FrameworkModule(private val application: Application) {
                 .build()
     }
 
-    @Named("suggestion")
+    @Named(SUGGESTION_RETROFIT)
     @Singleton
     @Provides
     fun provideRetorifutAddress(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
@@ -105,7 +108,7 @@ class FrameworkModule(private val application: Application) {
                 .build()
     }
 
-    @Named("suggestionDetailed")
+    @Named(SUGGESTION_DETAILED_RETROFIT)
     @Singleton
     @Provides
     fun provideRetorifutAddressDetailed(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
@@ -184,7 +187,7 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+    fun authApi(@Named(AUTH_RETROFIT) retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
     @Singleton
     @Provides
@@ -192,11 +195,11 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun suggestionApi(@Named("suggestion") retrofit: Retrofit): SuggestionApi = retrofit.create(SuggestionApi::class.java)
+    fun suggestionApi(@Named(SUGGESTION_RETROFIT) retrofit: Retrofit): SuggestionApi = retrofit.create(SuggestionApi::class.java)
 
     @Singleton
     @Provides
-    fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = retrofit.create(SuggestionDetailedApi::class.java)
+    fun suggestionDetailedApi(@Named(SUGGESTION_DETAILED_RETROFIT) retrofit: Retrofit): SuggestionDetailedApi = retrofit.create(SuggestionDetailedApi::class.java)
 
     @Singleton
     @Provides

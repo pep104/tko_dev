@@ -4,8 +4,8 @@ import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CancellationException
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
 import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import retrofit2.Response
 import java.io.IOException
@@ -16,34 +16,37 @@ abstract class BaseRepository(private val credentialsManager: CredentialsManager
     //мб есть вариант провернуть проверку истечения рефрештокена лучше,
     //чем внедряя менеджер в каждый класс наследующийся от базового репозитория
 
-    protected suspend fun <T, R> request(call: suspend () -> Response<T>, transform: (T) -> R): Either<Failure, R> {
+    protected suspend fun <T, R> request(call: suspend () -> Response<T>, transform: (T) -> R): Resource<R> {
         return if (tokenStrategy == TokenStrategy.NO_AUTH || (credentialsManager != null && !credentialsManager.isRefreshTokenExpired())) {
             try {
                 val call = call.invoke()
                 val body = call.body()
                 when (call.isSuccessful && body != null) {
-                    true -> Either.Right(transform(body))
+                    true -> Resource.Success(transform(body))
                     false -> {
-                        Either.Left(Failure.ServerError(parseError(call.errorBody()?.string())))
+                        Resource.Error(
+                                Failure.ServerError(parseError(call.errorBody()?.string())
+                                        ?: "Unknown Error")
+                        )
                     }
                 }
             } catch (exception: Throwable) {
                 Log.e("failure", "Failure: " + exception.localizedMessage)
                 when (exception) {
                     is IOException -> {
-                        Either.Left(Failure.Ignore)
+                        Resource.Error(Failure.Ignore)
                     }
                     //WARNING
                     is CancellationException -> {
-                        Either.Left(Failure.Ignore)
+                        Resource.Error(Failure.Ignore)
                     }
                     else -> {
-                        Either.Left(Failure.ServerError())
+                        Resource.Error(Failure.ServerError())
                     }
                 }
             }
         } else {
-            Either.Left(Failure.RefreshTokenExpired)
+            Resource.Error(Failure.RefreshTokenExpired)
         }
     }
 

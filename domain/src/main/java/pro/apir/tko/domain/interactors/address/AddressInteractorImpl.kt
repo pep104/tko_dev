@@ -2,9 +2,8 @@ package pro.apir.tko.domain.interactors.address
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
-import pro.apir.tko.core.functional.map
+import pro.apir.tko.core.data.Resource
+import pro.apir.tko.core.data.map
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.repository.address.AddressRepository
 import pro.apir.tko.domain.utils.substringLocationPrefix
@@ -14,7 +13,7 @@ class AddressInteractorImpl @Inject constructor(private val addressRepository: A
 
     private val dispatcher = Dispatchers.IO
 
-    override suspend fun getAddressSuggestions(query: String): Either<Failure, List<AddressModel>> = withContext(dispatcher) {
+    override suspend fun getAddressSuggestions(query: String): Resource<List<AddressModel>> = withContext(dispatcher) {
         addressRepository.getAddressSuggestions(query).map { list ->
             list.map {
                 it.removeLocationPrefix()
@@ -22,7 +21,7 @@ class AddressInteractorImpl @Inject constructor(private val addressRepository: A
         }
     }
 
-    override suspend fun getAddressDetailed(query: String): Either<Failure, List<AddressModel>> = withContext(dispatcher) {
+    override suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>> = withContext(dispatcher) {
         addressRepository.getAddressDetailed(query).map { list ->
             list.map {
                 it.removeLocationPrefix()
@@ -30,7 +29,7 @@ class AddressInteractorImpl @Inject constructor(private val addressRepository: A
         }
     }
 
-    override suspend fun getAddressDetailed(addressModel: AddressModel): Either<Failure, AddressModel> = withContext(dispatcher) {
+    override suspend fun getAddressDetailed(addressModel: AddressModel): Resource<AddressModel> = withContext(dispatcher) {
         val detailedResult = addressRepository.getAddressDetailed(addressModel.value).map { list ->
             list.map {
                 it.removeLocationPrefix()

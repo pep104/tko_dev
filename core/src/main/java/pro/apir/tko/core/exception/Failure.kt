@@ -6,10 +6,15 @@ package pro.apir.tko.core.exception
  */
 sealed class Failure {
     object NetworkConnection : Failure()
-    data class ServerError(val message: String? = null) : Failure()
-    object RefreshTokenExpired: Failure()
+    data class ServerError(
+            val errorMessage: String = "Unknown Error",
+            val statusCode: Int = 0
+    ) : Failure()
 
-    object Ignore: Failure()
+    object RefreshTokenExpired : Failure()
+
+    object Ignore : Failure()
+
     /** * Extend this class for feature specific failures.*/
-    abstract class FeatureFailure: Failure()
+    abstract class FeatureFailure : Failure()
 }

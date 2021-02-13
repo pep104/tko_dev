@@ -1,7 +1,6 @@
 package pro.apir.tko.domain.repository.attachment
 
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.AttachmentModel
 import java.io.File
 
@@ -13,7 +12,7 @@ import java.io.File
 
 interface AttachmentRepository {
 
-    suspend fun uploadFile(file: File): Either<Failure, List<AttachmentModel>>
+    suspend fun uploadFile(file: File): Resource<List<AttachmentModel>>
 
 
 }
