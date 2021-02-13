@@ -25,8 +25,7 @@ class InventoryRepositoryImpl @Inject constructor(
 ) : InventoryRepository, BaseRepository(credentialsManager) {
 
     override suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel> {
-        val result = request({ inventoryApi.getContainerArea(id) }, { it.toModel() })
-        return result
+        return inventoryApi.getContainerArea(id).toResult { it.toModel() }
     }
 
     override suspend fun getContainerAreasByBoundingBox(
@@ -41,23 +40,19 @@ class InventoryRepositoryImpl @Inject constructor(
 
         if (cached != null) emit(Resource.Success(cached))
 
-        val result = request({ inventoryApi.getContainerAreasByBoundingBox(lngMin.toString(), latMin.toString(), lngMax.toString(), latMax.toString(), page, pageSize) }, { it.results.map { resp -> resp.toModel() } })
+        val result = inventoryApi.getContainerAreasByBoundingBox(lngMin.toString(), latMin.toString(), lngMax.toString(), latMax.toString(), page, pageSize).toResult { it.results.map { resp -> resp.toModel() } }
         emit(result)
         result.onSuccess {
-            it.forEach {
-                cache.put(it.id.toString(), it)
+            it.forEach { containerArea ->
+                cache.put(containerArea.id.toString(), containerArea)
             }
         }
     }
 
     override suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>> {
-        return request(
-                call = {
-                    inventoryApi.searchContainer(search)
-                },
-                transform = {
-                    it.results.map { res -> res.toModel() }
-                })
+        return inventoryApi.searchContainer(search).toResult {
+            it.results.map { res -> res.toModel() }
+        }
     }
 
     override suspend fun updateContainer(model: ContainerAreaEditModel): Resource<ContainerAreaShortModel> {
@@ -80,16 +75,14 @@ class InventoryRepositoryImpl @Inject constructor(
                 model.kgo
         )
 
-        val result = request(
-                {
-                    if (model.id == null) {
-                        inventoryApi.createContainerArea(req)
-                    } else {
-                        inventoryApi.updateContainerArea(model.id!!.toLong(), req)
-                    }
-                },
-                { it.toModel() }
-        )
+        val result = if (model.id == null) {
+            inventoryApi.createContainerArea(req)
+        } else {
+            inventoryApi.updateContainerArea(model.id!!.toLong(), req)
+        }.toResult { it.toModel() }
+
+
+
 
         result.onSuccess {
             cache.remove(it.id.toString())

@@ -74,8 +74,8 @@ fun <A, B, C> ((A) -> B).c(f: (B) -> C): (A) -> C = {
  */
 fun <T, R> Resource<R>.flatMap(fn: (R) -> Resource<T>): Resource<T> =
         when (this) {
-            is Resource.Error -> Resource.Error(failure)
-            is Resource.Success -> fn(data)
+            is Error -> Error(failure)
+            is Success -> fn(data)
         }
 
 /**
@@ -84,18 +84,25 @@ fun <T, R> Resource<R>.flatMap(fn: (R) -> Resource<T>): Resource<T> =
  */
 fun <T, R> Resource<R>.map(fn: (R) -> (T)): Resource<T> = this.flatMap(fn.c(::success))
 
+fun <R> Resource<R>.mapFailure(fn: (Failure) -> Failure): Resource<R> {
+    return when (this) {
+        is Error -> Error(fn(failure))
+        is Success -> this
+    }
+}
+
 /** Returns the value from this `Right` or the given argument if this is a `Left`.
  *  Right(12).getOrElse(17) RETURNS 12 and Left(12).getOrElse(17) RETURNS 17
  */
 fun <R> Resource<R>.getOrElse(value: R): R =
         when (this) {
-            is Resource.Error -> value
-            is Resource.Success -> data
+            is Error -> value
+            is Success -> data
         }
 
 fun <R> Resource<R>.onSuccess(fn: (R) -> Unit) {
     when (this) {
-        is Resource.Success -> fn(data)
+        is Success -> fn(data)
     }
 
 }

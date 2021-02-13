@@ -13,11 +13,11 @@ class AddressRepositoryImpl @Inject constructor(private val suggestionApi: Sugge
 
     override suspend fun getAddressSuggestions(query: String): Resource<List<AddressModel>> {
         val request = SuggestionRequest(query)
-        return request({ suggestionApi.getAddressSuggestions(request) }, { it.suggestions.map { it.toModel() } })
+        return suggestionApi.getAddressSuggestions(request).toResult { it.suggestions.map { it.toModel() } }
     }
 
     override suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>> {
         val request = SuggestionRequest(query, 1)
-        return request({ suggestionDetailedApi.getAddressDetailed(request) }, {it.suggestions.map { it.toModel() }})
+        return suggestionDetailedApi.getAddressDetailed(request).toResult { it.suggestions.map { it.toModel() } }
     }
 }

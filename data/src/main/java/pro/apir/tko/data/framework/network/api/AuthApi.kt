@@ -1,9 +1,9 @@
 package pro.apir.tko.data.framework.network.api
 
+import pro.apir.tko.data.framework.network.calladapter.ApiResult
 import pro.apir.tko.data.framework.network.model.response.AuthTokenResponse
 import pro.apir.tko.data.framework.network.model.response.RefreshAccessTokenResponse
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -17,7 +17,7 @@ interface AuthApi {
 
     @FormUrlEncoded
     @POST("auth/token/")
-    suspend fun auth(@Field("email") email: String, @Field("password") password: String): Response<AuthTokenResponse>
+    suspend fun auth(@Field("email") email: String, @Field("password") password: String): ApiResult<AuthTokenResponse>
 
     //Extract to RefreshApi?
     @FormUrlEncoded

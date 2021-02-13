@@ -17,7 +17,7 @@ class AttachmentRepositoryImpl @Inject constructor(credentialsManager: Credentia
     override suspend fun uploadFile(file: File): Resource<List<AttachmentModel>> {
         val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
         val filePart = MultipartBody.Part.createFormData("files", file.name, requestFile)
-        return request({ attachmentApi.uploadFile(filePart) }, { it.map { item -> item.toModel() } })
+        return attachmentApi.uploadFile(filePart).toResult { it.map { item -> item.toModel() } }
     }
-
 }
+

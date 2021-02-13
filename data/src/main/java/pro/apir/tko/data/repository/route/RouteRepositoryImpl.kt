@@ -10,15 +10,11 @@ import javax.inject.Inject
 
 class RouteRepositoryImpl @Inject constructor(private val credentialsManager: CredentialsManager, private val routeApi: RouteApi) : RouteRepository, BaseRepository(credentialsManager) {
 
-    override suspend fun getRoutesList(page: Int, pageSize: Int) = request({ routeApi.getRoutesList(page, pageSize) }, { it.results.map { item -> item.toModel() } })
+    override suspend fun getRoutesList(page: Int, pageSize: Int) = routeApi.getRoutesList(page, pageSize).toResult { it.results.map { item -> item.toModel() } }
 
-    override suspend fun searchRoutes(search: String): Resource<List<RouteModel>> = request(
-            {
-                routeApi.searchRoutesList(search)
-            },
-            {
-                it.results.map { item -> item.toModel() }
-            })
+    override suspend fun searchRoutes(search: String): Resource<List<RouteModel>> = routeApi.searchRoutesList(search).toResult {
+        it.results.map { item -> item.toModel() }
+    }
 
-    override suspend fun getRoute(id: Long): Resource<RouteModel> = request({ routeApi.getRoute(id) }, { it.toModel() })
+    override suspend fun getRoute(id: Long): Resource<RouteModel> = routeApi.getRoute(id).toResult { it.toModel() }
 }

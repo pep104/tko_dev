@@ -11,9 +11,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(private val authApi: AuthApi, private val credentialsManager: CredentialsManager) : AuthRepository, BaseRepository(credentialsManager, TokenStrategy.NO_AUTH) {
 
     override suspend fun auth(email: String, password: String): Resource<AuthTokenModel> {
-        val result = request({ authApi.auth(email, password) }, { it.toModel() })
-
-        return result
+        return authApi.auth(email, password).toResult { it.toModel() }
     }
 
 }

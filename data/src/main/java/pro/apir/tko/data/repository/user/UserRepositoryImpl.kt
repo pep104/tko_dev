@@ -15,7 +15,7 @@ class UserRepositoryImpl @Inject constructor(private val credentialsManager: Cre
                                              private val preferencesManager: PreferencesManager) : UserRepository, BaseRepository(credentialsManager) {
 
     override suspend fun getUser(): Resource<UserModel> {
-        return request({ userApi.getUser() }, { response -> response.toModel() })
+        return userApi.getUser().toResult { response -> response.toModel() }
     }
 
     override suspend fun getUserId(): Int {

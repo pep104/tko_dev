@@ -21,6 +21,8 @@ import pro.apir.tko.data.framework.manager.token.CredentialsManagerImpl
 import pro.apir.tko.data.framework.network.NetworkHandler
 import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
+import pro.apir.tko.data.framework.network.calladapter.ApiCallAdapterFactory
+import pro.apir.tko.data.framework.network.calladapter.ApiResponseTransformer
 import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
@@ -40,10 +42,14 @@ private const val SUGGESTION_DETAILED_RETROFIT = "suggestionDetailed"
 @Module
 class FrameworkModule(private val application: Application) {
 
+    @Singleton
+    @Provides
+    fun provideCallAdapterFactory(transformer: ApiResponseTransformer) = ApiCallAdapterFactory.create(transformer)
+
     //    @Named("main")
     @Singleton
     @Provides
-    fun provideRetrofitInterfaceMain(authTokenRequestInterceptor: AuthTokenRequestInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
+    fun provideRetrofitInterfaceMain(apiCallAdapterFactory: ApiCallAdapterFactory, authTokenRequestInterceptor: AuthTokenRequestInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -61,6 +67,7 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
 
     }
@@ -68,7 +75,7 @@ class FrameworkModule(private val application: Application) {
     @Named(AUTH_RETROFIT)
     @Singleton
     @Provides
-    fun provideRetrofitAuth(): Retrofit {
+    fun provideRetrofitAuth(apiCallAdapterFactory: ApiCallAdapterFactory): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -82,13 +89,14 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
     }
 
     @Named(SUGGESTION_RETROFIT)
     @Singleton
     @Provides
-    fun provideRetorifutAddress(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
+    fun provideRetorifutAddress(apiCallAdapterFactory: ApiCallAdapterFactory, daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -105,13 +113,14 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(SUGGESTION_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
     }
 
     @Named(SUGGESTION_DETAILED_RETROFIT)
     @Singleton
     @Provides
-    fun provideRetorifutAddressDetailed(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
+    fun provideRetorifutAddressDetailed(apiCallAdapterFactory: ApiCallAdapterFactory, daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -128,9 +137,9 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(SUGGESTION_DETAILED_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
     }
-
 
 
     //Managers

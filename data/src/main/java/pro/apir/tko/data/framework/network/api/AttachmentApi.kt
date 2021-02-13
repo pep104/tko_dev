@@ -1,8 +1,8 @@
 package pro.apir.tko.data.framework.network.api
 
 import okhttp3.MultipartBody
+import pro.apir.tko.data.framework.network.calladapter.ApiResult
 import pro.apir.tko.data.framework.network.model.response.AttachmentResponse
-import retrofit2.Response
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -16,6 +16,6 @@ interface AttachmentApi {
 
     @Multipart
     @POST("attachments/upload-file/")
-    suspend fun uploadFile(@Part files: MultipartBody.Part): Response<List<AttachmentResponse>>
+    suspend fun uploadFile(@Part files: MultipartBody.Part): ApiResult<List<AttachmentResponse>>
 
 }

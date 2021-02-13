@@ -6,6 +6,7 @@ import pro.apir.tko.core.constant.KEY_ACCESS_TOKEN
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import javax.inject.Inject
 
+//TODO CHECK EXPIRED REFRESH TOKEN?
 class AuthTokenRequestInterceptor @Inject constructor(private val sp: PreferencesManager) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
