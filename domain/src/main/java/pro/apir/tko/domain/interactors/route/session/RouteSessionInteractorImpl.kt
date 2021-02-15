@@ -7,10 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
-import pro.apir.tko.core.functional.map
-import pro.apir.tko.core.functional.onRight
+import pro.apir.tko.core.data.Resource
+import pro.apir.tko.core.data.map
+import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.domain.failure.RouteTrackingFailure
 import pro.apir.tko.domain.failure.RouteTrackingNotExist
 import pro.apir.tko.domain.failure.TrackingFailureCode
@@ -33,7 +32,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      * Return ID of Route of existing RouteSession
      *
      */
-    override suspend fun getCurrentTrackingInfo(): Either<Failure, RouteTrackingInfoModel?> = withContext(Dispatchers.IO) {
+    override suspend fun getCurrentTrackingInfo(): Resource<RouteTrackingInfoModel?> = withContext(Dispatchers.IO) {
         sessionRepository.getCurrentRouteTrackingInfo()
     }
 
@@ -44,11 +43,11 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      * 2) Create actual session with tracking api
      *
      */
-    override suspend fun getSessionFromRoute(routeModel: RouteModel): Flow<Either<Failure, RouteSessionModel>> = flow {
+    override suspend fun getSessionFromRoute(routeModel: RouteModel): Flow<Resource<RouteSessionModel>> = flow {
         withContext(Dispatchers.IO) {
             //Create and emit initial session
             val initialSession = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_START_DISABLED)
-            emit(Either.Right(initialSession))
+            emit(Resource.Success(initialSession))
 
             //Request for actual session
             val actualSession = getActualSession(routeModel)
@@ -59,27 +58,27 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
     /**
      * Creates session with tracking info
      */
-    suspend fun getActualSession(routeModel: RouteModel): Either<Failure, RouteSessionModel> {
+    suspend fun getActualSession(routeModel: RouteModel): Resource<RouteSessionModel> {
         return withContext(Dispatchers.IO) {
             //get current session
             val existingTrackingInfo = getCurrentTrackingInfo()
 
             //
             when (existingTrackingInfo) {
-                is Either.Left -> existingTrackingInfo
-                is Either.Right -> {
+                is Resource.Error -> existingTrackingInfo
+                is Resource.Success -> {
                     when (true) {
-                        existingTrackingInfo.b != null && existingTrackingInfo.b!!.routeId == routeModel.id.toLong() -> {
-                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingTrackingInfo.b!!)
-                            Either.Right(session)
+                        existingTrackingInfo.data != null && existingTrackingInfo.data!!.routeId == routeModel.id.toLong() -> {
+                            val session = mapSessionWithInfo(RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_IN_PROGRESS), existingTrackingInfo.data!!)
+                            Resource.Success(session)
                         }
-                        existingTrackingInfo.b == null -> {
+                        existingTrackingInfo.data == null -> {
                             val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_DEFAULT)
-                            Either.Right(route)
+                            Resource.Success(route)
                         }
                         else -> {
                             val route = RouteSessionModel(routeModel, RouteStateConstants.ROUTE_TYPE_START_DISABLED)
-                            Either.Right(route)
+                            Resource.Success(route)
                         }
                     }
                 }
@@ -94,22 +93,22 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
      *  Start RouteSessionModel or Resume it with saved progress
      *
      */
-    override suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
+    override suspend fun startSession(routeSessionModel: RouteSessionModel): Resource<RouteSessionModel> {
         return withContext(Dispatchers.IO) {
             val userIdResult = userRepository.getUserId()
             //CHECK EXISTING SESSION FOR THIS ROUTE AND USER
             val existingSession = sessionRepository.getCurrentRouteTrackingInfo()
-            if (existingSession is Either.Right && existingSession.b != null) {
-                val session = mapSessionWithInfo(routeSessionModel, existingSession.b!!).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                Either.Right(session)
+            if (existingSession is Resource.Success && existingSession.data != null) {
+                val session = mapSessionWithInfo(routeSessionModel, existingSession.data!!).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                Resource.Success(session)
             } else {
                 //NOT EXISTS -> START ROUTE TRACKING
                 val startResult = sessionRepository.startRouteTracking(routeSessionModel.routeId.toLong())
                 when (startResult) {
-                    is Either.Left -> Either.Left(startResult.a)
-                    is Either.Right -> {
-                        val session = mapSessionWithInfo(routeSessionModel, startResult.b).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
-                        Either.Right(session)
+                    is Resource.Error -> Resource.Error(startResult.failure)
+                    is Resource.Success -> {
+                        val session = mapSessionWithInfo(routeSessionModel, startResult.data).apply { this.state = RouteStateConstants.ROUTE_TYPE_IN_PROGRESS }
+                        Resource.Success(session)
                     }
                 }
             }
@@ -121,21 +120,21 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
     /**
      * Finish route tracking for completed session
      */
-    override suspend fun finishSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> = withContext(Dispatchers.IO) {
+    override suspend fun finishSession(routeSessionModel: RouteSessionModel): Resource<RouteSessionModel> = withContext(Dispatchers.IO) {
         return@withContext if (routeSessionModel.sessionId != null) {
             val result = sessionRepository.finishRouteTracking(routeSessionModel.sessionId)
             when (result) {
-                is Either.Left -> Either.Left(result.a)
-                is Either.Right -> Either.Right(mapSessionWithInfo(routeSessionModel, result.b))
+                is Resource.Error -> Resource.Error(result.failure)
+                is Resource.Success -> Resource.Success(mapSessionWithInfo(routeSessionModel, result.data))
             }
         } else
-            Either.Left(RouteTrackingNotExist())
+            Resource.Error(RouteTrackingNotExist())
     }
 
     /**
      * Find and map existing route session to route list model
      */
-    override suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>> {
+    override suspend fun mapRouteListWithExisting(list: List<RouteModel>): Resource<List<RouteModel>> {
         return withContext(Dispatchers.IO) {
             val routeId = getCurrentTrackingInfo()
             routeId.map { tracking ->
@@ -147,22 +146,22 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
     /**
      * Completes given route point model and return list with new states
      */
-    override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel> {
+    override suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Resource<RouteSessionModel> {
         return withContext(Dispatchers.IO) {
             val enterResult = sessionRepository.enterRouteStop(routePointId)
 
             when (enterResult) {
-                is Either.Left -> {
+                is Resource.Error -> {
                     when (true) {
 
-                        enterResult.a is RouteTrackingFailure
-                                && (enterResult.a as RouteTrackingFailure).code == TrackingFailureCode.ALREADY_ENTERED -> completePointRequest(routeSessionModel, routePointId, this)
+                        enterResult.failure is RouteTrackingFailure
+                                && (enterResult.failure as RouteTrackingFailure).code == TrackingFailureCode.ALREADY_ENTERED -> completePointRequest(routeSessionModel, routePointId, this)
 
-                        else -> Either.Left(enterResult.a)
+                        else -> Resource.Error(enterResult.failure)
 
                     }
                 }
-                is Either.Right -> {
+                is Resource.Success -> {
                     completePointRequest(routeSessionModel, routePointId, this)
                 }
             }
@@ -177,7 +176,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             val photosToUpload = photoRepository.getPhotosByPoint(routeSessionModel.sessionId, routePointId)
             photosToUpload.forEach { cachePhoto ->
                 try {
-                    attachmentRepository.uploadFile(File(cachePhoto.path)).onRight { uploadedPhotos ->
+                    attachmentRepository.uploadFile(File(cachePhoto.path)).onSuccess { uploadedPhotos ->
                         photos.addAll(uploadedPhotos.map { it.id.toString() })
                         scope.launch {
                             photoRepository.deletePhoto(cachePhoto.id)
@@ -191,16 +190,16 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
         }
         val completeResult = sessionRepository.leaveRouteStop(photos)
         when (completeResult) {
-            is Either.Left -> Either.Left(completeResult.a)
+            is Resource.Error -> Resource.Error(completeResult.failure)
         }
     }
 
-    private suspend fun updateSession(sessionModel: RouteSessionModel): Either<Failure, RouteSessionModel> {
+    private suspend fun updateSession(sessionModel: RouteSessionModel): Resource<RouteSessionModel> {
         val info = getCurrentTrackingInfo()
         return when (info) {
-            is Either.Left -> Either.Left(info.a)
-            is Either.Right -> {
-                return if (info.b != null) Either.Right(mapSessionWithInfo(sessionModel, info.b!!)) else Either.Right(sessionModel)
+            is Resource.Error -> Resource.Error(info.failure)
+            is Resource.Success -> {
+                return if (info.data != null) Resource.Success(mapSessionWithInfo(sessionModel, info.data!!)) else Resource.Success(sessionModel)
             }
         }
     }

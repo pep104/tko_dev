@@ -48,7 +48,7 @@ class MainActivity : BaseActivity() {
         globalState.userState.observe(this, Observer {
             when (it) {
                 GlobalState.UserState.TokenExpired -> {
-                    this.recreate()
+                    navController.navigate(R.id.action_global_splashFragment)
                 }
             }
         })

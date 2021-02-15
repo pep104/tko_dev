@@ -2,17 +2,14 @@ package pro.apir.tko.data.repository.inventory
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
-import pro.apir.tko.core.functional.onRight
+import pro.apir.tko.core.data.Resource
+import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.data.cache.ContainerAreaListCache
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.model.request.ContainerAreaDetailedRequest
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
 import pro.apir.tko.data.framework.network.model.response.data.ContainerData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
-import pro.apir.tko.data.repository.BaseRepository
 import pro.apir.tko.domain.model.ContainerAreaEditModel
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
@@ -20,14 +17,12 @@ import pro.apir.tko.domain.repository.inventory.InventoryRepository
 import javax.inject.Inject
 
 class InventoryRepositoryImpl @Inject constructor(
-        private val credentialsManager: CredentialsManager,
         private val inventoryApi: InventoryApi,
         private val cache: ContainerAreaListCache
-) : InventoryRepository, BaseRepository(credentialsManager) {
+) : InventoryRepository {
 
-    override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaShortModel> {
-        val result = request({ inventoryApi.getContainerArea(id) }, { it.toModel() })
-        return result
+    override suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel> {
+        return inventoryApi.getContainerArea(id).toResult { it.toModel() }
     }
 
     override suspend fun getContainerAreasByBoundingBox(
@@ -37,31 +32,27 @@ class InventoryRepositoryImpl @Inject constructor(
             latMax: Double,
             page: Int,
             pageSize: Int
-    ): Flow<Either<Failure, List<ContainerAreaListModel>>> = flow {
+    ): Flow<Resource<List<ContainerAreaListModel>>> = flow {
         val cached = cache.getAll()
 
-        if (cached != null) emit(Either.Right(cached))
+        if (cached != null) emit(Resource.Success(cached))
 
-        val result = request({ inventoryApi.getContainerAreasByBoundingBox(lngMin.toString(), latMin.toString(), lngMax.toString(), latMax.toString(), page, pageSize) }, { it.results.map { resp -> resp.toModel() } })
+        val result = inventoryApi.getContainerAreasByBoundingBox(lngMin.toString(), latMin.toString(), lngMax.toString(), latMax.toString(), page, pageSize).toResult { it.results.map { resp -> resp.toModel() } }
         emit(result)
-        result.onRight {
-            it.forEach {
-                cache.put(it.id.toString(), it)
+        result.onSuccess {
+            it.forEach { containerArea ->
+                cache.put(containerArea.id.toString(), containerArea)
             }
         }
     }
 
-    override suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>> {
-        return request(
-                call = {
-                    inventoryApi.searchContainer(search)
-                },
-                transform = {
-                    it.results.map { res -> res.toModel() }
-                })
+    override suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>> {
+        return inventoryApi.searchContainer(search).toResult {
+            it.results.map { res -> res.toModel() }
+        }
     }
 
-    override suspend fun updateContainer(model: ContainerAreaEditModel): Either<Failure, ContainerAreaShortModel> {
+    override suspend fun updateContainer(model: ContainerAreaEditModel): Resource<ContainerAreaShortModel> {
         val coordinatesModel = model.coordinates
         val coordinatesData = if (coordinatesModel != null) CoordinatesData(coordinatesModel.lng, coordinatesModel.lat) else null
 
@@ -81,18 +72,16 @@ class InventoryRepositoryImpl @Inject constructor(
                 model.kgo
         )
 
-        val result = request(
-                {
-                    if (model.id == null) {
-                        inventoryApi.createContainerArea(req)
-                    } else {
-                        inventoryApi.updateContainerArea(model.id!!.toLong(), req)
-                    }
-                },
-                { it.toModel() }
-        )
+        val result = if (model.id == null) {
+            inventoryApi.createContainerArea(req)
+        } else {
+            inventoryApi.updateContainerArea(model.id!!.toLong(), req)
+        }.toResult { it.toModel() }
 
-        result.onRight {
+
+
+
+        result.onSuccess {
             cache.remove(it.id.toString())
         }
 

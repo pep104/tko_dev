@@ -3,6 +3,7 @@ package pro.apir.tko.presentation.ui.main
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -21,7 +22,7 @@ class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle
 
     private val _userState = handle.getLiveData<UserState>("userState")
     val userState: LiveData<UserState>
-        get() = _userState
+        get() = Transformations.distinctUntilChanged(_userState)
 
     private val _menuState = handle.getLiveData<Boolean>("menuState", false)
     val menuState: LiveData<Boolean>

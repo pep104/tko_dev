@@ -1,7 +1,6 @@
 package pro.apir.tko.domain.repository.route
 
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.RouteModel
 
 /**
@@ -11,10 +10,10 @@ import pro.apir.tko.domain.model.RouteModel
  */
 interface RouteRepository {
 
-    suspend fun getRoutesList(page: Int, pageSize: Int): Either<Failure, List<RouteModel>>
+    suspend fun getRoutesList(page: Int, pageSize: Int): Resource<List<RouteModel>>
 
-    suspend fun searchRoutes(search: String): Either<Failure, List<RouteModel>>
+    suspend fun searchRoutes(search: String): Resource<List<RouteModel>>
 
-    suspend fun getRoute(id: Long): Either<Failure, RouteModel>
+    suspend fun getRoute(id: Long): Resource<RouteModel>
 
 }

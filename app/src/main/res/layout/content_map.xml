@@ -65,10 +65,10 @@
             android:id="@+id/iconSearch"
             style="@style/AppBarIconStyle"
             android:src="@drawable/ic_search_black"
-            android:tint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
 
         <ProgressBar
             android:id="@+id/progressSearch"

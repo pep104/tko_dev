@@ -47,8 +47,8 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
                 is Failure.FeatureFailure ->  throw NotImplementedError("You should override failureObserver to handle FeatureFailure - ${it.javaClass.simpleName}")
                 Failure.NetworkConnection -> alert(R.string.error_network_connection)
                 is Failure.ServerError -> {
-                    if(it.message != null){
-                        alert(it.message)
+                    if(it.errorMessage != null){
+                        alert(it.errorMessage)
                     }
                 }
                 Failure.RefreshTokenExpired -> {

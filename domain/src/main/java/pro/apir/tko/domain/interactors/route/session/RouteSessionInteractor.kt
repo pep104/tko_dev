@@ -1,8 +1,7 @@
 package pro.apir.tko.domain.interactors.route.session
 
 import kotlinx.coroutines.flow.Flow
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.model.RouteSessionModel
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
@@ -14,17 +13,17 @@ import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
  */
 interface RouteSessionInteractor {
 
-    suspend fun getCurrentTrackingInfo(): Either<Failure, RouteTrackingInfoModel?>
+    suspend fun getCurrentTrackingInfo(): Resource<RouteTrackingInfoModel?>
 
 
-    suspend fun getSessionFromRoute(routeModel: RouteModel): Flow<Either<Failure, RouteSessionModel>>
+    suspend fun getSessionFromRoute(routeModel: RouteModel): Flow<Resource<RouteSessionModel>>
 
-    suspend fun startSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
+    suspend fun startSession(routeSessionModel: RouteSessionModel): Resource<RouteSessionModel>
 
-    suspend fun finishSession(routeSessionModel: RouteSessionModel): Either<Failure, RouteSessionModel>
+    suspend fun finishSession(routeSessionModel: RouteSessionModel): Resource<RouteSessionModel>
 
-    suspend fun mapRouteListWithExisting(list: List<RouteModel>): Either<Failure, List<RouteModel>>
+    suspend fun mapRouteListWithExisting(list: List<RouteModel>): Resource<List<RouteModel>>
 
-    suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Either<Failure, RouteSessionModel>
+    suspend fun completePoint(routeSessionModel: RouteSessionModel, routePointId: Long): Resource<RouteSessionModel>
 
 }

@@ -4,9 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
-import pro.apir.tko.core.functional.map
+import pro.apir.tko.core.data.Resource
+import pro.apir.tko.core.data.map
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.repository.attachment.AttachmentRepository
 import pro.apir.tko.domain.repository.inventory.InventoryRepository
@@ -18,7 +17,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
 
     private val dispatcher = Dispatchers.IO
 
-    override suspend fun getContainerArea(id: Long): Either<Failure, ContainerAreaShortModel> {
+    override suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel> {
         return withContext(dispatcher) {
             val data = inventoryRepository.getContainerArea(id)
 
@@ -44,7 +43,7 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
     }
 
 
-    override suspend fun updateContainer(model: ContainerAreaShortModel, photos: List<ImageModel>?, newPhotos: List<File>?): Either<Failure, ContainerAreaShortModel> {
+    override suspend fun updateContainer(model: ContainerAreaShortModel, photos: List<ImageModel>?, newPhotos: List<File>?): Resource<ContainerAreaShortModel> {
         return withContext(dispatcher) {
             //Upload new photos
             val uploaded = mutableListOf<AttachmentModel>()
@@ -105,12 +104,12 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         }
     }
 
-    override suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Flow<Either<Failure, List<ContainerAreaListModel>>> = withContext(dispatcher){
+    override suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Flow<Resource<List<ContainerAreaListModel>>> = withContext(dispatcher) {
         val result = inventoryRepository.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, page, pageSize)
         return@withContext result.map { filterContainerArea(it) }
     }
 
-    override suspend fun searchContainerArea(search: String): Either<Failure, List<ContainerAreaListModel>> {
+    override suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>> {
         return withContext(dispatcher) {
             val result = inventoryRepository.searchContainerArea(search)
 
@@ -118,10 +117,10 @@ class InventoryInteractorImpl @Inject constructor(private val inventoryRepositor
         }
     }
 
-    private fun filterContainerArea(result: Either<Failure, List<ContainerAreaListModel>>): Either<Failure, List<ContainerAreaListModel>> {
-        return if (result is Either.Right) {
-            Either.Right(
-                    result.b.filter { it.resourceType == "ContainerWasteArea" }.map {
+    private fun filterContainerArea(result: Resource<List<ContainerAreaListModel>>): Resource<List<ContainerAreaListModel>> {
+        return if (result is Resource.Success) {
+            Resource.Success(
+                    result.data.filter { it.resourceType == "ContainerWasteArea" }.map {
 
                         ContainerAreaListModel(
                                 it.id,

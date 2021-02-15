@@ -1,7 +1,7 @@
 package pro.apir.tko.data.framework.network.api
 
+import pro.apir.tko.data.framework.network.calladapter.ApiResult
 import pro.apir.tko.data.framework.network.model.response.UserInfoResponse
-import retrofit2.Response
 import retrofit2.http.GET
 
 /**
@@ -12,6 +12,6 @@ import retrofit2.http.GET
 interface UserApi {
 
     @GET("users/me/")
-    suspend fun getUser(): Response<UserInfoResponse>
+    suspend fun getUser(): ApiResult<UserInfoResponse>
 
 }

@@ -21,19 +21,12 @@ import pro.apir.tko.data.framework.manager.token.CredentialsManagerImpl
 import pro.apir.tko.data.framework.network.NetworkHandler
 import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
-import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
+import pro.apir.tko.data.framework.network.calladapter.ApiCallAdapterFactory
+import pro.apir.tko.data.framework.network.calladapter.ApiResponseTransformer
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
+import pro.apir.tko.data.framework.network.interceptor.TokenInterceptor
 import pro.apir.tko.data.framework.room.AppDatabase
-import pro.apir.tko.data.framework.source.address.SuggestionDetailedSource
-import pro.apir.tko.data.framework.source.address.SuggestionSource
-import pro.apir.tko.data.framework.source.attachment.AttachmentSource
-import pro.apir.tko.data.framework.source.attachment.IAttachmentSource
-import pro.apir.tko.data.framework.source.auth.AuthSource
-import pro.apir.tko.data.framework.source.inventory.InventorySource
-import pro.apir.tko.data.framework.source.route.RouteSource
-import pro.apir.tko.data.framework.source.route.RouteTrackSource
-import pro.apir.tko.data.framework.source.user.UserSource
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
 import retrofit2.Retrofit
@@ -42,19 +35,26 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
+private const val AUTH_RETROFIT = "auth"
+private const val SUGGESTION_RETROFIT = "suggestion"
+private const val SUGGESTION_DETAILED_RETROFIT = "suggestionDetailed"
+
 @Module
 class FrameworkModule(private val application: Application) {
 
+    @Singleton
+    @Provides
+    fun provideCallAdapterFactory(transformer: ApiResponseTransformer) = ApiCallAdapterFactory.create(transformer)
 
     //    @Named("main")
     @Singleton
     @Provides
-    fun provideRetrofitInterfaceMain(authTokenRequestInterceptor: AuthTokenRequestInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
+    fun provideRetrofitInterfaceMain(apiCallAdapterFactory: ApiCallAdapterFactory, tokenInterceptor: TokenInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         val client = OkHttpClient.Builder()
-                .addInterceptor(authTokenRequestInterceptor)
+                .addInterceptor(tokenInterceptor)
                 .addInterceptor(loggingInterceptor)
                 .authenticator(tokenAuthenticator)
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -67,14 +67,15 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
 
     }
 
-    @Named("auth")
+    @Named(AUTH_RETROFIT)
     @Singleton
     @Provides
-    fun provideRetrofitAuth(): Retrofit {
+    fun provideRetrofitAuth(apiCallAdapterFactory: ApiCallAdapterFactory): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -88,13 +89,14 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
     }
 
-    @Named("suggestion")
+    @Named(SUGGESTION_RETROFIT)
     @Singleton
     @Provides
-    fun provideRetorifutAddress(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
+    fun provideRetorifutAddress(apiCallAdapterFactory: ApiCallAdapterFactory, daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -111,13 +113,14 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(SUGGESTION_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
     }
 
-    @Named("suggestionDetailed")
+    @Named(SUGGESTION_DETAILED_RETROFIT)
     @Singleton
     @Provides
-    fun provideRetorifutAddressDetailed(daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
+    fun provideRetorifutAddressDetailed(apiCallAdapterFactory: ApiCallAdapterFactory, daDataTokenInterceptor: DaDataTokenInterceptor): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -134,17 +137,10 @@ class FrameworkModule(private val application: Application) {
                 .baseUrl(SUGGESTION_DETAILED_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(apiCallAdapterFactory)
                 .build()
     }
 
-
-//    @Singleton
-//    @Provides
-//    fun provideMainGetApi(retrofit: Retrofit) = retrofit.create(InventoryApi::class.java)
-//
-//    @Singleton
-//    @Provides
-//    fun provideAuthApi(@Named("auth") retrofit: Retrofit) = retrofit.create(AuthApi::class.java)
 
     //Managers
 
@@ -164,7 +160,7 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun authInterceptor(sp: PreferencesManager): AuthTokenRequestInterceptor = AuthTokenRequestInterceptor(sp)
+    fun authInterceptor(credentialsManager: CredentialsManager): TokenInterceptor = TokenInterceptor(credentialsManager)
 
     @Singleton
     @Provides
@@ -188,35 +184,35 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun inventoryApi(retrofit: Retrofit): InventoryApi = InventorySource(retrofit)
+    fun inventoryApi(retrofit: Retrofit): InventoryApi = retrofit.create(InventoryApi::class.java)
 
     @Singleton
     @Provides
-    fun routeApi(retrofit: Retrofit): RouteApi = RouteSource(retrofit)
+    fun routeApi(retrofit: Retrofit): RouteApi = retrofit.create(RouteApi::class.java)
 
     @Singleton
     @Provides
-    fun routeTrackApi(retrofit: Retrofit): RouteTrackApi = RouteTrackSource(retrofit)
+    fun routeTrackApi(retrofit: Retrofit): RouteTrackApi = retrofit.create(RouteTrackApi::class.java)
 
     @Singleton
     @Provides
-    fun authApi(@Named("auth") retrofit: Retrofit): AuthApi = AuthSource(retrofit)
+    fun authApi(@Named(AUTH_RETROFIT) retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
     @Singleton
     @Provides
-    fun attachmentApi(retrofit: Retrofit): IAttachmentSource = AttachmentSource(retrofit)
+    fun attachmentApi(retrofit: Retrofit): AttachmentApi = retrofit.create(AttachmentApi::class.java)
 
     @Singleton
     @Provides
-    fun suggestionApi(@Named("suggestion") retrofit: Retrofit): SuggestionApi = SuggestionSource(retrofit)
+    fun suggestionApi(@Named(SUGGESTION_RETROFIT) retrofit: Retrofit): SuggestionApi = retrofit.create(SuggestionApi::class.java)
 
     @Singleton
     @Provides
-    fun suggestionDetailedApi(@Named("suggestionDetailed") retrofit: Retrofit): SuggestionDetailedApi = SuggestionDetailedSource(retrofit)
+    fun suggestionDetailedApi(@Named(SUGGESTION_DETAILED_RETROFIT) retrofit: Retrofit): SuggestionDetailedApi = retrofit.create(SuggestionDetailedApi::class.java)
 
     @Singleton
     @Provides
-    fun userApi(retrofit: Retrofit): UserApi = UserSource(retrofit)
+    fun userApi(retrofit: Retrofit): UserApi = retrofit.create(UserApi::class.java)
 
     //Room
 

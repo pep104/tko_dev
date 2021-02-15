@@ -2,8 +2,7 @@ package pro.apir.tko.domain.interactors.route
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.core.functional.Either
+import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.domain.repository.route.RouteRepository
@@ -22,9 +21,9 @@ class RouteInteractorImpl @Inject constructor(private val routeRepository: Route
                 return@withContext processRoutes(routeListResult)
             }
 
-    private suspend fun processRoutes(routeListResult: Either<Failure, List<RouteModel>>) = when (routeListResult) {
-        is Either.Left -> routeListResult
-        is Either.Right -> routeSessionInteractor.mapRouteListWithExisting(routeListResult.b)
+    private suspend fun processRoutes(routeListResult: Resource<List<RouteModel>>) = when (routeListResult) {
+        is Resource.Error -> routeListResult
+        is Resource.Success -> routeSessionInteractor.mapRouteListWithExisting(routeListResult.data)
     }
 
 }
