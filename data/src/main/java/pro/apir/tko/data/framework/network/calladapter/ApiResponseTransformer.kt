@@ -1,5 +1,7 @@
 package pro.apir.tko.data.framework.network.calladapter
 
+import pro.apir.tko.core.exception.Failure
+import pro.apir.tko.core.exception.RefreshTokenExpiredException
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -25,6 +27,11 @@ class ApiResponseTransformer @Inject constructor() {
     }
 
     fun <N> transform(error: Throwable): ApiResult<N> {
+
+        if (error is RefreshTokenExpiredException) {
+            return ApiResult.Error(Failure.RefreshTokenExpired)
+        }
+
         return ApiResult.Error(error.message ?: "Unknown error", 0)
     }
 

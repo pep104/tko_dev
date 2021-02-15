@@ -23,9 +23,9 @@ import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator
 import pro.apir.tko.data.framework.network.calladapter.ApiCallAdapterFactory
 import pro.apir.tko.data.framework.network.calladapter.ApiResponseTransformer
-import pro.apir.tko.data.framework.network.interceptor.AuthTokenRequestInterceptor
 import pro.apir.tko.data.framework.network.interceptor.CacheInterceptor
 import pro.apir.tko.data.framework.network.interceptor.DaDataTokenInterceptor
+import pro.apir.tko.data.framework.network.interceptor.TokenInterceptor
 import pro.apir.tko.data.framework.room.AppDatabase
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
@@ -49,12 +49,12 @@ class FrameworkModule(private val application: Application) {
     //    @Named("main")
     @Singleton
     @Provides
-    fun provideRetrofitInterfaceMain(apiCallAdapterFactory: ApiCallAdapterFactory, authTokenRequestInterceptor: AuthTokenRequestInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
+    fun provideRetrofitInterfaceMain(apiCallAdapterFactory: ApiCallAdapterFactory, tokenInterceptor: TokenInterceptor, tokenAuthenticator: TokenAuthenticator): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         val client = OkHttpClient.Builder()
-                .addInterceptor(authTokenRequestInterceptor)
+                .addInterceptor(tokenInterceptor)
                 .addInterceptor(loggingInterceptor)
                 .authenticator(tokenAuthenticator)
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -160,7 +160,7 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun authInterceptor(sp: PreferencesManager): AuthTokenRequestInterceptor = AuthTokenRequestInterceptor(sp)
+    fun authInterceptor(credentialsManager: CredentialsManager): TokenInterceptor = TokenInterceptor(credentialsManager)
 
     @Singleton
     @Provides

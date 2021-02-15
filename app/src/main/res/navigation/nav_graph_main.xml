@@ -123,5 +123,5 @@
             android:id="@+id/cameraFragment2"
             android:name="pro.apir.tko.presentation.ui.main.camera.CameraFragment"
             android:label="CameraFragment" />
-    </navigation>
+    </navigation><action android:id="@+id/action_global_splashFragment" app:destination="@id/splashFragment"/>
 </navigation>
