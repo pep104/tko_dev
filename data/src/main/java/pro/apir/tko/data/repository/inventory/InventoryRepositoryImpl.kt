@@ -5,13 +5,11 @@ import kotlinx.coroutines.flow.flow
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.data.cache.ContainerAreaListCache
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.model.request.ContainerAreaDetailedRequest
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
 import pro.apir.tko.data.framework.network.model.response.data.ContainerData
 import pro.apir.tko.data.framework.network.model.response.data.CoordinatesData
-import pro.apir.tko.data.repository.BaseRepository
 import pro.apir.tko.domain.model.ContainerAreaEditModel
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
@@ -19,10 +17,9 @@ import pro.apir.tko.domain.repository.inventory.InventoryRepository
 import javax.inject.Inject
 
 class InventoryRepositoryImpl @Inject constructor(
-        private val credentialsManager: CredentialsManager,
         private val inventoryApi: InventoryApi,
         private val cache: ContainerAreaListCache
-) : InventoryRepository, BaseRepository(credentialsManager) {
+) : InventoryRepository {
 
     override suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel> {
         return inventoryApi.getContainerArea(id).toResult { it.toModel() }
