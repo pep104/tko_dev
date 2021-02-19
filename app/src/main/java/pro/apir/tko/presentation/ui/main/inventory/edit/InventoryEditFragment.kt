@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
 import pro.apir.tko.R
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
-import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.entities.PhotoWrapper
@@ -423,8 +422,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
         val location = address?.value
         val lat = address?.lat
         val lng = address?.lng
-        if (location != null) {
-            val address = AddressModel(location, location, lat, lng)
+        if (address != null && location != null) {
             findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment, bundleOf(AddressFragment.KEY_ADDRESS to address))
         } else {
             findNavController().navigate(R.id.action_inventoryEditFragment_to_addressFragment)

@@ -39,7 +39,7 @@ class AddressInteractorImpl @Inject constructor(private val addressRepository: A
             if (it.isEmpty() || it[0].lng == null || it[0].lat == null)
                 addressModel
             else {
-                AddressModel(addressModel.value, addressModel.unrestrictedValue, it[0].lat, it[0].lng)
+                addressModel.copy(lat = it[0].lat, lng = it[0].lng)
             }
         }
     }

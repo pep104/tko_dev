@@ -14,7 +14,25 @@ data class SuggestionData(
         @SerializedName("unrestricted_value")
         val unrestrictedValue: String,
         val data: SuggestionAddressData
-){
-    fun toModel() = AddressModel(value, unrestrictedValue, data.lat?.round(6), data.lng?.round(6))
+) {
+    fun toModel() = AddressModel(
+            value,
+            unrestrictedValue,
+            data.lat?.round(6),
+            data.lng?.round(6),
+            data.cityType,
+            data.cityTypeFull,
+            data.city,
+            data.cityFull,
+            data.streetType,
+            data.streetTypeFull,
+            data.street,
+            data.streetFull,
+            data.houseType,
+            data.houseTypeFull,
+            data.house,
+            data.houseFull,
+            data.fiasLevel
+    )
 
 }

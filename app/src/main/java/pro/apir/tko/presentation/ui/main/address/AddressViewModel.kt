@@ -102,7 +102,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
             queryJob?.cancel()
             viewModelScope.launch {
                 delay(300)
-                Log.e("http","query: $query")
+                Log.e("http", "query: $query")
                 addressInteractor.getAddressSuggestions(query).fold(::handleFailure) {
                     _suggestions.postValue(it)
                 }
@@ -112,7 +112,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     fun setChoosed(addressModel: AddressModel) {
         if (addressModel.lat != null && addressModel.lng != null) {
-           setAddress(addressModel)
+            setAddress(addressModel)
         } else {
             fetchDetailedTest(addressModel)
         }
@@ -135,13 +135,13 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     private fun fetchDetailedTest(addressModel: AddressModel) {
         queryJob?.cancel()
         viewModelScope.launch {
-            addressInteractor.getAddressDetailed(addressModel).fold({},{
+            addressInteractor.getAddressDetailed(addressModel).fold({}, {
                 setAddress(it)
             })
         }
     }
 
-    private fun setAddress(addressModel: AddressModel){
+    private fun setAddress(addressModel: AddressModel) {
         _address.postValue(addressModel)
         _viewType.postValue(ViewType.BOTTOM_CARD)
     }
@@ -189,11 +189,11 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
 
             }
-            Log.e("mask","time: $time")
+            Log.e("mask", "time: $time")
         }
     }
 
-    fun updateCoordinatesOnDragEvent(lat: Double, lon: Double){
+    fun updateCoordinatesOnDragEvent(lat: Double, lon: Double) {
         updateCoordinates(lat, lon)
     }
 
@@ -203,7 +203,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
             delay(400)
             val addressModel = _address.value
             if (addressModel != null && (addressModel.lat != lat || addressModel.lng != lon)) {
-                val newAddressModel = AddressModel(addressModel.value, addressModel.unrestrictedValue, lat, lon)
+                val newAddressModel = addressModel.copy(lat = lat, lng = lon)
                 _address.postValue(newAddressModel)
             }
         }
