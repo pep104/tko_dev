@@ -24,13 +24,13 @@ sealed class Resource<out R> {
      * Returns true if this is a Right, false otherwise.
      * @see Success
      */
-    val isRight get() = this is Success<R>
+    val isSuccess get() = this is Success<R>
 
     /**
      * Returns true if this is a Left, false otherwise.
      * @see Error
      */
-    val isLeft get() = this is Error
+    val isError get() = this is Error
 
     /**
      * Creates a Left type.
@@ -50,13 +50,15 @@ sealed class Resource<out R> {
      * @see Success
      */
     inline fun fold(
-            crossinline onFailure: (Failure) -> Any,
-            crossinline onSuccess: (R) -> Any
-    ): Any =
-            when (this) {
-                is Error -> onFailure(failure)
-                is Success -> onSuccess(data)
-            }
+            onFailure: (Failure) -> Unit,
+            onSuccess: (R) -> Unit
+    ) {
+        when (this) {
+            is Error -> onFailure(failure)
+            is Success -> onSuccess(data)
+        }
+    }
+
 
 }
 

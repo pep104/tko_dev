@@ -7,8 +7,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
-import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
+import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
@@ -20,7 +20,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  */
 abstract class BaseListViewModel(private val handle: SavedStateHandle,
                                  private val inventoryInteractor: InventoryInteractor,
-                                 private val locationManager: LocationManager) : BaseViewModel() {
+                                 private val locationManager: LocationManager
+) : BaseViewModel() {
 
     protected var fetchJob: Job? = null
     protected var searchJob: Job? = null

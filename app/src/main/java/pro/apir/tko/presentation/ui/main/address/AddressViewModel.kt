@@ -12,9 +12,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
-import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.address.AddressInteractor
+import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
@@ -28,7 +28,8 @@ import kotlin.system.measureNanoTime
  */
 class AddressViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
                                                    private val addressInteractor: AddressInteractor,
-                                                   private val locationManager: LocationManager) : BaseViewModel() {
+                                                   private val locationManager: LocationManager
+) : BaseViewModel() {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddressViewModel>

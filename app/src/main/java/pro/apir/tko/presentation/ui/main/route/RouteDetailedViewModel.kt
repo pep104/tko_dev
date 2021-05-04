@@ -17,10 +17,11 @@ import kotlinx.coroutines.withContext
 import org.osmdroid.api.IGeoPoint
 import pro.apir.tko.core.constant.extension.roundUpNearest
 import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.data.framework.manager.location.LocationManager
+import pro.apir.tko.core.utils.LocationUtils
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
+import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.presentation.platform.BaseViewModel
 
@@ -34,7 +35,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
 class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
                                                          private val routeSessionInteractor: RouteSessionInteractor,
                                                          private val routePhotosInteractor: RoutePhotoInteractor,
-                                                         private val locationManager: LocationManager) : BaseViewModel() {
+                                                         private val locationManager: LocationManager
+) : BaseViewModel() {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<RouteDetailedViewModel>
@@ -447,30 +449,10 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
 
     private fun calcDistance(point: CoordinatesModel?, user: LocationModel?): Double? {
         return if (point != null && user != null) {
-            calcDistance(user.lat, user.lon, point.lat, point.lng)
+            LocationUtils.distanceBetween(user.lat, user.lon, point.lat, point.lng)
         } else {
             null
         }
     }
-
-    //fixme extract this function
-    private fun calcDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val R = 6371 // Radius of the earth
-
-        val latDistance = Math.toRadians(lat2 - lat1)
-        val lonDistance = Math.toRadians(lon2 - lon1)
-        val a = (Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + (Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2)))
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        var distance = R * c * 1000 // convert to meters
-
-        //Not used
-        val height: Double = 0.0
-
-        distance = Math.pow(distance, 2.0) + Math.pow(height, 2.0)
-        return Math.sqrt(distance)
-    }
-
 
 }

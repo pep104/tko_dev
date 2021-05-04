@@ -10,7 +10,7 @@ import pro.apir.tko.domain.model.AddressModel
  */
 interface AddressInteractor {
 
-    suspend fun getAddressSuggestions(query: String): Resource<List<AddressModel>>
+    suspend fun getAddressSuggestions(query: String, useLocation: Boolean = true): Resource<List<AddressModel>>
 
     suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>>
 

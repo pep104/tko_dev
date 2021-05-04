@@ -2,6 +2,7 @@ package pro.apir.tko.domain.repository.address
 
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.AddressModel
+import pro.apir.tko.domain.model.LocationModel
 
 /**
  * Created by antonsarmatin
@@ -10,7 +11,7 @@ import pro.apir.tko.domain.model.AddressModel
  */
 interface AddressRepository {
 
-    suspend fun getAddressSuggestions(query: String): Resource<List<AddressModel>>
+    suspend fun getAddressSuggestions(query: String, locationModel: LocationModel? = null): Resource<List<AddressModel>>
 
     suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>>
 
