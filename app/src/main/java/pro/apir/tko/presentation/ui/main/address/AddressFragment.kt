@@ -96,7 +96,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             viewModel.updateCoordinatesOnDragEvent(lat, lon)
             setMapPoint(lat, lon, false)
             removeCoordinatesMaskedTextListener()
-            etCoordinates.setText(getString(R.string.text_coordinates_placeholder, lat.toString(), lon.toString()))
+            etCoordinates.setText(
+                getString(
+                    R.string.text_coordinates_placeholder,
+                    lat.toString(),
+                    lon.toString()
+                )
+            )
             setCoordinatesMaskedTextListener()
             return false
         }
@@ -108,19 +114,23 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     val maskedListener: MaskedTextChangedListener by lazy {
         MaskedTextChangedListener(
-                field = etCoordinates,
-                primaryFormat = getString(R.string.mask_coordinates),
-                affineFormats = emptyList(),
-                customNotations = listOf(Notation('m', "-", true)),
-                affinityCalculationStrategy = AffinityCalculationStrategy.WHOLE_STRING,
-                autocomplete = true,
-                autoskip = false,
-                listener = null,
-                valueListener = object : MaskedTextChangedListener.ValueListener {
-                    override fun onTextChanged(maskFilled: Boolean, extractedValue: String, formattedValue: String) {
-                        viewModel.processInput(extractedValue)
-                    }
-                })
+            field = etCoordinates,
+            primaryFormat = getString(R.string.mask_coordinates),
+            affineFormats = emptyList(),
+            customNotations = listOf(Notation('m', "-", true)),
+            affinityCalculationStrategy = AffinityCalculationStrategy.WHOLE_STRING,
+            autocomplete = true,
+            autoskip = false,
+            listener = null,
+            valueListener = object : MaskedTextChangedListener.ValueListener {
+                override fun onTextChanged(
+                    maskFilled: Boolean,
+                    extractedValue: String,
+                    formattedValue: String
+                ) {
+                    viewModel.processInput(extractedValue)
+                }
+            })
     }
 
 
@@ -153,7 +163,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         //Try to get AddressModel parcelable
         arguments?.let { bundle ->
             if (bundle.containsKey(KEY_ADDRESS)) {
-                viewModel.setChoosed(bundle.get(KEY_ADDRESS) as AddressModel)
+                viewModel.selectAddress(
+                    addressModel = bundle.get(KEY_ADDRESS) as AddressModel,
+                    forceQuery = true
+                )
             }
         }
 
@@ -242,19 +255,19 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         }
 
         requireActivity()
-                .onBackPressedDispatcher
-                .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        //Close this fragment only if state is 0 (bottom card visible)
-                        if (cardBottom.isVisible()) {
-                            findNavController().navigateUp()
-                        } else {
-                            //Else show bottom card
-                            viewModel.setViewType(AddressViewModel.ViewType.BOTTOM_CARD)
-                        }
+            .onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    //Close this fragment only if state is 0 (bottom card visible)
+                    if (cardBottom.isVisible()) {
+                        findNavController().navigateUp()
+                    } else {
+                        //Else show bottom card
+                        viewModel.setViewType(AddressViewModel.ViewType.BOTTOM_CARD)
                     }
                 }
-                )
+            }
+            )
 
         observeViewModel()
     }
@@ -293,10 +306,17 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         viewModel.address.observe(viewLifecycleOwner, Observer {
             textAddress.isEnabled = true
             textAddress.text = it.value
-//            etAddress.setText(it.value)
+            etAddress.applyUnwatchable(addressWatcher) {
+                setText(it.value)
+                setSelection(it.value.length)
+            }
             if (it.lat != null && it.lng != null) {
                 textCoordinates.isEnabled = true
-                val coordinatesText = getString(R.string.text_coordinates_placeholder, it.lat.toString(), it.lng.toString())
+                val coordinatesText = getString(
+                    R.string.text_coordinates_placeholder,
+                    it.lat.toString(),
+                    it.lng.toString()
+                )
                 textCoordinates.text = coordinatesText
                 myLocationOverlay?.disableFollowLocation()
                 btnCopy.visible()
@@ -359,10 +379,20 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             isFollowEnabled?.let { enabled ->
 
                 if (enabled) {
-                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.blueMain), PorterDuff.Mode.SRC_IN)
+                    btnGeoSwitch.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.blueMain
+                        ), PorterDuff.Mode.SRC_IN
+                    )
                     myLocationOverlay?.enableFollowLocation()
                 } else {
-                    btnGeoSwitch.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black), PorterDuff.Mode.SRC_IN)
+                    btnGeoSwitch.setColorFilter(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.black
+                        ), PorterDuff.Mode.SRC_IN
+                    )
                     myLocationOverlay?.disableFollowLocation()
 
                     val point = viewModel.address.value
@@ -381,7 +411,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     //Configure map view
     private fun setMap(mapView: MapView) {
-        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        Configuration.getInstance()
+            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapView.setMultiTouchControls(true)
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
@@ -389,7 +420,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
+        myLocationOverlay?.setDirectionArrow(
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_map_static
+            )?.toBitmap(),
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap()
+        )
 
 
         if (viewModel.address.value == null) {
@@ -455,13 +492,15 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     //Suggestion RecyclerView callback
     override fun onSuggestionClicked(data: AddressModel) {
         //Set selected suggestion to VM
-        viewModel.setChoosed(data)
+        viewModel.selectAddress(data)
     }
 
     override fun onSuggestionLongClicked(data: AddressModel) {
         //Set selected suggestion to EditText for completion
-        etAddress.setText(data.value)
-        etAddress.setSelection(data.value.length)
+        viewModel.selectAddress(
+            addressModel = data,
+            forceSelection = true
+        )
     }
 
     companion object {
