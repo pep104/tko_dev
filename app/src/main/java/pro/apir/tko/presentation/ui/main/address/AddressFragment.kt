@@ -431,14 +431,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_map_static
-            )?.toBitmap(),
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap()
-        )
-
+        myLocationOverlay?.setCustomLocationMarkers()
 
         if (viewModel.address.value == null) {
             myLocationOverlay?.enableFollowLocation()

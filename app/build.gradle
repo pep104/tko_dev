@@ -152,7 +152,7 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:4.3.0'
 
     //OSM
-    implementation 'org.osmdroid:osmdroid-android:6.1.5'
+    implementation 'org.osmdroid:osmdroid-android:6.1.10'
 
     //Dexter
     implementation 'com.karumi:dexter:6.0.1'
