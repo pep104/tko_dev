@@ -111,6 +111,11 @@ class AddressInteractorImpl @Inject constructor(
             }
         }
 
+    override suspend fun getAddressByLocation(locationModel: LocationModel): Resource<List<AddressModel>>  = withContext(dispatcher) {
+        //TODO increase radius if result is empty or level is not proper?
+        addressRepository.getAddressByLocation(locationModel, 10)
+    }
+
     private fun AddressModel.removeLocationPrefix() =
         this.copy(
             value = this.value.substringLocationPrefix() ?: this.value,

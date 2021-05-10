@@ -2,6 +2,7 @@ package pro.apir.tko.domain.interactors.address
 
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.domain.model.AddressModel
+import pro.apir.tko.domain.model.LocationModel
 
 /**
  * Created by antonsarmatin
@@ -15,5 +16,8 @@ interface AddressInteractor {
     suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>>
 
     suspend fun getAddressDetailed(addressModel: AddressModel): Resource<AddressModel>
+
+    suspend fun getAddressByLocation(locationModel: LocationModel): Resource<List<AddressModel>>
+
 
 }

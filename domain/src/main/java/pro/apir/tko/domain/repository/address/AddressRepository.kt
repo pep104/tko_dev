@@ -15,4 +15,6 @@ interface AddressRepository {
 
     suspend fun getAddressDetailed(query: String): Resource<List<AddressModel>>
 
+    suspend fun getAddressByLocation(locationModel: LocationModel, radius: Int): Resource<List<AddressModel>>
+
 }
