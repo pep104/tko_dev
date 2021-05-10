@@ -1,6 +1,5 @@
 package pro.apir.tko.presentation.ui.main.address
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -21,7 +20,6 @@ import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.address.AddressSuggestionRequester
 import pro.apir.tko.presentation.utils.geoPointFromLocationModel
-import kotlin.system.measureNanoTime
 
 /**
  * Created by Антон Сарматин
@@ -147,46 +145,40 @@ class AddressViewModel @AssistedInject constructor(
 
     fun processInput(input: String) {
         viewModelScope.launch(Dispatchers.Default) {
-            val time = measureNanoTime {
-
-                if (input.isNullOrBlank()) {
-                    _errorCoordinates.postValue(false)
+            if (input.isNullOrBlank()) {
+                _errorCoordinates.postValue(false)
+            } else {
+                val divider = ','
+                val dot = '.'
+                val inputSolid = input.replace(" ", "")
+                val coordinates = inputSolid.split(divider)
+                if (coordinates.size != 2) {
+                    _errorCoordinates.postValue(true)
                 } else {
-                    val divider = ','
-                    val dot = '.'
-                    val inputSolid = input.replace(" ", "")
-                    val coordinates = inputSolid.split(divider)
-                    if (coordinates.size != 2) {
-                        _errorCoordinates.postValue(true)
-                    } else {
-                        _errorCoordinates.postValue(false)
-                        val latString = coordinates[0]
-                        val lonString = coordinates[1]
+                    _errorCoordinates.postValue(false)
+                    val latString = coordinates[0]
+                    val lonString = coordinates[1]
 
-                        val latDouble = latString.toDoubleOrNull()
-                        val lonDouble = lonString.toDoubleOrNull()
+                    val latDouble = latString.toDoubleOrNull()
+                    val lonDouble = lonString.toDoubleOrNull()
 
-                        if (latDouble != null && lonDouble != null) {
-                            when {
-                                latDouble in -90.0..90.0 && lonDouble in -180.0..180.0 -> {
-                                    _errorCoordinates.postValue(false)
-                                    updateCoordinates(latDouble, lonDouble)
-                                }
-                                else -> {
-                                    _errorCoordinates.postValue(true)
-                                }
+                    if (latDouble != null && lonDouble != null) {
+                        when {
+                            latDouble in -90.0..90.0 && lonDouble in -180.0..180.0 -> {
+                                _errorCoordinates.postValue(false)
+                                updateCoordinates(latDouble, lonDouble)
                             }
-
-                        } else {
-                            _errorCoordinates.postValue(true)
+                            else -> {
+                                _errorCoordinates.postValue(true)
+                            }
                         }
 
+                    } else {
+                        _errorCoordinates.postValue(true)
                     }
+
                 }
-
-
             }
-            Log.e("mask", "time: $time")
         }
     }
 
