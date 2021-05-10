@@ -65,6 +65,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     override fun handleFailure() = viewModel.failure
 
+    private lateinit var textTitle: TextView
+
     private lateinit var cardBottom: CardView
     private lateinit var cardSearch: CardView
     private lateinit var cardCoordinates: CardView
@@ -82,6 +84,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     private lateinit var btnCopy: ImageView
     private lateinit var btnClearAddress: ImageView
 
+    private lateinit var textAddressCoordinates: TextView
     private lateinit var etCoordinates: EditText
     private lateinit var btnClearCoordinates: ImageView
     private lateinit var dividerCoordinatesEt: View
@@ -175,6 +178,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textTitle = view.title
+
         cardBottom = view.cardBottom
         cardSearch = view.cardSearch
         cardCoordinates = view.cardCoordinates
@@ -195,6 +200,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         btnCopy = view.btnCopy
 
         //Coordinates card
+        textAddressCoordinates = view.textCoordinatesAddressCard
         etCoordinates = view.etCoordinatesCard
         btnClearCoordinates = view.btnClearCoordinates
         dividerCoordinatesEt = view.dividerCoordinatesEt
@@ -310,6 +316,10 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 setText(it.value)
                 setSelection(it.value.length)
             }
+
+            textAddressCoordinates.isEnabled = true
+            textAddressCoordinates.text = it.value
+
             if (it.lat != null && it.lng != null) {
                 textCoordinates.isEnabled = true
                 val coordinatesText = getString(
@@ -326,13 +336,12 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 textCoordinates.text = getString(R.string.text_coordinates_not_found)
                 etCoordinates.setText("")
             }
-            btnEditCoordinates.visible()
         })
 
         viewModel.viewType.observe(viewLifecycleOwner, Observer {
             removeCoordinatesMaskedTextListener()
             mapView.removeMapListener(mapListener)
-
+            textTitle.text = getString(R.string.text_address_title)
             when (it) {
                 AddressViewModel.ViewType.BOTTOM_CARD -> {
                     etAddress.removeTextChangedListener(addressWatcher)
@@ -357,10 +366,12 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
                 }
                 AddressViewModel.ViewType.LOCATION_COORDINATES -> {
+                    textTitle.text = getString(R.string.text_address_title_coordinates)
                     mapView.addMapListener(mapListener)
                     btnSave.invisible()
                     cardBottom.invisible()
                     cardCoordinates.visible()
+                    //FIXME user location for null coordinates
                     etCoordinates.setText(textCoordinates.text)
                     etCoordinates.hint = textCoordinates.text
                     setCoordinatesMaskedTextListener()

@@ -133,16 +133,42 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/textHeaderCoordinatesCard"
+                    android:id="@+id/textHeaderCoordinatesAddressCard"
+                    style="@style/TextAddressHeaders"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
-                    android:text="@string/text_coordinates"
-                    android:textColor="#99000000"
-                    android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:text="@string/text_address"/>
+
+                <TextView
+                    android:id="@+id/textCoordinatesAddressCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/text_coordinates_choose_placeholder"
+                    android:textColor="@color/selector_text_address"
+                    app:layout_constraintTop_toBottomOf="@id/textHeaderCoordinatesAddressCard"
+                    android:textSize="16sp"/>
+
+                <TextView
+                    android:id="@+id/textHeaderCoordinatesCard"
+                    style="@style/TextAddressHeaders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="11dp"
+                    android:text="@string/text_coordinates"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/textCoordinatesAddressCard" />
 
                 <EditText
                     android:id="@+id/etCoordinatesCard"
@@ -342,7 +368,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_edit"
-                    android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/btnCopy"
                     app:tint="@color/blueDark" />
@@ -377,7 +402,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Уточнить адрес"
+        android:text="@string/text_address_title"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/btnBack"
