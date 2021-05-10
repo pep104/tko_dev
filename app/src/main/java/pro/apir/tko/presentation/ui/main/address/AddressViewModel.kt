@@ -1,6 +1,5 @@
 package pro.apir.tko.presentation.ui.main.address
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -10,30 +9,32 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
-import pro.apir.tko.data.framework.manager.location.LocationManager
+import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.di.ViewModelAssistedFactory
-import pro.apir.tko.domain.interactors.address.AddressInteractor
+import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
+import pro.apir.tko.presentation.utils.address.AddressSuggestionRequester
 import pro.apir.tko.presentation.utils.geoPointFromLocationModel
-import kotlin.system.measureNanoTime
 
 /**
  * Created by Антон Сарматин
  * Date: 22.01.2020
  * Project: tko-android
  */
-class AddressViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                   private val addressInteractor: AddressInteractor,
-                                                   private val locationManager: LocationManager) : BaseViewModel() {
+class AddressViewModel @AssistedInject constructor(
+    @Assisted
+    private val handle: SavedStateHandle,
+    private val addressRequester: AddressSuggestionRequester,
+    private val locationManager: LocationManager
+) : BaseViewModel() {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<AddressViewModel>
-
-    private var queryJob: Job? = null
 
     private var addressCoordinatesJob: Job? = null
 
@@ -58,7 +59,7 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     //Map
 
-    private val _isFollowEnabled = handle.getLiveData<Boolean>("isFollowEnabled", false)
+    private val _isFollowEnabled = handle.getLiveData("isFollowEnabled", false)
     val isFollowEnabled: LiveData<Boolean>
         get() = _isFollowEnabled
 
@@ -89,6 +90,24 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
             viewModelScope.launch {
                 _lastPosition = geoPointFromLocationModel(locationManager.getCurrentLocation())
             }
+
+        viewModelScope.launch {
+            addressRequester.suggestions.collect { resource ->
+                resource.onSuccess {
+                    _suggestions.postValue(it)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            addressRequester.selectedAddress.collect {
+                when (it) {
+                    is AddressSuggestionRequester.SuggestionResult.Final -> setFinalAddress(it.model)
+                    is AddressSuggestionRequester.SuggestionResult.Partial -> setPartialAddress(it.model)
+                }
+            }
+        }
+
     }
 
     //FUNCTIONS
@@ -98,50 +117,26 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
     }
 
     fun query(query: String) {
-        if (query.length > 2) {
-            queryJob?.cancel()
-            viewModelScope.launch {
-                delay(300)
-                Log.e("http","query: $query")
-                addressInteractor.getAddressSuggestions(query).fold(::handleFailure) {
-                    _suggestions.postValue(it)
-                }
-            }
-        }
+        addressRequester.query(query)
     }
 
-    fun setChoosed(addressModel: AddressModel) {
-        if (addressModel.lat != null && addressModel.lng != null) {
-           setAddress(addressModel)
-        } else {
-            fetchDetailedTest(addressModel)
-        }
+    fun selectAddress(
+        addressModel: AddressModel,
+        forceSelection: Boolean = false,
+        forceQuery: Boolean = false
+    ) {
+        addressRequester.select(
+            addressModel = addressModel,
+            forceSelection = forceSelection,
+            forceQuery = forceQuery
+        )
     }
 
-    private fun fetchDetailed(addressModel: AddressModel) {
-        queryJob?.cancel()
-        viewModelScope.launch() {
-            addressInteractor.getAddressDetailed(addressModel.value).fold({}, {
-                if (it.isNotEmpty() && it.first().lat != null && it.first().lng != null) {
-                    setAddress(it.first())
-                } else {
-                    //Зациклится же? Или так надо?
-                    setChoosed(addressModel)
-                }
-            })
-        }
+    private fun setPartialAddress(addressModel: AddressModel) {
+        _address.postValue(addressModel)
     }
 
-    private fun fetchDetailedTest(addressModel: AddressModel) {
-        queryJob?.cancel()
-        viewModelScope.launch {
-            addressInteractor.getAddressDetailed(addressModel).fold({},{
-                setAddress(it)
-            })
-        }
-    }
-
-    private fun setAddress(addressModel: AddressModel){
+    private fun setFinalAddress(addressModel: AddressModel) {
         _address.postValue(addressModel)
         _viewType.postValue(ViewType.BOTTOM_CARD)
     }
@@ -150,60 +145,55 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     fun processInput(input: String) {
         viewModelScope.launch(Dispatchers.Default) {
-            val time = measureNanoTime {
-
-                if (input.isNullOrBlank()) {
-                    _errorCoordinates.postValue(false)
+            if (input.isNullOrBlank()) {
+                _errorCoordinates.postValue(false)
+            } else {
+                val divider = ','
+                val dot = '.'
+                val inputSolid = input.replace(" ", "")
+                val coordinates = inputSolid.split(divider)
+                if (coordinates.size != 2) {
+                    _errorCoordinates.postValue(true)
                 } else {
-                    val divider = ','
-                    val dot = '.'
-                    val inputSolid = input.replace(" ", "")
-                    val coordinates = inputSolid.split(divider)
-                    if (coordinates.size != 2) {
-                        _errorCoordinates.postValue(true)
-                    } else {
-                        _errorCoordinates.postValue(false)
-                        val latString = coordinates[0]
-                        val lonString = coordinates[1]
+                    _errorCoordinates.postValue(false)
+                    val latString = coordinates[0]
+                    val lonString = coordinates[1]
 
-                        val latDouble = latString.toDoubleOrNull()
-                        val lonDouble = lonString.toDoubleOrNull()
+                    val latDouble = latString.toDoubleOrNull()
+                    val lonDouble = lonString.toDoubleOrNull()
 
-                        if (latDouble != null && lonDouble != null) {
-                            when {
-                                latDouble in -90.0..90.0 && lonDouble in -180.0..180.0 -> {
-                                    _errorCoordinates.postValue(false)
-                                    updateCoordinates(latDouble, lonDouble)
-                                }
-                                else -> {
-                                    _errorCoordinates.postValue(true)
-                                }
+                    if (latDouble != null && lonDouble != null) {
+                        when {
+                            latDouble in -90.0..90.0 && lonDouble in -180.0..180.0 -> {
+                                _errorCoordinates.postValue(false)
+                                updateCoordinates(latDouble, lonDouble)
                             }
-
-                        } else {
-                            _errorCoordinates.postValue(true)
+                            else -> {
+                                _errorCoordinates.postValue(true)
+                            }
                         }
 
+                    } else {
+                        _errorCoordinates.postValue(true)
                     }
+
                 }
-
-
             }
-            Log.e("mask","time: $time")
         }
     }
 
-    fun updateCoordinatesOnDragEvent(lat: Double, lon: Double){
+    fun updateCoordinatesOnDragEvent(lat: Double, lon: Double) {
         updateCoordinates(lat, lon)
     }
 
+    //TODO to requester
     private fun updateCoordinates(lat: Double, lon: Double) {
         addressCoordinatesJob?.cancel()
         addressCoordinatesJob = viewModelScope.launch {
             delay(400)
             val addressModel = _address.value
             if (addressModel != null && (addressModel.lat != lat || addressModel.lng != lon)) {
-                val newAddressModel = AddressModel(addressModel.value, addressModel.unrestrictedValue, lat, lon)
+                val newAddressModel = addressModel.copy(lat = lat, lng = lon)
                 _address.postValue(newAddressModel)
             }
         }
@@ -237,6 +227,11 @@ class AddressViewModel @AssistedInject constructor(@Assisted private val handle:
 
     }
 
+
+    override fun onCleared() {
+        super.onCleared()
+        addressRequester.destroy()
+    }
 
     enum class ViewType {
         BOTTOM_CARD,

@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import pro.apir.tko.core.types.Dictionary
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.di.ViewModelAssistedFactory
+import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
@@ -32,6 +33,7 @@ import java.io.File
  */
 class InventoryEditViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
                                                          private val inventoryInteractor: InventoryInteractor,
+                                                         private val addressInteractor: AddressInteractor,
                                                          private val dictionariesManager: OptionsDictionariesManager) : BaseViewModel(handle) {
 
     @AssistedInject.Factory
@@ -123,48 +125,59 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
 
 
     fun setEditData(data: ContainerAreaShortModel?) {
-        if (data != null) {
-            _isNewMode.value = false
-            _id = data.id
+        viewModelScope.launch {
+            if (data != null) {
+                _isNewMode.value = false
+                _id = data.id
 
-            //MAP MODEL TO FIELDS
-            area = data.area
-            registryNumber = data.registryNumber
-            data.photos?.let {
-                _images.value = it.map { photo -> PhotoWrapper(photo) }.toMutableList()
-            }
-            data.location?.let {
-                _address.value = AddressModel(it, "", data.coordinates?.lat, data.coordinates?.lng)
-            }
+                //MAP MODEL TO FIELDS
+                area = data.area
+                registryNumber = data.registryNumber
+                data.photos?.let {
+                    _images.value = it.map { photo -> PhotoWrapper(photo) }.toMutableList()
+                }
+                data.location?.let { value ->
+                    addressInteractor.getAddressDetailed(value).fold(
+                            onSuccess = { addresses ->
+                                addresses.firstOrNull()?.let {
+                                    _address.value = it.copy(lat = data.coordinates?.lat, lng = data.coordinates?.lng)
+                                }
+                                Unit
+                            },
+                            onFailure = {
+                                handleFailure(it)
+                            }
+                    )
+                }
+                data.access?.let {
+                    accessOptions.value?.let { opt -> access = opt.getPositionByKey(it) }
+                }
 
-            data.access?.let {
-                accessOptions.value?.let { opt -> access = opt.getPositionByKey(it) }
-            }
+                data.fence?.let {
+                    fenceOptions.value?.let { opt -> fence = opt.getPositionByKey(it) }
+                }
 
-            data.fence?.let {
-                fenceOptions.value?.let { opt -> fence = opt.getPositionByKey(it) }
-            }
+                data.coverage?.let {
+                    coverageOptions.value?.let { opt -> coverage = opt.getPositionByKey(it) }
+                }
 
-            data.coverage?.let {
-                coverageOptions.value?.let { opt -> coverage = opt.getPositionByKey(it) }
-            }
+                data.kgo?.let {
+                    kgoOptions.value?.let { opt -> kgo = opt.getPositionByKey(it) }
+                }
 
-            data.kgo?.let {
-                kgoOptions.value?.let { opt -> kgo = opt.getPositionByKey(it) }
-            }
+                data.hasCover?.let {
+                    hasCoverOptions.value?.let { opt -> hasCover = opt.getPositionByKey(it.toString().toUpperCase()) }
+                }
 
-            data.hasCover?.let {
-                hasCoverOptions.value?.let { opt -> hasCover = opt.getPositionByKey(it.toString().toUpperCase()) }
-            }
+                data.infoPlate?.let {
+                    infoPlateOptions.value?.let { opt -> infoPlate = opt.getPositionByKey(it.toString().toUpperCase()) }
+                }
 
-            data.infoPlate?.let {
-                infoPlateOptions.value?.let { opt -> infoPlate = opt.getPositionByKey(it.toString().toUpperCase()) }
-            }
+                data.containers?.let {
+                    _containers.value = it.map { item -> Container(item) }.toMutableList()
+                }
 
-            data.containers?.let {
-                _containers.value = it.map { item -> Container(item) }.toMutableList()
             }
-
         }
     }
 

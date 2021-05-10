@@ -10,13 +10,13 @@ import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
+import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.ui.main.list.BaseListViewModel

@@ -1,4 +1,4 @@
-package pro.apir.tko.data.framework.manager.location
+package pro.apir.tko.domain.manager
 
 import kotlinx.coroutines.flow.Flow
 import pro.apir.tko.domain.model.LocationModel

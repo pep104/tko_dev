@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
+import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -41,24 +42,24 @@ fun View.gone() {
 fun View.goneWithFade() {
     val view = this
     view.animate()
-            .alpha(0f)
-            .setDuration(200L)
-            .withEndAction {
-                view.gone()
-                view.alpha = 1f
-            }
+        .alpha(0f)
+        .setDuration(200L)
+        .withEndAction {
+            view.gone()
+            view.alpha = 1f
+        }
 
 }
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int): View =
-        LayoutInflater.from(context).inflate(layoutRes, this, false)
+    LayoutInflater.from(context).inflate(layoutRes, this, false)
 
 
 fun ImageView.loadFromUrl(url: String) =
-        Glide.with(this.context.applicationContext)
-                .load(url)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(this)!!
+    Glide.with(this.context.applicationContext)
+        .load(url)
+        .transition(DrawableTransitionOptions.withCrossFade())
+        .into(this)!!
 
 fun EditText.getTextValue(): String {
     return this.text.toString().trim()
@@ -83,11 +84,11 @@ fun Activity?.toast(text: String) {
 fun AppCompatActivity.alert(msg: String?) {
     try {
         val dialog = AlertDialog.Builder(this)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .create()
+            .setMessage(msg)
+            .setPositiveButton(android.R.string.ok) { dialog, which ->
+                dialog.dismiss()
+            }
+            .create()
         dialog.show()
     } catch (e: Exception) {
 
@@ -97,11 +98,11 @@ fun AppCompatActivity.alert(msg: String?) {
 fun Fragment.alert(msg: String?) {
     try {
         val dialog = AlertDialog.Builder(context!!)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .create()
+            .setMessage(msg)
+            .setPositiveButton(android.R.string.ok) { dialog, which ->
+                dialog.dismiss()
+            }
+            .create()
         dialog.show()
     } catch (e: Exception) {
 
@@ -117,7 +118,8 @@ fun View.afterLayout(what: () -> Unit) {
     if (isLaidOut) {
         what.invoke()
     } else {
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 viewTreeObserver.removeOnGlobalLayoutListener(this)
                 what.invoke()
@@ -176,7 +178,8 @@ fun EditText.placeCursorToEnd() {
 
 fun View.addViewObserver(function: () -> Unit) {
     val view = this
-    view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+    view.viewTreeObserver.addOnGlobalLayoutListener(object :
+        ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
             view.viewTreeObserver.removeOnGlobalLayoutListener(this)
             function.invoke()
@@ -186,12 +189,12 @@ fun View.addViewObserver(function: () -> Unit) {
 
 /** Combination of all flags required to put activity into immersive mode */
 const val FLAGS_FULLSCREEN =
-        View.SYSTEM_UI_FLAG_LOW_PROFILE or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+    View.SYSTEM_UI_FLAG_LOW_PROFILE or
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
 /** Milliseconds used for UI animations */
 const val ANIMATION_FAST_MILLIS = 50L
@@ -212,10 +215,11 @@ fun ImageButton.simulateClick(delay: Long = ANIMATION_FAST_MILLIS) {
 fun View.padWithDisplayCutout() {
 
     fun doPadding(cutout: DisplayCutout) = setPadding(
-            cutout.safeInsetLeft,
-            cutout.safeInsetTop,
-            cutout.safeInsetRight,
-            cutout.safeInsetBottom)
+        cutout.safeInsetLeft,
+        cutout.safeInsetTop,
+        cutout.safeInsetRight,
+        cutout.safeInsetBottom
+    )
 
     // Apply padding using the display cutout designated "safe area"
     rootWindowInsets?.displayCutout?.let { doPadding(it) }
@@ -230,8 +234,9 @@ fun View.padWithDisplayCutout() {
 fun AlertDialog.showImmersive() {
     // Set the dialog to not focusable
     window?.setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+    )
 
     // Make sure that the dialog's window is in full screen
     window?.decorView?.systemUiVisibility = FLAGS_FULLSCREEN
@@ -243,3 +248,9 @@ fun AlertDialog.showImmersive() {
     window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 }
 
+fun EditText.applyUnwatchable(watcher: TextWatcher, apply: EditText.() -> Unit): EditText {
+    removeTextChangedListener(watcher)
+    apply()
+    addTextChangedListener(watcher)
+    return this
+}

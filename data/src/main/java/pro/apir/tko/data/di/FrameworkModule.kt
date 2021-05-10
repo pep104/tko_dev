@@ -12,7 +12,6 @@ import pro.apir.tko.core.constant.SUGGESTION_DETAILED_URL
 import pro.apir.tko.core.constant.SUGGESTION_URL
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManagerImpl
-import pro.apir.tko.data.framework.manager.location.LocationManager
 import pro.apir.tko.data.framework.manager.location.LocationManagerImpl
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManagerImpl
@@ -29,6 +28,7 @@ import pro.apir.tko.data.framework.network.interceptor.TokenInterceptor
 import pro.apir.tko.data.framework.room.AppDatabase
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
+import pro.apir.tko.domain.manager.LocationManager
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit

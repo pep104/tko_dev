@@ -24,13 +24,13 @@ sealed class Resource<out R> {
      * Returns true if this is a Right, false otherwise.
      * @see Success
      */
-    val isRight get() = this is Success<R>
+    val isSuccess get() = this is Success<R>
 
     /**
      * Returns true if this is a Left, false otherwise.
      * @see Error
      */
-    val isLeft get() = this is Error
+    val isError get() = this is Error
 
     /**
      * Creates a Left type.
@@ -50,13 +50,14 @@ sealed class Resource<out R> {
      * @see Success
      */
     inline fun fold(
-            crossinline onFailure: (Failure) -> Any,
-            crossinline onSuccess: (R) -> Any
-    ): Any =
-            when (this) {
-                is Error -> onFailure(failure)
-                is Success -> onSuccess(data)
-            }
+        onFailure: (Failure) -> Unit,
+        onSuccess: (R) -> Unit
+    ) {
+        when (this) {
+            is Error -> onFailure(failure)
+            is Success -> onSuccess(data)
+        }
+    }
 
 }
 
@@ -73,10 +74,10 @@ fun <A, B, C> ((A) -> B).c(f: (B) -> C): (A) -> C = {
  * to operate on. If it is Left, operations like map, flatMap, ... return the Left value unchanged.
  */
 fun <T, R> Resource<R>.flatMap(fn: (R) -> Resource<T>): Resource<T> =
-        when (this) {
-            is Error -> Error(failure)
-            is Success -> fn(data)
-        }
+    when (this) {
+        is Error -> Error(failure)
+        is Success -> fn(data)
+    }
 
 /**
  * Right-biased map() FP convention which means that Right is assumed to be the default case
@@ -95,10 +96,16 @@ fun <R> Resource<R>.mapFailure(fn: (Failure) -> Failure): Resource<R> {
  *  Right(12).getOrElse(17) RETURNS 12 and Left(12).getOrElse(17) RETURNS 17
  */
 fun <R> Resource<R>.getOrElse(value: R): R =
-        when (this) {
-            is Error -> value
-            is Success -> data
-        }
+    when (this) {
+        is Error -> value
+        is Success -> data
+    }
+
+fun <R> Resource<R>.getOrNull(): R? =
+    when (this) {
+        is Error -> null
+        is Success -> data
+    }
 
 fun <R> Resource<R>.onSuccess(fn: (R) -> Unit) {
     when (this) {

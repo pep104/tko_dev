@@ -14,12 +14,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import pro.apir.tko.data.BuildConfig
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
+import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.LocationModel
+import pro.apir.tko.domain.model.toModel
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class LocationManagerImpl @Inject constructor(private val context: Context, private val preferencesManager: PreferencesManager) : LocationManager {
+class LocationManagerImpl @Inject constructor(private val context: Context, private val preferencesManager: PreferencesManager) :
+    LocationManager {
 
     private val KEY_LON = "lllon"
     private val KEY_LAT = "lllat"
@@ -52,11 +55,9 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
             override fun onLocationResult(result: LocationResult?) {
                 locationClient.removeLocationUpdates(this)
                 result?.let { locationResult ->
-                    val location = locationResult.lastLocation
-                    location?.let {
-                        val locationModel = LocationModel(lat = it.latitude, lon = it.longitude)
-                        saveLastLocation(locationModel)
-                        continuation.resume(locationModel)
+                    locationResult.lastLocation?.let {
+                        saveLastLocation(it.toModel())
+                        continuation.resume(it.toModel())
                     }
                 }
             }
@@ -81,13 +82,13 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult?) {
                 result?.lastLocation?.let {
-                    offer(LocationModel(lat = it.latitude, lon = it.longitude))
+                    offer(it.toModel())
                 }
             }
         }
 
         locationClient.lastLocation.addOnSuccessListener {location ->
-            location?.let { offer(LocationModel(lat = it.latitude, lon = it.longitude)) }
+            location?.let { offer(location.toModel()) }
         }
         withContext(Dispatchers.Main) {
             locationClient.requestLocationUpdates(flowRequest, locationCallback, Looper.myLooper())
