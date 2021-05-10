@@ -2,9 +2,7 @@ package pro.apir.tko.presentation.utils.address
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.data.getOrElse
 import pro.apir.tko.domain.interactors.address.AddressInteractor
@@ -26,25 +24,13 @@ class AddressSuggestionRequester @Inject constructor(
 
     private var queryJob: Job? = null
 
-    private val _query = MutableStateFlow<Query>(Query.empty())
+    private var _query: Query = Query.empty()
 
     private val _suggestions = MutableSharedFlow<Resource<List<AddressModel>>>()
     val suggestions = _suggestions.asSharedFlow()
 
     private val _selectedAddress = MutableSharedFlow<SuggestionResult>()
     val selectedAddress = _selectedAddress.asSharedFlow()
-
-
-    init {
-        scope.launch {
-            _query.collect {
-                when (it) {
-                    is Query.Model -> fetchSuggestions(it.addressModel.value)
-                    is Query.Text -> fetchSuggestions(it.query)
-                }
-            }
-        }
-    }
 
 
     fun select(
@@ -64,16 +50,16 @@ class AddressSuggestionRequester @Inject constructor(
 
     fun query(query: String) {
         scope.launch {
-            _query.emit(query.toQuery())
+            fetchSuggestions(query.toQuery())
         }
     }
 
-    private fun fetchSuggestions(query: String) {
-        if (query.length > QUERY_LENGTH_MIN_LIMIT) {
+    private fun fetchSuggestions(query: Query) {
+        if (query.get().length > QUERY_LENGTH_MIN_LIMIT) {
             queryJob?.cancel()
             queryJob = scope.launch {
                 delay(DEBOUNCE_DELAY)
-                val suggestionsResult = addressInteractor.getAddressSuggestions(query)
+                val suggestionsResult = addressInteractor.getAddressSuggestions(query.get())
                 _suggestions.emit(suggestionsResult)
             }
         }
@@ -86,7 +72,7 @@ class AddressSuggestionRequester @Inject constructor(
 
     private suspend fun setPartialResult(addressModel: AddressModel) {
         _selectedAddress.emit(SuggestionResult.Partial(addressModel))
-        _query.emit(addressModel.toQuery())
+        fetchSuggestions(addressModel.toQuery())
     }
 
     private suspend fun setFinalAddress(addressModel: AddressModel) {
@@ -98,7 +84,7 @@ class AddressSuggestionRequester @Inject constructor(
     }
 
     private fun checkConfirmation(addressModel: AddressModel): Boolean {
-        val current = _query.value
+        val current = _query
         return when {
             current is Query.Model && current.addressModel == addressModel -> {
                 true
@@ -125,8 +111,15 @@ class AddressSuggestionRequester @Inject constructor(
     }
 
     sealed class Query {
-        data class Model(val addressModel: AddressModel) : Query()
-        data class Text(val query: String) : Query()
+
+        abstract fun get(): String
+
+        data class Model(val addressModel: AddressModel) : Query() {
+            override fun get() = addressModel.value
+        }
+        data class Text(val query: String) : Query() {
+            override fun get() = query
+        }
 
         companion object {
             fun empty() = Text("")
