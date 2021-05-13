@@ -33,8 +33,8 @@ android {
         applicationId "pro.apir.tko"
         minSdkVersion 22
         targetSdkVersion 30
-        versionCode 17
-        versionName "1.1-DEV-TKO-34"
+        versionCode 18
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -184,11 +184,11 @@ dependencies {
 
 android.applicationVariants.all { variant ->
     variant.outputs.all {
-        def product = applicationId
         def versionName = variant.versionName
         def versionCode = variant.versionCode
         def buildType = variant.buildType.name
-        outputFileName = "${product}-${versionName}-${versionCode}-${buildType}.apk"
+        def flavor = variant.getFlavorName()
+        outputFileName = "${project.rootProject.name}-${versionName}-${versionCode}-${flavor}-${buildType}.apk"
     }
 }
 
