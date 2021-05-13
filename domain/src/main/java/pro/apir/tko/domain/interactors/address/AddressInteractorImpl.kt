@@ -1,10 +1,13 @@
 package pro.apir.tko.domain.interactors.address
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import pro.apir.tko.core.data.Resource
+import pro.apir.tko.core.data.asResource
 import pro.apir.tko.core.data.map
+import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.utils.LocationUtils
 import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.AddressModel
@@ -111,9 +114,57 @@ class AddressInteractorImpl @Inject constructor(
             }
         }
 
-    override suspend fun getAddressByLocation(locationModel: LocationModel): Resource<List<AddressModel>>  = withContext(dispatcher) {
-        //TODO increase radius if result is empty or level is not proper?
-        addressRepository.getAddressByLocation(locationModel, 10)
+    override suspend fun getAddressByLocation(locationModel: LocationModel): Resource<AddressModel>  = withContext(dispatcher) {
+        var failure: Failure? = null
+        var finalResult: AddressModel? = null
+        var fetchRadius = 20
+        val fetchRadiusStep = 10
+        val fetchRadiusThreshold = 100
+        while (fetchRadius <= fetchRadiusThreshold
+            && (finalResult == null || !finalResult.isContainsHouse)
+            && failure == null){
+            Log.d("!!!","step with r: $fetchRadius, current address: ${finalResult?.value}")
+            val fetchResult = addressRepository.getAddressByLocation(locationModel, fetchRadius).map { it.removeLocationPrefix() }
+            if(fetchResult is Resource.Error){
+                Log.d("!!!","step with r: $fetchRadius is failed")
+                failure = fetchResult.failure
+                break
+            }
+
+            if(fetchResult is Resource.Success){
+                Log.d("!!!","step with r: $fetchRadius is success, found ${fetchResult.data.size} addresses")
+                fetchResult.data.forEach {
+                    Log.d("!!!address", "${it.value} isHoused: ${it.isContainsHouse} house: ${it.house} level: ${it.fiasLevel}")
+                }
+                if(fetchResult.data.isNotEmpty()){
+                    finalResult = fetchResult.data[0]
+                }
+
+                fetchRadius +=fetchRadiusStep
+            }
+        }
+        Log.d("!!!","after step w/ r: $fetchRadius address is: ${finalResult?.value}")
+
+        return@withContext if(finalResult!=null){
+            Resource.Success(finalResult)
+        }else{
+            Resource.Error(failure ?: Failure.Ignore)
+        }
+    }
+
+    override suspend fun getAddressByUser(): Resource<AddressModel> = withContext(dispatcher) {
+        val userLocation = locationManager.getLastLocation() ?: locationManager.getCurrentLocation()
+        val locations = getAddressByLocation(locationModel = userLocation)
+
+        return@withContext when(locations){
+            is Resource.Error -> locations
+            is Resource.Success -> {
+                    locations.data
+                        .copy(isUserLocation = true)
+                        .removeLocationPrefix()
+                        .asResource()
+            }
+        }
     }
 
     private fun AddressModel.removeLocationPrefix() =
@@ -123,5 +174,7 @@ class AddressInteractorImpl @Inject constructor(
                 ?: this.unrestrictedValue
         )
 
+    private fun List<AddressModel>.removeLocationPrefix() =
+        this.map { it.removeLocationPrefix() }
 
 }

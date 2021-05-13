@@ -30,7 +30,9 @@ data class AddressModel(
         val houseTypeFull: String?,
         val house: String?,
         val houseFull: String?,
-        val fiasLevel: Int
+        val fiasLevel: Int,
+
+        val isUserLocation: Boolean = false
 
 ) : Parcelable {
 
@@ -40,7 +42,7 @@ data class AddressModel(
     val isContainsStreet: Boolean
         get() = street != null && fiasLevel >= 7
 
+    // OR - для некоторых адресов level == 7, но дом есть.
     val isContainsHouse: Boolean
-        get() = house != null && fiasLevel >= 8
-
+        get() = house != null || fiasLevel >= 8
 }

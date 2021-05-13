@@ -17,7 +17,9 @@ interface AddressInteractor {
 
     suspend fun getAddressDetailed(addressModel: AddressModel): Resource<AddressModel>
 
-    suspend fun getAddressByLocation(locationModel: LocationModel): Resource<List<AddressModel>>
+    suspend fun getAddressByLocation(locationModel: LocationModel): Resource<AddressModel>
+
+    suspend fun getAddressByUser(): Resource<AddressModel>
 
 
 }

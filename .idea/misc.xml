@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../../layout/custom_preview.xml" value="0.5251282051282051" />
+        <entry key="app/src/main/res/drawable/ic_map_static.xml" value="0.534375" />
+        <entry key="app/src/main/res/layout/fragment_address.xml" value="0.29347826086956524" />
+      </map>
+    </option>
+  </component>
   <component name="EntryPointsManager">
     <list size="1">
       <item index="0" class="java.lang.String" itemvalue="kotlinx.android.parcel.Parcelize" />

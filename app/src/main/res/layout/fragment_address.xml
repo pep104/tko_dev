@@ -246,6 +246,18 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/btnCoordinatesByLocation" />
 
+                <ProgressBar
+                    android:id="@+id/pbAddressCoordinates"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:visibility="invisible"
+                    tools:visibility="visible"
+                    android:indeterminateTint="@color/white"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnSubmitCoordinates"
+                    app:layout_constraintStart_toStartOf="@+id/btnSubmitCoordinates"
+                    app:layout_constraintTop_toTopOf="@id/btnSubmitCoordinates" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
