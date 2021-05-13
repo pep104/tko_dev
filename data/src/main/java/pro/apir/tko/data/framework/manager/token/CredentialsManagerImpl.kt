@@ -1,6 +1,7 @@
 package pro.apir.tko.data.framework.manager.token
 
 import android.util.Log
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import pro.apir.tko.core.constant.KEY_ACCESS_TOKEN
 import pro.apir.tko.core.constant.KEY_REFRESH_TOKEN
@@ -58,6 +59,7 @@ class CredentialsManagerImpl @Inject constructor(private val preferencesManager:
         }
     }
 
+    @Keep
     private data class TokenBody(val exp: Long)
 
 }

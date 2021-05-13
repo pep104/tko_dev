@@ -1,10 +1,12 @@
 package pro.apir.tko.data.mapper
 
 import android.util.Log
+import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import pro.apir.tko.domain.failure.TrackingFailureCode
 
+@Keep
 class TrackingFailureCodeMapperImpl : TrackingFailureCodeMapper {
 
     override fun getFailureFromJSON(json: String?): TrackingFailureCode {
