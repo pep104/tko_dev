@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
+import org.osmdroid.util.GeoPoint
 import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.core.utils.LocationUtils
 import pro.apir.tko.di.ViewModelAssistedFactory
@@ -20,7 +21,6 @@ import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.address.AddressSuggestionRequester
-import pro.apir.tko.presentation.utils.geoPointFromLocationModel
 import kotlin.math.absoluteValue
 
 /**
@@ -85,7 +85,7 @@ class AddressViewModel @AssistedInject constructor(
         set(value) {
             handle.set("bbox", value)
             if (value != null) {
-                locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+                locationManager.saveLocalLocation(LocationModel(value.latitude, value.longitude))
             }
             field = value
         }
@@ -95,10 +95,11 @@ class AddressViewModel @AssistedInject constructor(
 
 
     init {
-        if (_lastPosition == null)
-            viewModelScope.launch {
-                _lastPosition = geoPointFromLocationModel(locationManager.getCurrentLocation())
+        if (lastPosition == null) {
+            locationManager.geLocalLocation()?.let {
+                _lastPosition = GeoPoint(it.lat, it.lon)
             }
+        }
 
         viewModelScope.launch {
             addressRequester.suggestions.collect { resource ->
@@ -260,7 +261,11 @@ class AddressViewModel @AssistedInject constructor(
 
             }
             ViewType.SEARCH -> {
-
+                _address.value?.let {
+                    addressRequester.query(
+                        it.value.substringBeforeLast(',', it.value)
+                    )
+                }
             }
             ViewType.LOCATION_COORDINATES -> {
                 _addressCoordinatesChanger.value = _address.value

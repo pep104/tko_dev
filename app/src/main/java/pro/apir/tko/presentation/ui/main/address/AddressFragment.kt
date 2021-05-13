@@ -93,7 +93,12 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             val lon = mapView.mapCenter.longitude.round(6)
             Log.e("map", "$lat $lon")
             viewModel.updateCoordinatesOnDragEvent(lat, lon)
-            setMapPoint(lat, lon, false)
+            setMapPoint(
+                lat = lat,
+                lng = lon,
+                move = false,
+                center = false
+            )
             removeCoordinatesMaskedTextListener()
             etCoordinates.setText(
                 getString(
@@ -164,6 +169,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             if (bundle.containsKey(KEY_ADDRESS)) {
                 viewModel.selectAddress(
                     addressModel = bundle.get(KEY_ADDRESS) as AddressModel,
+                    forceSelection = true,
                     forceQuery = true
                 )
             } else {
@@ -370,17 +376,16 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     mapView.controller.setCenter(GeoPoint(viewModel.lastPosition))
 
                 viewModel.address.value.withCoordinates { lat, lon ->
-                    setMapPoint(lat, lon)
+                    setMapPoint(lat, lon, false)
                 }
 
 
             }
             AddressViewModel.ViewType.SEARCH -> {
-                etAddress.addTextChangedListener(addressWatcher)
-
                 viewModel.address.value?.let { addressModel ->
                     etAddress.setText(addressModel.value)
                 }
+                etAddress.addTextChangedListener(addressWatcher)
 
                 cardBottom.invisible()
                 btnSave.invisible()
@@ -470,7 +475,11 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapView.setMultiTouchControls(true)
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-        mapView.controller.zoomTo(12.0, 0L)
+        mapView.controller.zoomTo(17.0, 0L)
+
+        viewModel.lastPosition?.let {
+            mapView.controller.setCenter(it)
+        }
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
@@ -507,9 +516,16 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     }
 
     //Set current map point from coordinates
-    private fun setMapPoint(lat: Double, lng: Double, move: Boolean = true) {
+    private fun setMapPoint(
+        lat: Double,
+        lng: Double,
+        move: Boolean = true,
+        center: Boolean = true
+    ) {
         if (move)
             mapView.controller.animateTo(GeoPoint(lat, lng))
+        else if (center)
+            mapView.controller.setCenter(GeoPoint(lat, lng))
 
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)

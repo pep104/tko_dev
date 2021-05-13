@@ -49,14 +49,13 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
 
     @SuppressLint("MissingPermission")
     override suspend fun getCurrentLocation(): LocationModel = suspendCoroutine { continuation ->
-
         val locationClient = LocationServices.getFusedLocationProviderClient(context)
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult?) {
                 locationClient.removeLocationUpdates(this)
                 result?.let { locationResult ->
                     locationResult.lastLocation?.let {
-                        saveLastLocation(it.toModel())
+                        saveLocalLocation(it.toModel())
                         continuation.resume(it.toModel())
                     }
                 }
@@ -65,12 +64,20 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
 
         try {
             CoroutineScope(Dispatchers.Main).launch {
-                locationClient.requestLocationUpdates(singleRequest, locationCallback, Looper.myLooper())
+                locationClient.requestLocationUpdates(singleRequest, locationCallback, Looper.getMainLooper())
             }
         } catch (e: Exception) {
             Log.e("locationSource", "Exception: ${e.message}")
         }
 
+    }
+
+    @SuppressLint("MissingPermission")
+    override suspend fun getLastLocation(): LocationModel? = suspendCoroutine { continuation ->
+        val locationClient = LocationServices.getFusedLocationProviderClient(context)
+        locationClient.lastLocation?.addOnSuccessListener {
+            continuation.resume(it.toModel())
+        }
     }
 
 
@@ -99,12 +106,12 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
 
     }
 
-    override fun saveLastLocation(model: LocationModel) {
+    override fun saveLocalLocation(model: LocationModel) {
         preferencesManager.saveDouble(KEY_LAT, model.lat)
         preferencesManager.saveDouble(KEY_LON, model.lon)
     }
 
-    override fun getLastLocation(): LocationModel? {
+    override fun geLocalLocation(): LocationModel? {
         val lat = preferencesManager.getDouble(KEY_LAT)
         val lon = preferencesManager.getDouble(KEY_LON)
         return if (preferencesManager.isExists(KEY_LAT) && preferencesManager.isExists(KEY_LON)) {

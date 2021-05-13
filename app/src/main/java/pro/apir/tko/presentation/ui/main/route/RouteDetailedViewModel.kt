@@ -61,7 +61,7 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
         set(value) {
             handle.set("bbox", value)
             if (value != null) {
-                locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+                locationManager.saveLocalLocation(LocationModel(value.latitude, value.longitude))
             }
             field = value
         }

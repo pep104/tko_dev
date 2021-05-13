@@ -56,7 +56,7 @@ class AddressInteractorImpl @Inject constructor(
         return@withContext Resource.Success(
             resultList
                 .map { it.removeLocationPrefix() }
-                .sortByDistance(locationManager.getLastLocation())
+                .sortByDistance(locationManager.geLocalLocation())
         )
     }
 
@@ -148,7 +148,7 @@ class AddressInteractorImpl @Inject constructor(
         }
 
     override suspend fun getAddressByUser(): Resource<AddressModel> = withContext(dispatcher) {
-        val userLocation = locationManager.getLastLocation() ?: locationManager.getCurrentLocation()
+        val userLocation = locationManager.getLastLocation() ?: return@withContext Resource.Error(Failure.Ignore)
         val locations = getAddressByLocation(locationModel = userLocation)
 
         return@withContext when (locations) {
