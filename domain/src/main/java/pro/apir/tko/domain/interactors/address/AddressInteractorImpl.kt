@@ -1,6 +1,5 @@
 package pro.apir.tko.domain.interactors.address
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -18,14 +17,14 @@ import javax.inject.Inject
 
 class AddressInteractorImpl @Inject constructor(
     private val addressRepository: AddressRepository,
-    private val locationManager: LocationManager
+    private val locationManager: LocationManager,
 ) : AddressInteractor {
 
     private val dispatcher = Dispatchers.IO
 
     override suspend fun getAddressSuggestions(
         query: String,
-        useLocation: Boolean
+        useLocation: Boolean,
     ): Resource<List<AddressModel>> = withContext(dispatcher) {
 
         val addresses = addressRepository.getAddressSuggestions(query)
@@ -63,7 +62,7 @@ class AddressInteractorImpl @Inject constructor(
 
     private fun mergeAddresses(
         addresses: List<AddressModel>,
-        locationBasedAddresses: List<AddressModel>
+        locationBasedAddresses: List<AddressModel>,
     ): List<AddressModel> =
         arrayListOf<AddressModel>()
             .apply {
@@ -74,7 +73,7 @@ class AddressInteractorImpl @Inject constructor(
 
     private fun List<AddressModel>.sortByDistance(
         location: LocationModel?,
-        isNearest: Boolean = true
+        isNearest: Boolean = true,
     ) =
         if (location != null)
             this.sortedBy {
@@ -114,55 +113,51 @@ class AddressInteractorImpl @Inject constructor(
             }
         }
 
-    override suspend fun getAddressByLocation(locationModel: LocationModel): Resource<AddressModel>  = withContext(dispatcher) {
-        var failure: Failure? = null
-        var finalResult: AddressModel? = null
-        var fetchRadius = 20
-        val fetchRadiusStep = 10
-        val fetchRadiusThreshold = 100
-        while (fetchRadius <= fetchRadiusThreshold
-            && (finalResult == null || !finalResult.isContainsHouse)
-            && failure == null){
-            Log.d("!!!","step with r: $fetchRadius, current address: ${finalResult?.value}")
-            val fetchResult = addressRepository.getAddressByLocation(locationModel, fetchRadius).map { it.removeLocationPrefix() }
-            if(fetchResult is Resource.Error){
-                Log.d("!!!","step with r: $fetchRadius is failed")
-                failure = fetchResult.failure
-                break
-            }
-
-            if(fetchResult is Resource.Success){
-                Log.d("!!!","step with r: $fetchRadius is success, found ${fetchResult.data.size} addresses")
-                fetchResult.data.forEach {
-                    Log.d("!!!address", "${it.value} isHoused: ${it.isContainsHouse} house: ${it.house} level: ${it.fiasLevel}")
-                }
-                if(fetchResult.data.isNotEmpty()){
-                    finalResult = fetchResult.data[0]
+    override suspend fun getAddressByLocation(locationModel: LocationModel): Resource<AddressModel> =
+        withContext(dispatcher) {
+            var failure: Failure? = null
+            var finalResult: AddressModel? = null
+            var fetchRadius = 20
+            val fetchRadiusStep = 10
+            val fetchRadiusThreshold = 100
+            while (fetchRadius <= fetchRadiusThreshold
+                && (finalResult == null || !finalResult.isContainsHouse)
+                && failure == null
+            ) {
+                val fetchResult = addressRepository.getAddressByLocation(locationModel, fetchRadius)
+                    .map { it.removeLocationPrefix() }
+                if (fetchResult is Resource.Error) {
+                    failure = fetchResult.failure
+                    break
                 }
 
-                fetchRadius +=fetchRadiusStep
+                if (fetchResult is Resource.Success) {
+                    if (fetchResult.data.isNotEmpty()) {
+                        finalResult = fetchResult.data[0]
+                    }
+
+                    fetchRadius += fetchRadiusStep
+                }
+            }
+
+            return@withContext if (finalResult != null) {
+                Resource.Success(finalResult)
+            } else {
+                Resource.Error(failure ?: Failure.Ignore)
             }
         }
-        Log.d("!!!","after step w/ r: $fetchRadius address is: ${finalResult?.value}")
-
-        return@withContext if(finalResult!=null){
-            Resource.Success(finalResult)
-        }else{
-            Resource.Error(failure ?: Failure.Ignore)
-        }
-    }
 
     override suspend fun getAddressByUser(): Resource<AddressModel> = withContext(dispatcher) {
         val userLocation = locationManager.getLastLocation() ?: locationManager.getCurrentLocation()
         val locations = getAddressByLocation(locationModel = userLocation)
 
-        return@withContext when(locations){
+        return@withContext when (locations) {
             is Resource.Error -> locations
             is Resource.Success -> {
-                    locations.data
-                        .copy(isUserLocation = true)
-                        .removeLocationPrefix()
-                        .asResource()
+                locations.data
+                    .copy(isUserLocation = true)
+                    .removeLocationPrefix()
+                    .asResource()
             }
         }
     }
