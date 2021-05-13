@@ -58,7 +58,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -68,9 +69,11 @@ android {
         dev {
             dimension "environment"
             applicationIdSuffix ".dev"
+            signingConfig signingConfigs.release
         }
         production {
             dimension "environment"
+            signingConfig signingConfigs.release
         }
     }
 
