@@ -5,8 +5,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.data.getOrElse
+import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.model.AddressModel
+import pro.apir.tko.domain.model.LocationModel
 import javax.inject.Inject
 
 /**
@@ -14,8 +16,6 @@ import javax.inject.Inject
  * Date: 04/05/2021
  * Project: tko
  */
-//TODO FETCH BY GEO LOC
-// при выбранном адресе использовать порог drag от адреса для возможности донастройки
 class AddressSuggestionRequester @Inject constructor(
     private val addressInteractor: AddressInteractor,
 ) {
@@ -36,7 +36,7 @@ class AddressSuggestionRequester @Inject constructor(
     fun select(
         addressModel: AddressModel,
         forceSelection: Boolean = false,
-        forceQuery: Boolean = false
+        forceQuery: Boolean = false,
     ) {
         scope.launch {
             val isFinal = checkConfirmation(addressModel)
@@ -51,6 +51,18 @@ class AddressSuggestionRequester @Inject constructor(
     fun query(query: String) {
         scope.launch {
             fetchSuggestions(query.toQuery())
+        }
+    }
+
+    suspend fun fetchByLocation(locationModel: LocationModel): Resource<AddressModel> {
+        return addressInteractor.getAddressByLocation(locationModel)
+    }
+
+    fun fetchUser() {
+        scope.launch {
+            addressInteractor.getAddressByUser().onSuccess {
+                setPartialResult(it)
+            }
         }
     }
 
@@ -117,6 +129,7 @@ class AddressSuggestionRequester @Inject constructor(
         data class Model(val addressModel: AddressModel) : Query() {
             override fun get() = addressModel.value
         }
+
         data class Text(val query: String) : Query() {
             override fun get() = query
         }

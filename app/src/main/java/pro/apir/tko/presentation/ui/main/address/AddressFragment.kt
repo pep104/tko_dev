@@ -7,18 +7,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -65,6 +60,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     override fun handleFailure() = viewModel.failure
 
+    private lateinit var textTitle: TextView
+
     private lateinit var cardBottom: CardView
     private lateinit var cardSearch: CardView
     private lateinit var cardCoordinates: CardView
@@ -82,11 +79,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     private lateinit var btnCopy: ImageView
     private lateinit var btnClearAddress: ImageView
 
+    private lateinit var textAddressCoordinates: TextView
     private lateinit var etCoordinates: EditText
     private lateinit var btnClearCoordinates: ImageView
     private lateinit var dividerCoordinatesEt: View
     private lateinit var textErrorCoordinates: TextView
     private lateinit var btnSubmitCoordinates: MaterialButton
+    private lateinit var pbAddressCoordinates: ProgressBar
 
     private val mapListener: MapListener = object : MapListener {
         override fun onScroll(event: ScrollEvent?): Boolean {
@@ -94,7 +93,12 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             val lon = mapView.mapCenter.longitude.round(6)
             Log.e("map", "$lat $lon")
             viewModel.updateCoordinatesOnDragEvent(lat, lon)
-            setMapPoint(lat, lon, false)
+            setMapPoint(
+                lat = lat,
+                lng = lon,
+                move = false,
+                center = false
+            )
             removeCoordinatesMaskedTextListener()
             etCoordinates.setText(
                 getString(
@@ -126,7 +130,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                 override fun onTextChanged(
                     maskFilled: Boolean,
                     extractedValue: String,
-                    formattedValue: String
+                    formattedValue: String,
                 ) {
                     viewModel.processInput(extractedValue)
                 }
@@ -165,15 +169,20 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             if (bundle.containsKey(KEY_ADDRESS)) {
                 viewModel.selectAddress(
                     addressModel = bundle.get(KEY_ADDRESS) as AddressModel,
+                    forceSelection = true,
                     forceQuery = true
                 )
+            } else {
+                viewModel.selectUser()
             }
-        }
+        } ?: viewModel.selectUser()
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        textTitle = view.title
 
         cardBottom = view.cardBottom
         cardSearch = view.cardSearch
@@ -195,11 +204,13 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         btnCopy = view.btnCopy
 
         //Coordinates card
+        textAddressCoordinates = view.textCoordinatesAddressCard
         etCoordinates = view.etCoordinatesCard
         btnClearCoordinates = view.btnClearCoordinates
         dividerCoordinatesEt = view.dividerCoordinatesEt
         textErrorCoordinates = view.textErrorCoordinates
         btnSubmitCoordinates = view.btnSubmitCoordinates
+        pbAddressCoordinates = view.pbAddressCoordinates
 
         btnSave = view.btnSave
 
@@ -225,6 +236,7 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         }
 
         btnSubmitCoordinates.setOnClickListener {
+            viewModel.submitCoordinatesUpdate()
             viewModel.setViewType(AddressViewModel.ViewType.BOTTOM_CARD)
         }
 
@@ -286,10 +298,8 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             mapView.controller.zoomTo(it, 0L)
         }
 
-        //TODO
-//        viewModel.lastPosition?.let {
-//            mapView.controller.setCenter(it)
-//        }
+        if (viewModel.address.value == null && viewModel.lastPosition != null)
+            mapView.controller.setCenter(GeoPoint(viewModel.lastPosition))
     }
 
     override fun onPause() {
@@ -299,83 +309,26 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     }
 
     private fun observeViewModel() {
-        viewModel.suggestions.observe(viewLifecycleOwner, Observer {
-            suggestionAdapter.setList(it)
-        })
+        viewModel.suggestions.observe(viewLifecycleOwner, suggestionAdapter::setList)
 
-        viewModel.address.observe(viewLifecycleOwner, Observer {
-            textAddress.isEnabled = true
-            textAddress.text = it.value
-            etAddress.applyUnwatchable(addressWatcher) {
-                setText(it.value)
-                setSelection(it.value.length)
-            }
-            if (it.lat != null && it.lng != null) {
-                textCoordinates.isEnabled = true
-                val coordinatesText = getString(
-                    R.string.text_coordinates_placeholder,
-                    it.lat.toString(),
-                    it.lng.toString()
-                )
-                textCoordinates.text = coordinatesText
-                myLocationOverlay?.disableFollowLocation()
-                btnCopy.visible()
-                setMapPoint(it.lat!!, it.lng!!)
-            } else {
-                textCoordinates.isEnabled = false
-                textCoordinates.text = getString(R.string.text_coordinates_not_found)
-                etCoordinates.setText("")
-            }
-            btnEditCoordinates.visible()
-        })
+        viewModel.address.observe(viewLifecycleOwner, ::handleAddress)
 
-        viewModel.viewType.observe(viewLifecycleOwner, Observer {
-            removeCoordinatesMaskedTextListener()
-            mapView.removeMapListener(mapListener)
+        viewModel.addressCoordinatesChanger.observe(viewLifecycleOwner,
+            ::handleAddressCoordinatesChanger)
 
-            when (it) {
-                AddressViewModel.ViewType.BOTTOM_CARD -> {
-                    etAddress.removeTextChangedListener(addressWatcher)
-                    hideKeyboard()
-                    cardSearch.gone()
-                    cardCoordinates.gone()
-                    btnSave.visible()
-                    cardBottom.visible()
-                }
-                AddressViewModel.ViewType.SEARCH -> {
-                    etAddress.addTextChangedListener(addressWatcher)
+        viewModel.addressCoordinatesLoading.observe(viewLifecycleOwner,
+            ::handleAddressCordinatesLoading)
 
-                    viewModel.address.value?.let { addressModel ->
-                        etAddress.setText(addressModel.value)
-                    }
-
-                    cardBottom.invisible()
-                    btnSave.invisible()
-                    cardSearch.visible()
-                    etAddress.focusWithKeyboard()
-                    etAddress.placeCursorToEnd()
-
-                }
-                AddressViewModel.ViewType.LOCATION_COORDINATES -> {
-                    mapView.addMapListener(mapListener)
-                    btnSave.invisible()
-                    cardBottom.invisible()
-                    cardCoordinates.visible()
-                    etCoordinates.setText(textCoordinates.text)
-                    etCoordinates.hint = textCoordinates.text
-                    setCoordinatesMaskedTextListener()
-                }
-            }
-        })
+        viewModel.viewType.observe(viewLifecycleOwner, ::handleViewType)
 
         //coordinates edit
-        viewModel.errorCoordinates.observe(viewLifecycleOwner, Observer { isError ->
+        viewModel.errorCoordinates.observe(viewLifecycleOwner) { isError ->
             textErrorCoordinates.isVisible = isError
-        })
+        }
 
 
         //controls etc
-        viewModel.isFollowEnabled.observe(viewLifecycleOwner, Observer { isFollowEnabled ->
+        viewModel.isFollowEnabled.observe(viewLifecycleOwner) { isFollowEnabled ->
             isFollowEnabled?.let { enabled ->
 
                 if (enabled) {
@@ -395,19 +348,125 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
                     )
                     myLocationOverlay?.disableFollowLocation()
 
-                    val point = viewModel.address.value
-                    point?.let {
-                        if (it.lat != null && it.lng != null)
-                            setMapPoint(it.lat!!, it.lng!!)
+                    viewModel.address.value.withCoordinates { lat, lon ->
+                        setMapPoint(lat, lon)
                     }
 
                 }
 
             }
-        })
+        }
 
     }
 
+    private fun handleViewType(type: AddressViewModel.ViewType) {
+        removeCoordinatesMaskedTextListener()
+        mapView.removeMapListener(mapListener)
+        textTitle.text = getString(R.string.text_address_title)
+        when (type) {
+            AddressViewModel.ViewType.BOTTOM_CARD -> {
+                etAddress.removeTextChangedListener(addressWatcher)
+                hideKeyboard()
+                cardSearch.gone()
+                cardCoordinates.gone()
+                btnSave.visible()
+                cardBottom.visible()
+
+                if (viewModel.address.value == null && viewModel.lastPosition != null)
+                    mapView.controller.setCenter(GeoPoint(viewModel.lastPosition))
+
+                viewModel.address.value.withCoordinates { lat, lon ->
+                    setMapPoint(lat, lon, false)
+                }
+
+
+            }
+            AddressViewModel.ViewType.SEARCH -> {
+                viewModel.address.value?.let { addressModel ->
+                    etAddress.setText(addressModel.value)
+                }
+                etAddress.addTextChangedListener(addressWatcher)
+
+                cardBottom.invisible()
+                btnSave.invisible()
+                cardSearch.visible()
+                etAddress.focusWithKeyboard()
+                etAddress.placeCursorToEnd()
+
+            }
+            AddressViewModel.ViewType.LOCATION_COORDINATES -> {
+                viewModel.address.value.withCoordinates { lat, lon ->
+                    mapView.controller.setCenter(GeoPoint(lat, lon))
+                }
+
+                textTitle.text = getString(R.string.text_address_title_coordinates)
+                mapView.addMapListener(mapListener)
+                btnSave.invisible()
+                cardBottom.invisible()
+                cardCoordinates.visible()
+
+                val address = viewModel.addressCoordinatesChanger.value
+                if (address?.lat != null && address.lng != null) {
+                    val coordinatesText = getString(
+                        R.string.text_coordinates_placeholder,
+                        address.lat.toString(),
+                        address.lng.toString()
+                    )
+                    etCoordinates.setText(coordinatesText)
+                    etCoordinates.hint = coordinatesText
+                } else {
+                    etCoordinates.setText("")
+                    etCoordinates.hint = getString(R.string.hint_address_coordinates_input)
+                }
+
+                setCoordinatesMaskedTextListener()
+            }
+        }
+    }
+
+    private fun handleAddress(address: AddressModel) {
+
+        textAddress.text = address.value
+        etAddress.applyUnwatchable(addressWatcher) {
+            setText(address.value)
+            setSelection(address.value.length)
+        }
+
+        textAddress.isEnabled = !address.isUserLocation
+
+
+        if (address.lat != null && address.lng != null) {
+            textCoordinates.isEnabled = true
+            val coordinatesText = getString(
+                R.string.text_coordinates_placeholder,
+                address.lat.toString(),
+                address.lng.toString()
+            )
+            textCoordinates.text = coordinatesText
+            myLocationOverlay?.disableFollowLocation()
+            btnCopy.visible()
+            setMapPoint(address.lat!!, address.lng!!)
+        } else {
+            textCoordinates.isEnabled = false
+            textCoordinates.text = getString(R.string.text_coordinates_not_found)
+            etCoordinates.setText("")
+        }
+    }
+
+    private fun handleAddressCoordinatesChanger(address: AddressModel?) {
+        textAddressCoordinates.isEnabled = address != null
+        btnSubmitCoordinates.isEnabled = address != null
+        textAddressCoordinates.text = address?.value ?: getString(R.string.text_address_not_found)
+
+        textAddressCoordinates.isEnabled = address?.isUserLocation == false
+    }
+
+    private fun handleAddressCordinatesLoading(isLoading: Boolean) {
+        if(btnSubmitCoordinates.isEnabled){
+            btnSubmitCoordinates.isEnabled = !isLoading
+        }
+        pbAddressCoordinates.isVisible = isLoading
+    }
 
     //Configure map view
     private fun setMap(mapView: MapView) {
@@ -416,18 +475,15 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapView.setMultiTouchControls(true)
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-        mapView.controller.zoomTo(12.0, 0L)
+        mapView.controller.zoomTo(17.0, 0L)
+
+        viewModel.lastPosition?.let {
+            mapView.controller.setCenter(it)
+        }
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(
-            ContextCompat.getDrawable(
-                requireContext(),
-                R.drawable.ic_map_static
-            )?.toBitmap(),
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap()
-        )
-
+        myLocationOverlay?.setCustomLocationMarkers()
 
         if (viewModel.address.value == null) {
             myLocationOverlay?.enableFollowLocation()
@@ -460,9 +516,16 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
     }
 
     //Set current map point from coordinates
-    private fun setMapPoint(lat: Double, lng: Double, move: Boolean = true) {
+    private fun setMapPoint(
+        lat: Double,
+        lng: Double,
+        move: Boolean = true,
+        center: Boolean = true
+    ) {
         if (move)
             mapView.controller.animateTo(GeoPoint(lat, lng))
+        else if (center)
+            mapView.controller.setCenter(GeoPoint(lat, lng))
 
         val location = GeoPoint(lat, lng)
         val marker = Marker(mapView)
@@ -501,6 +564,14 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
             addressModel = data,
             forceSelection = true
         )
+    }
+
+    //Utils
+    private fun AddressModel?.withCoordinates(func: (Double, Double) -> Unit) {
+        this?.let {
+            if (lat != null && lng != null)
+                func(lat!!, lng!!)
+        }
     }
 
     companion object {

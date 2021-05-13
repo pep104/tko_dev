@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -101,7 +100,7 @@ abstract class BaseListFragment : BaseFragment() {
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
+        myLocationOverlay?.setCustomLocationMarkers()
         if (viewModel().lastPosition == null) {
             myLocationOverlay?.enableFollowLocation()
         }

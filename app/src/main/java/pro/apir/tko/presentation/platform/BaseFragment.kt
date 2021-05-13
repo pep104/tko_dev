@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.App
 import pro.apir.tko.R
 import pro.apir.tko.core.exception.Failure
@@ -101,6 +103,26 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
             activity?.window?.decorView?.systemUiVisibility = if(isLight) View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
 
+    }
+
+    fun MyLocationNewOverlay.setCustomLocationMarkers() {
+        val point = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.ic_map_static
+        )?.toBitmap()
+        val arrow = ContextCompat.getDrawable(
+            requireContext(),
+            R.drawable.ic_map_arrow
+        )?.toBitmap()
+
+        this.setDirectionArrow(
+            point,
+            arrow
+        )
+
+        if (point != null)
+            this.setPersonHotspot(point.width.toFloat() / 2f,
+                point.height.toFloat() / 2f)
     }
 
 }

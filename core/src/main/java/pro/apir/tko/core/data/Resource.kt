@@ -107,9 +107,11 @@ fun <R> Resource<R>.getOrNull(): R? =
         is Success -> data
     }
 
-fun <R> Resource<R>.onSuccess(fn: (R) -> Unit) {
+inline fun <R> Resource<R>.onSuccess(fn: (R) -> Unit) {
     when (this) {
         is Success -> fn(data)
     }
 
 }
+
+fun <R> R.asResource() = Resource.Success(this)

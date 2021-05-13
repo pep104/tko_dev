@@ -42,7 +42,7 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
         set(value) {
             handle.set("bbox", value)
             if (value != null) {
-                locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+                locationManager.saveLocalLocation(LocationModel(value.latitude, value.longitude))
             }
             field = value
         }
@@ -69,7 +69,7 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
 
     init {
         if (lastPosition == null) {
-            locationManager.getLastLocation()?.let {
+            locationManager.geLocalLocation()?.let {
                 _lastPosition = GeoPoint(it.lat, it.lon)
             }
         }

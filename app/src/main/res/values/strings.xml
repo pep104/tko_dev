@@ -37,6 +37,7 @@
     <string name="hint_reg_num">Укажите реестровый номер</string>
     <string name="hint_adress_edit">Улица, дом, номер</string>
     <string name="text_address_choose_placeholder">Выберите адрес</string>
+    <string name="text_coordinates_choose_placeholder">Выберите точку на карте</string>
     <string name="text_coordinates_not_found">Координаты не найдены</string>
     <string name="text_container_area">Размер площадки, м²</string>
     <string name="hint_area">Укажите размер площадки</string>
@@ -54,6 +55,11 @@
     <string name="text_count_short">Кол-во</string>
     <string name="text_route_list_header">Маршруты</string>
     <string name="btn_choose_route">Выбрать маршрут</string>
+
+    <string name="text_address_title">Уточнить адрес</string>
+    <string name="text_address_title_coordinates">Выберите точку</string>
+
+    <string name="hint_address_coordinates_input">Введите координаты</string>
 
     <string name="text_route_list_info">%1$s — %2$s км</string>
 
@@ -92,6 +98,7 @@
     //Toast
     <string name="toast_copy_done">Скопировано в буфер обмена</string>
     <string name="btn_coordinates_by_user_location">Моя геопозиция</string>
+    <string name="text_address_not_found">Не найден</string>
 
     <plurals name="plurals_containers">
         <item quantity="zero">0 контейнеров</item>

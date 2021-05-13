@@ -12,14 +12,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.osmdroid.api.IGeoPoint
+import org.osmdroid.util.GeoPoint
 import pro.apir.tko.core.data.onSuccess
+import pro.apir.tko.core.utils.LocationUtils
 import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.address.AddressSuggestionRequester
-import pro.apir.tko.presentation.utils.geoPointFromLocationModel
+import kotlin.math.absoluteValue
 
 /**
  * Created by Антон Сарматин
@@ -30,7 +32,7 @@ class AddressViewModel @AssistedInject constructor(
     @Assisted
     private val handle: SavedStateHandle,
     private val addressRequester: AddressSuggestionRequester,
-    private val locationManager: LocationManager
+    private val locationManager: LocationManager,
 ) : BaseViewModel() {
 
     @AssistedInject.Factory
@@ -46,6 +48,13 @@ class AddressViewModel @AssistedInject constructor(
     val suggestions: LiveData<List<AddressModel>>
         get() = _suggestions
 
+    private val _addressCoordinatesChanger = MutableLiveData<AddressModel?>()
+    val addressCoordinatesChanger: LiveData<AddressModel?>
+        get() = _addressCoordinatesChanger
+
+    private val _addressCoordinatesLoading = MutableLiveData<Boolean>(false)
+    val addressCoordinatesLoading: LiveData<Boolean>
+    get()  = _addressCoordinatesLoading
 
     private val _viewType = handle.getLiveData<ViewType>("viewType", ViewType.BOTTOM_CARD)
     val viewType: LiveData<ViewType>
@@ -76,7 +85,7 @@ class AddressViewModel @AssistedInject constructor(
         set(value) {
             handle.set("bbox", value)
             if (value != null) {
-                locationManager.saveLastLocation(LocationModel(value.latitude, value.longitude))
+                locationManager.saveLocalLocation(LocationModel(value.latitude, value.longitude))
             }
             field = value
         }
@@ -86,10 +95,11 @@ class AddressViewModel @AssistedInject constructor(
 
 
     init {
-        if (_lastPosition == null)
-            viewModelScope.launch {
-                _lastPosition = geoPointFromLocationModel(locationManager.getCurrentLocation())
+        if (lastPosition == null) {
+            locationManager.geLocalLocation()?.let {
+                _lastPosition = GeoPoint(it.lat, it.lon)
             }
+        }
 
         viewModelScope.launch {
             addressRequester.suggestions.collect { resource ->
@@ -113,6 +123,7 @@ class AddressViewModel @AssistedInject constructor(
     //FUNCTIONS
 
     fun setViewType(type: ViewType) {
+        setupForViewType(type)
         _viewType.postValue(type)
     }
 
@@ -123,13 +134,17 @@ class AddressViewModel @AssistedInject constructor(
     fun selectAddress(
         addressModel: AddressModel,
         forceSelection: Boolean = false,
-        forceQuery: Boolean = false
+        forceQuery: Boolean = false,
     ) {
         addressRequester.select(
             addressModel = addressModel,
             forceSelection = forceSelection,
             forceQuery = forceQuery
         )
+    }
+
+    fun selectUser() {
+        addressRequester.fetchUser()
     }
 
     private fun setPartialAddress(addressModel: AddressModel) {
@@ -186,15 +201,74 @@ class AddressViewModel @AssistedInject constructor(
         updateCoordinates(lat, lon)
     }
 
-    //TODO to requester
+    fun submitCoordinatesUpdate() {
+        _address.value = _addressCoordinatesChanger.value
+    }
+
     private fun updateCoordinates(lat: Double, lon: Double) {
         addressCoordinatesJob?.cancel()
         addressCoordinatesJob = viewModelScope.launch {
-            delay(400)
-            val addressModel = _address.value
-            if (addressModel != null && (addressModel.lat != lat || addressModel.lng != lon)) {
-                val newAddressModel = addressModel.copy(lat = lat, lng = lon)
-                _address.postValue(newAddressModel)
+            val currentAddress = _address.value
+            if (currentAddress != null
+                && !currentAddress.isUserLocation
+                && checkDistanceThreshold(currentAddress, lat, lon)
+            ) {
+                updateCoordinatesForCurrentAddress(lat, lon)
+            } else {
+                updateCordinatesWithFetchNewAddress(lat, lon)
+            }
+        }
+    }
+
+    private fun updateCoordinatesForCurrentAddress(lat: Double, lon: Double) {
+        val current = addressCoordinatesChanger.value
+        if (current?.lat != lat || current.lng != lon)
+            _addressCoordinatesChanger.value = current?.copy(lat = lat, lng = lon)
+    }
+
+    private suspend fun updateCordinatesWithFetchNewAddress(lat: Double, lon: Double) {
+        _addressCoordinatesLoading.value = true
+        delay(400)
+        addressRequester.fetchByLocation(LocationModel(lat, lon)).fold(
+            onFailure = {
+                _addressCoordinatesLoading.value = false
+                _addressCoordinatesChanger.postValue(null)
+            },
+            onSuccess = {
+                _addressCoordinatesLoading.value = false
+                _addressCoordinatesChanger.postValue(it.copy(lat = lat, lng = lon))
+            }
+        )
+    }
+
+    private fun checkDistanceThreshold(
+        addressModel: AddressModel,
+        lat: Double,
+        lon: Double,
+    ): Boolean {
+        if (addressModel.lat == null || addressModel.lng == null) return false
+        return LocationUtils.distanceBetween(addressModel.lat!!,
+            addressModel.lng!!,
+            lat,
+            lon).absoluteValue <= FETCH_DISTANCE_THRESHOLD
+    }
+
+    //viewtype preconditions
+    private fun setupForViewType(type: ViewType) {
+        _addressCoordinatesChanger.value = null
+        when (type) {
+            ViewType.BOTTOM_CARD -> {
+
+            }
+            ViewType.SEARCH -> {
+                _address.value?.let {
+                    addressRequester.query(
+                        it.value.substringBeforeLast(',', it.value)
+                    )
+                }
+            }
+            ViewType.LOCATION_COORDINATES -> {
+                _addressCoordinatesChanger.value = _address.value
             }
         }
     }
@@ -237,6 +311,10 @@ class AddressViewModel @AssistedInject constructor(
         BOTTOM_CARD,
         SEARCH,
         LOCATION_COORDINATES
+    }
+
+    companion object {
+        private const val FETCH_DISTANCE_THRESHOLD = 50
     }
 
 }

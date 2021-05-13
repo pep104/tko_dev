@@ -3,6 +3,7 @@ package pro.apir.tko.data.repository.address
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.data.framework.network.api.SuggestionApi
 import pro.apir.tko.data.framework.network.api.SuggestionDetailedApi
+import pro.apir.tko.data.framework.network.model.request.GeolocateRequest
 import pro.apir.tko.data.framework.network.model.request.SuggestionRequest
 import pro.apir.tko.data.framework.network.model.request.data.LocationRequestData
 import pro.apir.tko.domain.manager.LocationManager
@@ -47,6 +48,20 @@ class AddressRepositoryImpl @Inject constructor(
             count = 1
         )
         return suggestionDetailedApi.getAddressDetailed(request)
+            .toResult { it.suggestions.map { it.toModel() } }
+    }
+
+    override suspend fun getAddressByLocation(
+        locationModel: LocationModel,
+        radius: Int
+    ): Resource<List<AddressModel>> {
+        val request = GeolocateRequest(
+            lat = locationModel.lat,
+            lon = locationModel.lon,
+            radius = radius
+        )
+
+        return suggestionApi.getAddressByLocation(request)
             .toResult { it.suggestions.map { it.toModel() } }
     }
 }

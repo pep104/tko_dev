@@ -12,7 +12,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -493,7 +492,7 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
         val locationProvider = GpsMyLocationProvider(context)
         myLocationOverlay = MyLocationNewOverlay(locationProvider, mapView)
-        myLocationOverlay?.setDirectionArrow(ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_static)?.toBitmap(), ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_arrow)?.toBitmap())
+        myLocationOverlay?.setCustomLocationMarkers()
 
 
         mapView.overlayManager.add(myLocationOverlay)
