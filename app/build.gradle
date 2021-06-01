@@ -71,6 +71,11 @@ android {
             applicationIdSuffix ".dev"
             signingConfig signingConfigs.release
         }
+        stage {
+            dimension "environment"
+            applicationIdSuffix ".stage"
+            signingConfig signingConfigs.release
+        }
         production {
             dimension "environment"
             signingConfig signingConfigs.release

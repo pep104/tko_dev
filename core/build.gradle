@@ -29,6 +29,9 @@ android {
         dev {
             dimension "environment"
         }
+        stage {
+            dimension "environment"
+        }
         production {
             dimension "environment"
         }

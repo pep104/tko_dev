@@ -7,9 +7,9 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import pro.apir.tko.core.constant.BASE_URL
 import pro.apir.tko.core.constant.SUGGESTION_DETAILED_URL
 import pro.apir.tko.core.constant.SUGGESTION_URL
+import pro.apir.tko.data.BuildConfig
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManagerImpl
 import pro.apir.tko.data.framework.manager.location.LocationManagerImpl
@@ -64,7 +64,7 @@ class FrameworkModule(private val application: Application) {
         val gson = GsonBuilder().setLenient().create()
 
         return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BuildConfig.HOST_URL+BuildConfig.API_SUFFIX)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(apiCallAdapterFactory)
@@ -86,7 +86,7 @@ class FrameworkModule(private val application: Application) {
                 .build()
 
         return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BuildConfig.HOST_URL+BuildConfig.API_SUFFIX)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(apiCallAdapterFactory)
