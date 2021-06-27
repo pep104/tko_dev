@@ -71,7 +71,8 @@ class MenuFragment : BaseFragment() {
                 Manifest.permission.CAMERA
         ).withListener(object : MultiplePermissionsListener {
             override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                btnRoutes.isEnabled = true
+//              FIXME Временно отключено, ибо функционал не нужен и проблема с маркетом из-за резрешения на background локацию
+//                btnRoutes.isEnabled = true
                 btnInventory.isEnabled = true
             }
 

@@ -1,6 +1,5 @@
 package pro.apir.tko.data.framework.manager.location
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import android.util.Log
@@ -12,6 +11,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import pro.apir.tko.core.exception.ExceptionHandler
 import pro.apir.tko.data.BuildConfig
 import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import pro.apir.tko.domain.manager.LocationManager
@@ -47,7 +47,6 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
         }
     }
 
-    @SuppressLint("MissingPermission")
     override suspend fun getCurrentLocation(): LocationModel = suspendCoroutine { continuation ->
         val locationClient = LocationServices.getFusedLocationProviderClient(context)
         val locationCallback = object : LocationCallback() {
@@ -66,22 +65,24 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
             CoroutineScope(Dispatchers.Main).launch {
                 locationClient.requestLocationUpdates(singleRequest, locationCallback, Looper.getMainLooper())
             }
-        } catch (e: Exception) {
+        } catch (e: SecurityException) {
+
+        }
+
+    }
+
+    override suspend fun getLastLocation(): LocationModel? = suspendCoroutine { continuation ->
+        try {
+            val locationClient = LocationServices.getFusedLocationProviderClient(context)
+            locationClient.lastLocation?.addOnSuccessListener {
+                continuation.resume(it.toModel())
+            }
+        }catch (e: SecurityException){
             Log.e("locationSource", "Exception: ${e.message}")
         }
-
-    }
-
-    @SuppressLint("MissingPermission")
-    override suspend fun getLastLocation(): LocationModel? = suspendCoroutine { continuation ->
-        val locationClient = LocationServices.getFusedLocationProviderClient(context)
-        locationClient.lastLocation?.addOnSuccessListener {
-            continuation.resume(it.toModel())
-        }
     }
 
 
-    @SuppressLint("MissingPermission")
     @ExperimentalCoroutinesApi
     override fun getLocationFlow(): Flow<LocationModel> = channelFlow {
 
@@ -94,16 +95,20 @@ class LocationManagerImpl @Inject constructor(private val context: Context, priv
             }
         }
 
-        locationClient.lastLocation.addOnSuccessListener {location ->
-            location?.let { offer(location.toModel()) }
+        try {
+            locationClient.lastLocation.addOnSuccessListener {location ->
+                location?.let { offer(location.toModel()) }
+            }
+            withContext(Dispatchers.Main) {
+                locationClient.requestLocationUpdates(flowRequest, locationCallback, Looper.myLooper())
+            }
+        }catch (e: SecurityException){
+           ExceptionHandler.logNonFatal(e)
+        }finally {
+            awaitClose {
+                locationClient.removeLocationUpdates(locationCallback)
+            }
         }
-        withContext(Dispatchers.Main) {
-            locationClient.requestLocationUpdates(flowRequest, locationCallback, Looper.myLooper())
-        }
-        awaitClose {
-            locationClient.removeLocationUpdates(locationCallback)
-        }
-
     }
 
     override fun saveLocalLocation(model: LocationModel) {
