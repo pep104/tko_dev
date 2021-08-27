@@ -6,6 +6,8 @@ import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.address.AddressInteractorImpl
 import pro.apir.tko.domain.interactors.auth.AuthInteractor
 import pro.apir.tko.domain.interactors.auth.AuthInteractorImpl
+import pro.apir.tko.domain.interactors.host.HostInteractor
+import pro.apir.tko.domain.interactors.host.HostInteractorImpl
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractorImpl
 import pro.apir.tko.domain.interactors.route.RouteInteractor
@@ -49,5 +51,9 @@ abstract class InteractorsModule {
     @Binds
     @Singleton
     abstract fun userInteractor(userInteractor: UserInteractorImpl): UserInteractor
+
+    @Binds
+    @Singleton
+    abstract fun hostInteractor(hostInteractorImpl: HostInteractorImpl): HostInteractor
 
 }

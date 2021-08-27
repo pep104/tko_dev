@@ -29,17 +29,17 @@ android {
         dev {
             dimension "environment"
             buildConfigField "String", "API_SUFFIX", "\"/api/\""
-            buildConfigField "String", "HOST_URL", "\"https://test.tko.apir.pro\""
+            buildConfigField "String", "HOST_URL", "\"http://base.url\""
         }
         stage {
             dimension "environment"
             buildConfigField "String", "API_SUFFIX", "\"/api/\""
-            buildConfigField "String", "HOST_URL", "\"https://test.tko.apir.pro\""
+            buildConfigField "String", "HOST_URL", "\"http://base.url\""
         }
         production {
             dimension "environment"
             buildConfigField "String", "API_SUFFIX", "\"/api/\""
-            buildConfigField "String", "HOST_URL", "\"http://37.139.32.239:80\""
+            buildConfigField "String", "HOST_URL", "\"http://base.url\""
         }
     }
 

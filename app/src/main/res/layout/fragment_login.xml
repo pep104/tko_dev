@@ -13,6 +13,27 @@
         layout="@layout/toolbar_title" />
 
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/menuHost"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/text_host_hint"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutMail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <LinearLayout
         android:id="@+id/layoutMail"
         android:layout_width="match_parent"
@@ -52,6 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="56dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/shape_rounded_blue_main_a8"

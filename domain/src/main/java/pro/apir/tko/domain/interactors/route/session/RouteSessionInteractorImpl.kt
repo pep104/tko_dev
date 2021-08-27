@@ -16,6 +16,7 @@ import pro.apir.tko.domain.failure.TrackingFailureCode
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.model.route.RouteTrackingInfoModel
 import pro.apir.tko.domain.repository.attachment.AttachmentRepository
+import pro.apir.tko.domain.repository.host.HostRepository
 import pro.apir.tko.domain.repository.route.RouteSessionRepository
 import pro.apir.tko.domain.repository.route.photo.RoutePhotoRepository
 import pro.apir.tko.domain.repository.user.UserRepository
@@ -25,7 +26,9 @@ import javax.inject.Inject
 class RouteSessionInteractorImpl @Inject constructor(private val sessionRepository: RouteSessionRepository,
                                                      private val photoRepository: RoutePhotoRepository,
                                                      private val attachmentRepository: AttachmentRepository,
-                                                     private val userRepository: UserRepository) : RouteSessionInteractor {
+                                                     private val userRepository: UserRepository,
+                                                     private val hostRepository: HostRepository,
+) : RouteSessionInteractor {
 
     /**
      *
@@ -206,7 +209,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
 
 
     private fun mapSessionWithInfo(sessionModel: RouteSessionModel, infoModel: RouteTrackingInfoModel): RouteSessionModel {
-
+        val hostUrl = hostRepository.getHost().toUrl()
         var completedCount = 0
         var completedLastPos = -1
         val sessionId = infoModel.sessionId
@@ -222,7 +225,7 @@ class RouteSessionInteractorImpl @Inject constructor(private val sessionReposito
             val newPoint = if (infoPoint != null) {
                 completedCount++
                 completedLastPos = index
-                val photos = infoPoint.attachments.map { PhotoModel(it.id.toLong(), PhotoModel.Type.REMOTE, it.url) }
+                val photos = infoPoint.attachments.map { PhotoModel(it.id.toLong(), PhotoModel.Type.REMOTE, "${hostUrl}${it.url}") }
                 RoutePointModel(RouteStateConstants.POINT_TYPE_COMPLETED, photos, point)
             } else {
                 val photos =

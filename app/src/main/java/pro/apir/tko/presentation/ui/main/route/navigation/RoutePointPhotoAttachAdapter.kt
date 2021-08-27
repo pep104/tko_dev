@@ -70,10 +70,12 @@ class RoutePointPhotoAttachAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ListItem.AddButton.type -> {
-                AddButtonHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_photo_add, parent, false))
+                AddButtonHolder(LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_route_photo_add, parent, false))
             }
             else -> {
-                ImageHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route_photo, parent, false))
+                ImageHolder(LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_route_photo, parent, false))
             }
         }
     }
@@ -110,18 +112,19 @@ class RoutePointPhotoAttachAdapter : RecyclerView.Adapter<RecyclerView.ViewHolde
             val glide = when (image.photo.type) {
                 PhotoModel.Type.LOCAL -> {
                     Glide.with(imageView)
-                            .load(File(image.photo.path))
+                        .load(File(image.photo.path))
                 }
                 PhotoModel.Type.REMOTE -> {
                     Glide.with(imageView)
-                            .load(imageView.context.getString(R.string.url_file, image.photo.path))
+                        //FIXME url dynamic?
+                        .load(imageView.context.getString(R.string.url_file, image.photo.path))
                 }
             }
 
             glide.diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .transform(CenterCrop(), RoundedCorners(6.dpToPx))
-                    .into(imageView)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .transform(CenterCrop(), RoundedCorners(6.dpToPx))
+                .into(imageView)
 
 
             deleteView.setOnClickListener {

@@ -3,6 +3,7 @@ package pro.apir.tko.di.component
 import dagger.Component
 import pro.apir.tko.data.di.FrameworkModule
 import pro.apir.tko.data.di.MapperModule
+import pro.apir.tko.data.di.NetworkModule
 import pro.apir.tko.data.di.RepositoryModule
 import pro.apir.tko.di.module.AppModule
 import pro.apir.tko.di.module.ViewModelModule
@@ -17,6 +18,7 @@ import javax.inject.Singleton
             InteractorsModule::class,
             RepositoryModule::class,
             FrameworkModule::class,
+            NetworkModule::class,
             MapperModule::class
         ]
 )

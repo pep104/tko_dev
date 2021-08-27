@@ -2,9 +2,12 @@ package pro.apir.tko.presentation.ui.main.login
 
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.core.view.isVisible
@@ -12,10 +15,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.BuildConfig
 import pro.apir.tko.R
+import pro.apir.tko.presentation.entities.HostUi
 import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.platform.BaseFragment
 
@@ -31,6 +36,7 @@ class LoginFragment : BaseFragment() {
     private lateinit var etMail: EditText
     private lateinit var etPass: EditText
     private lateinit var btnLogin: MaterialButton
+    private lateinit var tiHost: TextInputLayout
 
     private lateinit var loading: ProgressBar
 
@@ -43,7 +49,11 @@ class LoginFragment : BaseFragment() {
         appComponent.createMainComponent().injectLoginFragment(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
 
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -57,15 +67,23 @@ class LoginFragment : BaseFragment() {
         etPass = view.etPass
         btnLogin = view.btnLogin
         loading = view.progressBar
+        tiHost = view.menuHost
+
 
         if(BuildConfig.DEBUG){
             etMail.setText("admin@apir.pro")
             etPass.setText("JsXkQCBv758uxWK92iRY")
         }
+
         btnLogin.setOnClickListener {
-            viewModel.login(etMail.getTextValue(), etPass.getTextValue())
+            viewModel.login(
+                email = etMail.getTextValue(),
+                pass = etPass.getTextValue(),
+                host = tiHost.editText?.getTextValue() ?: ""
+            )
         }
 
+        setupHostPicker(tiHost)
         observeViewModel()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -84,6 +102,22 @@ class LoginFragment : BaseFragment() {
             etMail.isEnabled = !it
             loading.isVisible = it
         })
+
+        viewModel.host.observe(viewLifecycleOwner, Observer {
+            (tiHost.editText as AutoCompleteTextView)
+                .setText(
+                    getString(it.stringId),
+                    false
+                )
+        })
+    }
+
+    private fun setupHostPicker(tiHost: TextInputLayout) {
+        val items = HostUi.values().map { requireContext().getString(it.stringId) }
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_host, items)
+
+        (tiHost.editText as AutoCompleteTextView).inputType = InputType.TYPE_NULL
+        (tiHost.editText as AutoCompleteTextView).setAdapter(adapter)
     }
 
 }
