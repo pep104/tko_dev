@@ -18,29 +18,29 @@ class PreferencesManagerImpl @Inject constructor(context: Context) : Preferences
         sp.edit().putString(key, value).apply()
     }
 
-    override fun getString(key: String): String = sp.getString(key, "") ?: ""
+    override fun getString(key: String, default: String): String = sp.getString(key, default) ?: default
 
     override fun saveInt(key: String, value: Int) {
         sp.edit().putInt(key, value).apply()
     }
 
-    override fun getInt(key: String): Int = sp.getInt(key, -1)
+    override fun getInt(key: String, default: Int): Int = sp.getInt(key, default)
 
     override fun saveLong(key: String, value: Long) {
         sp.edit().putLong(key, value).apply()
     }
 
-    override fun getLong(key: String) = sp.getLong(key, 0L)
+    override fun getLong(key: String, default: Long) = sp.getLong(key, default)
 
     override fun saveBool(key: String, value: Boolean) {
         sp.edit().putBoolean(key, value).apply()
     }
 
-    override fun getBool(key: String) = sp.getBoolean(key, false)
+    override fun getBool(key: String, default: Boolean) = sp.getBoolean(key, default)
 
     override fun saveDouble(key: String, value: Double) {
         sp.edit().putFloat(key, value.toFloat()).apply()
     }
 
-    override fun getDouble(key: String): Double = sp.getFloat(key, 0.0f).toDouble()
+    override fun getDouble(key: String, default: Double): Double = sp.getFloat(key, default.toFloat()).toDouble()
 }

@@ -6,6 +6,7 @@ import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.attachment.AttachmentRepositoryImpl
 import pro.apir.tko.data.repository.auth.AuthRepositoryImpl
 import pro.apir.tko.data.repository.credentials.CredentialsRepositoryImpl
+import pro.apir.tko.data.repository.host.HostRepositoryImpl
 import pro.apir.tko.data.repository.inventory.InventoryRepositoryImpl
 import pro.apir.tko.data.repository.route.RouteRepositoryImpl
 import pro.apir.tko.data.repository.route.RouteSessionRepositoryImpl
@@ -15,6 +16,7 @@ import pro.apir.tko.domain.repository.address.AddressRepository
 import pro.apir.tko.domain.repository.attachment.AttachmentRepository
 import pro.apir.tko.domain.repository.auth.AuthRepository
 import pro.apir.tko.domain.repository.credentials.CredentialsRepository
+import pro.apir.tko.domain.repository.host.HostRepository
 import pro.apir.tko.domain.repository.inventory.InventoryRepository
 import pro.apir.tko.domain.repository.route.RouteRepository
 import pro.apir.tko.domain.repository.route.RouteSessionRepository
@@ -60,6 +62,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun credentialsRepository(impl: CredentialsRepositoryImpl): CredentialsRepository
+
+    @Binds
+    @Singleton
+    abstract fun hostRepository(impl: HostRepositoryImpl): HostRepository
 
     //Cache
 

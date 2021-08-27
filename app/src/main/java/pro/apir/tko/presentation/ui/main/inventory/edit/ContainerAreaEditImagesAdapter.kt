@@ -22,7 +22,8 @@ import pro.apir.tko.presentation.ui.main.inventory.edit.diff.ContainerEditImages
  * Date: 22.01.2020
  * Project: tko-android
  */
-class ContainerAreaEditImagesAdapter : RecyclerView.Adapter<ContainerAreaEditImagesAdapter.ImageHolder>() {
+class ContainerAreaEditImagesAdapter :
+    RecyclerView.Adapter<ContainerAreaEditImagesAdapter.ImageHolder>() {
 
     private val data = arrayListOf<PhotoWrapper>()
 
@@ -42,7 +43,7 @@ class ContainerAreaEditImagesAdapter : RecyclerView.Adapter<ContainerAreaEditIma
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun setDataFromModel(data: List<ImageModel>){
+    fun setDataFromModel(data: List<ImageModel>) {
         val list = data.map { PhotoWrapper(it) }
         setData(list)
     }
@@ -53,7 +54,8 @@ class ContainerAreaEditImagesAdapter : RecyclerView.Adapter<ContainerAreaEditIma
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
-        return ImageHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_image_container_edit_list, parent, false))
+        return ImageHolder(LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_image_container_edit_list, parent, false))
     }
 
     override fun getItemCount() = data.size
@@ -73,16 +75,16 @@ class ContainerAreaEditImagesAdapter : RecyclerView.Adapter<ContainerAreaEditIma
         }
 
         fun bind(item: PhotoWrapper, pos: Int) {
-            if (item.uploaded != null){
+            if (item.uploaded != null) {
                 Glide.with(imageView)
-                        .load(imageView.context.getString(R.string.url_file, item.uploaded.url))
-                        .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
-                        .into(imageView)
-            }else if(item.new != null){
+                    .load(item.uploaded.url)
+                    .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
+                    .into(imageView)
+            } else if (item.new != null) {
                 Glide.with(imageView)
-                        .load(item.new)
-                        .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
-                        .into(imageView)
+                    .load(item.new)
+                    .transform(CenterCrop(), RoundedCornersTransformation(8.dpToPx, 0))
+                    .into(imageView)
             }
 
             btnDelete.setOnClickListener {
