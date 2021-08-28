@@ -1,6 +1,5 @@
 package pro.apir.tko.presentation.ui.main.list.route
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
@@ -79,7 +78,6 @@ class RouteListViewModel @Inject constructor(
     }
 
     fun setChosenRoute(id: Int?) {
-        Log.e("choose", "id: $id")
         _routes.value?.let { list ->
             val item = list.find { model -> model.id == id }
             _choosenRoute.postValue(item)

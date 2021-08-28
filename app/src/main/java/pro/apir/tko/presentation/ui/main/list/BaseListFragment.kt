@@ -2,7 +2,6 @@ package pro.apir.tko.presentation.ui.main.list
 
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -85,7 +84,6 @@ abstract class BaseListFragment : BaseFragment() {
 
 
     private val containersObserver = Observer<List<ContainerAreaListModel>> {
-        Log.e("observer", "container base list")
         if (!it.isNullOrEmpty()) {
             setMarkers(it)
         }
@@ -266,7 +264,6 @@ abstract class BaseListFragment : BaseFragment() {
     protected fun setMarkers(list: List<ContainerAreaListModel>, fromSearch: Boolean = false) {
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.e("mapMarkers", "job start")
             val newFolderOverlay = FolderOverlay()
 
             list.forEach {
@@ -291,7 +288,6 @@ abstract class BaseListFragment : BaseFragment() {
                 mapView.overlayManager.remove(markerOverlay)
                 mapView.overlayManager.add(newFolderOverlay)
                 markerOverlay = newFolderOverlay
-                Log.e("mapMarkers", "job end")
             }
         }
 
