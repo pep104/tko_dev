@@ -5,6 +5,7 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import pro.apir.tko.core.exception.RefreshTokenNotValidException
 import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.AuthApi
 import javax.inject.Inject
@@ -14,7 +15,10 @@ import javax.inject.Inject
  * Date: 18.01.2020
  * Project: tko-android
  */
-class TokenAuthenticator @Inject constructor(private val credentialsManager: CredentialsManager, private val authApi: AuthApi) : Authenticator {
+class TokenAuthenticator @Inject constructor(
+    private val credentialsManager: CredentialsManager,
+    private val authApi: AuthApi,
+) : Authenticator {
 
 
     override fun authenticate(route: Route?, response: Response): Request? {
@@ -25,10 +29,11 @@ class TokenAuthenticator @Inject constructor(private val credentialsManager: Cre
             val newToken = ref.body()!!.accessRefreshed
             Log.e("authenticator", "new token: $newToken")
             credentialsManager.saveAccessToken(newToken)
-            response.request.newBuilder().header("Authorization", "Bearer $newToken").build()
+            response.request.newBuilder()
+                .header("Authorization", "Bearer $newToken")
+                .build()
         } else {
-            Log.e("authenticator", "refresh failure")
-            null
+            throw RefreshTokenNotValidException()
         }
     }
 }
