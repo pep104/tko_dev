@@ -4,32 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.auth.AuthInteractor
 import pro.apir.tko.domain.interactors.host.HostInteractor
 import pro.apir.tko.presentation.entities.HostUi
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.mapper.HostMapper
+import javax.inject.Inject
 
 /**
  * Created by antonsarmatin
  * Date: 2020-01-15
  * Project: android-template
  */
-class LoginViewModel @AssistedInject constructor(
-    @Assisted private val handle: SavedStateHandle,
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val handle: SavedStateHandle,
     private val authInteractor: AuthInteractor,
     private val hostInteractor: HostInteractor,
     private val hostMapper: HostMapper,
 ) : BaseViewModel() {
 
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<LoginViewModel>
 
     private val _requestState = MutableLiveData<Boolean>()
     val requestState: LiveData<Boolean>

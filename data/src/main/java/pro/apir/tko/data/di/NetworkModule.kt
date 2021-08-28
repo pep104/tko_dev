@@ -3,6 +3,8 @@ package pro.apir.tko.data.di
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pro.apir.tko.core.constant.SUGGESTION_DETAILED_URL
@@ -36,6 +38,7 @@ private const val SUGGESTION_RETROFIT = "suggestion"
 private const val SUGGESTION_DETAILED_RETROFIT = "suggestionDetailed"
 
 @Module
+@InstallIn(SingletonComponent::class)
 class NetworkModule {
 
     @Singleton

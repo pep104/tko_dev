@@ -5,15 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pro.apir.tko.core.types.Dictionary
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.AddressModel
@@ -25,19 +23,21 @@ import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.platform.livedata.LiveEvent
 import java.io.File
+import javax.inject.Inject
 
 /**
  * Created by Антон Сарматин
  * Date: 22.01.2020
  * Project: tko-android
  */
-class InventoryEditViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                         private val inventoryInteractor: InventoryInteractor,
-                                                         private val addressInteractor: AddressInteractor,
-                                                         private val dictionariesManager: OptionsDictionariesManager) : BaseViewModel(handle) {
+@HiltViewModel
+class InventoryEditViewModel @Inject constructor(
+    private val handle: SavedStateHandle,
+    private val inventoryInteractor: InventoryInteractor,
+    private val addressInteractor: AddressInteractor,
+    private val dictionariesManager: OptionsDictionariesManager,
+) : BaseViewModel(handle) {
 
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<InventoryEditViewModel>
 
     private val _isNewMode = handle.getLiveData<Boolean>("mode", true)
     val isNewMode: LiveData<Boolean>
@@ -70,11 +70,13 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             handle.set("cRegistryNumber", value)
         }
 
-    private val _containers = handle.getLiveData<MutableList<Container>>("containers", mutableListOf())
+    private val _containers =
+        handle.getLiveData<MutableList<Container>>("containers", mutableListOf())
     val containers: LiveData<MutableList<Container>>
         get() = _containers
 
-    val accessOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getAccessOptionDictionary())
+    val accessOptions: LiveData<Dictionary> =
+        MutableLiveData(dictionariesManager.getAccessOptionDictionary())
     var access = handle.get<Int>("access")
         set(value) {
             field = value
@@ -82,7 +84,8 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
 
 
-    val fenceOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getFenceOptionsDictionary())
+    val fenceOptions: LiveData<Dictionary> =
+        MutableLiveData(dictionariesManager.getFenceOptionsDictionary())
     var fence = handle.get<Int>("fence")
         set(value) {
             field = value
@@ -90,28 +93,32 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
         }
 
 
-    val coverageOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getCoverageOptionsDictionary())
+    val coverageOptions: LiveData<Dictionary> =
+        MutableLiveData(dictionariesManager.getCoverageOptionsDictionary())
     var coverage = handle.get<Int>("coverage")
         set(value) {
             field = value
             handle.set("coverage", value)
         }
 
-    val kgoOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getKGOOptionsDictionary())
+    val kgoOptions: LiveData<Dictionary> =
+        MutableLiveData(dictionariesManager.getKGOOptionsDictionary())
     var kgo = handle.get<Int>("kgo")
         set(value) {
             field = value
             handle.set("kgo", value)
         }
 
-    val infoPlateOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getInfoPlateDictionary())
+    val infoPlateOptions: LiveData<Dictionary> =
+        MutableLiveData(dictionariesManager.getInfoPlateDictionary())
     var infoPlate = handle.get<Int>("infoPlate")
         set(value) {
             field = value
             handle.set("infoPlate", value)
         }
 
-    val hasCoverOptions: LiveData<Dictionary> = MutableLiveData(dictionariesManager.getHasCoverOptionsDictionary())
+    val hasCoverOptions: LiveData<Dictionary> =
+        MutableLiveData(dictionariesManager.getHasCoverOptionsDictionary())
     var hasCover = handle.get<Int>("hasCover")
         set(value) {
             field = value
@@ -138,15 +145,16 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                 }
                 data.location?.let { value ->
                     addressInteractor.getAddressDetailed(value).fold(
-                            onSuccess = { addresses ->
-                                addresses.firstOrNull()?.let {
-                                    _address.value = it.copy(lat = data.coordinates?.lat, lng = data.coordinates?.lng)
-                                }
-                                Unit
-                            },
-                            onFailure = {
-                                handleFailure(it)
+                        onSuccess = { addresses ->
+                            addresses.firstOrNull()?.let {
+                                _address.value = it.copy(lat = data.coordinates?.lat,
+                                    lng = data.coordinates?.lng)
                             }
+                            Unit
+                        },
+                        onFailure = {
+                            handleFailure(it)
+                        }
                     )
                 }
                 data.access?.let {
@@ -166,11 +174,15 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
                 }
 
                 data.hasCover?.let {
-                    hasCoverOptions.value?.let { opt -> hasCover = opt.getPositionByKey(it.toString().toUpperCase()) }
+                    hasCoverOptions.value?.let { opt ->
+                        hasCover = opt.getPositionByKey(it.toString().toUpperCase())
+                    }
                 }
 
                 data.infoPlate?.let {
-                    infoPlateOptions.value?.let { opt -> infoPlate = opt.getPositionByKey(it.toString().toUpperCase()) }
+                    infoPlateOptions.value?.let { opt ->
+                        infoPlate = opt.getPositionByKey(it.toString().toUpperCase())
+                    }
                 }
 
                 data.containers?.let {
@@ -224,36 +236,36 @@ class InventoryEditViewModel @AssistedInject constructor(@Assisted private val h
             //Mapping fields to model
 
             val coordinatesModel = CoordinatesModel(
-                    _address.value?.lng ?: 0.0,
-                    _address.value?.lat ?: 0.0
+                _address.value?.lng ?: 0.0,
+                _address.value?.lat ?: 0.0
             )
             //FIXME исправить эту дичь с кучей моделей
             val newModel = ContainerAreaShortModel(
-                    _id,
-                    area,
-                    null,
-                    _containers.value?.map { item -> item.toModel() },
-                    coordinatesModel,
-                    _address.value?.value,
-                    registryNumber,
-                    null,
-                    hasCoverOptions.value?.getKey(hasCover)?.toBoolean(),
-                    infoPlateOptions.value?.getKey(infoPlate)?.toBoolean(),
-                    accessOptions.value?.getKey(access),
-                    fenceOptions.value?.getKey(fence),
-                    coverageOptions.value?.getKey(coverage),
-                    kgoOptions.value?.getKey(kgo)
+                _id,
+                area,
+                null,
+                _containers.value?.map { item -> item.toModel() },
+                coordinatesModel,
+                _address.value?.value,
+                registryNumber,
+                null,
+                hasCoverOptions.value?.getKey(hasCover)?.toBoolean(),
+                infoPlateOptions.value?.getKey(infoPlate)?.toBoolean(),
+                accessOptions.value?.getKey(access),
+                fenceOptions.value?.getKey(fence),
+                coverageOptions.value?.getKey(coverage),
+                kgoOptions.value?.getKey(kgo)
             )
 
             inventoryInteractor.updateContainer(newModel, oldPhotos, newPhotos)
-                    .fold(::handleFailure) {
-                        val result = if (isNewMode.value == true) {
-                            EditResultEvent.Created(it)
-                        } else {
-                            EditResultEvent.Edited(it)
-                        }
-                        _isSaved.postValue(result)
+                .fold(::handleFailure) {
+                    val result = if (isNewMode.value == true) {
+                        EditResultEvent.Created(it)
+                    } else {
+                        EditResultEvent.Edited(it)
                     }
+                    _isSaved.postValue(result)
+                }
         }
     }
 

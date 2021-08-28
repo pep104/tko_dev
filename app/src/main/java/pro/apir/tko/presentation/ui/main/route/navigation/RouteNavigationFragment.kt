@@ -21,6 +21,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_route_navigation.view.*
 import kotlinx.android.synthetic.main.include_loading.view.*
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +63,7 @@ import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
  * Project: tko-android
  *
  */
+@AndroidEntryPoint
 class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.AttachInteractionListener {
 
 
@@ -130,7 +132,6 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectRouteNavigationFragment(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

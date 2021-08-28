@@ -36,6 +36,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import pro.apir.tko.R
 import pro.apir.tko.presentation.extension.*
@@ -50,7 +51,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -64,6 +64,7 @@ typealias LumaListener = (luma: Double) -> Unit
  * - Photo taking
  * - Image analysis
  */
+@AndroidEntryPoint
 class CameraFragment : BaseFragment() {
 
     private val viewModel: CameraViewModel by viewModels()
@@ -123,7 +124,6 @@ class CameraFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectCameraFragment(this)
         mainExecutor = ContextCompat.getMainExecutor(requireContext())
     }
 

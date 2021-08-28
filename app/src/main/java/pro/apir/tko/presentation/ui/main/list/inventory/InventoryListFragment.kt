@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.presentation.extension.goneWithFade
@@ -21,6 +22,7 @@ import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
  * Date: 18.01.2020
  * Project: tko-android
  */
+@AndroidEntryPoint
 class InventoryListFragment : BaseListFragment(), ContainerListAdapter.OnItemClickListener {
 
     private val viewModel: InventoryListViewModel by viewModels()
@@ -42,7 +44,6 @@ class InventoryListFragment : BaseListFragment(), ContainerListAdapter.OnItemCli
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectInventoryListFragment(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -2,27 +2,21 @@ package pro.apir.tko.presentation.ui.main.list.inventory
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.presentation.ui.main.inventory.edit.EditResultEvent
 import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
+import javax.inject.Inject
 
-class InventoryListViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                         private val inventoryInteractor: InventoryInteractor,
-                                                         private val locationManager: LocationManager
+@HiltViewModel
+class InventoryListViewModel @Inject constructor(private val handle: SavedStateHandle,
+                                                 private val inventoryInteractor: InventoryInteractor,
+                                                 private val locationManager: LocationManager
 ) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
-
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<InventoryListViewModel>
-
-
-
 
     fun handleEditResult(result: EditResultEvent) {
         viewModelScope.launch(Dispatchers.IO) {

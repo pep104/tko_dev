@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import pro.apir.tko.R
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.domain.model.RouteModel
@@ -23,6 +24,7 @@ import javax.inject.Inject
  * Date: 08.02.2020
  * Project: tko-android
 + */
+@AndroidEntryPoint
 class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListener {
 
     @Inject
@@ -45,7 +47,6 @@ class RouteListFragment : BaseListFragment(), RouteListAdapter.RouteChooseListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectRouteListFragment(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

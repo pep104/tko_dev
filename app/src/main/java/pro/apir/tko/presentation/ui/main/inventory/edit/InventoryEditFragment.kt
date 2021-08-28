@@ -20,6 +20,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_inventory_edit.*
 import kotlinx.android.synthetic.main.fragment_inventory_edit.view.*
 import kotlinx.android.synthetic.main.toolbar_back_title.view.*
@@ -41,6 +42,7 @@ import javax.inject.Inject
  * Date: 22.01.2020
  * Project: tko-android
  */
+@AndroidEntryPoint
 class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnItemClickListener, AddContainerDialog.AddContainerListener, ContainersEditAdapter.OnContainerChangedListener {
 
     @Inject
@@ -146,7 +148,6 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectInventoryEditFragment(this)
 
         arguments?.let { bundle ->
             if (bundle.containsKey(KEY_CONTAINER)) {

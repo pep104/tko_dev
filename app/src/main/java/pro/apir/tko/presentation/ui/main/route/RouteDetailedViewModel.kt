@@ -6,8 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,12 +17,12 @@ import org.osmdroid.api.IGeoPoint
 import pro.apir.tko.core.constant.extension.roundUpNearest
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.core.utils.LocationUtils
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.presentation.platform.BaseViewModel
+import javax.inject.Inject
 
 
 /**
@@ -32,14 +31,13 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Project: tko-android
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED VM
-class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                         private val routeSessionInteractor: RouteSessionInteractor,
-                                                         private val routePhotosInteractor: RoutePhotoInteractor,
-                                                         private val locationManager: LocationManager
+@HiltViewModel
+class RouteDetailedViewModel @Inject constructor(
+    private val handle: SavedStateHandle,
+    private val routeSessionInteractor: RouteSessionInteractor,
+    private val routePhotosInteractor: RoutePhotoInteractor,
+    private val locationManager: LocationManager,
 ) : BaseViewModel() {
-
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<RouteDetailedViewModel>
 
 
     //Map
@@ -119,7 +117,8 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     val loadingStopCompletion: LiveData<Boolean>
         get() = _loadingStopCompletion
 
-    private val _loadingTrackingCompletion = handle.getLiveData<Boolean>("loadingTrackingCompletion")
+    private val _loadingTrackingCompletion =
+        handle.getLiveData<Boolean>("loadingTrackingCompletion")
     val loadingTrackingCompletion: LiveData<Boolean>
         get() = _loadingTrackingCompletion
 
@@ -295,18 +294,18 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
                 } else {
                     _loadingStopCompletion.postValue(true)
                     routeSessionInteractor.completePoint(session, completablePointId).fold(
-                            {
-                                _loadingStopCompletion.postValue(false)
-                                handleFailure(it)
-                            },
-                            {
-                                setData(it)
-                                //Update current pos
-                                val completedPos = it.points.first { it.pointId == completablePointId }
-                                setStopData(completedPos)
-                                _loadingStopCompletion.postValue(false)
-                                Unit
-                            })
+                        {
+                            _loadingStopCompletion.postValue(false)
+                            handleFailure(it)
+                        },
+                        {
+                            setData(it)
+                            //Update current pos
+                            val completedPos = it.points.first { it.pointId == completablePointId }
+                            setStopData(completedPos)
+                            _loadingStopCompletion.postValue(false)
+                            Unit
+                        })
                 }
 
             } else {
@@ -432,7 +431,10 @@ class RouteDetailedViewModel @AssistedInject constructor(@Assisted private val h
     }
 
 
-    private fun mapDistances(list: List<RoutePointModel>, userLocation: LocationModel?): List<RoutePointModel> {
+    private fun mapDistances(
+        list: List<RoutePointModel>,
+        userLocation: LocationModel?,
+    ): List<RoutePointModel> {
         return if (userLocation != null)
             list.map {
                 val pointCoordinates = it.coordinates

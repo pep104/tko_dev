@@ -1,9 +1,11 @@
 package pro.apir.tko.data.di
 
-import android.app.Application
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManager
 import pro.apir.tko.data.framework.dict.OptionsDictionariesManagerImpl
 import pro.apir.tko.data.framework.manager.host.HostManager
@@ -22,14 +24,15 @@ import javax.inject.Singleton
 
 
 @Module
-class FrameworkModule(private val application: Application) {
+@InstallIn(SingletonComponent::class)
+class FrameworkModule() {
 
 
     //Managers
 
     @Singleton
     @Provides
-    fun preferencesManager(context: Context): PreferencesManager = PreferencesManagerImpl(context)
+    fun preferencesManager(@ApplicationContext context: Context): PreferencesManager = PreferencesManagerImpl(context)
 
     @Singleton
     @Provides
@@ -37,7 +40,7 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun locationManager(context: Context, preferencesManager: PreferencesManager): LocationManager = LocationManagerImpl(context, preferencesManager)
+    fun locationManager(@ApplicationContext  context: Context, preferencesManager: PreferencesManager): LocationManager = LocationManagerImpl(context, preferencesManager)
 
     @Singleton
     @Provides
@@ -47,15 +50,15 @@ class FrameworkModule(private val application: Application) {
 
     @Singleton
     @Provides
-    fun networkHandler(context: Context): NetworkHandler = NetworkHandler(context)
+    fun networkHandler(@ApplicationContext context: Context): NetworkHandler = NetworkHandler(context)
 
 
     //Room
 
     @Singleton
     @Provides
-    fun appDatabase(): AppDatabase {
-        return AppDatabase.getDatabase(application)
+    fun appDatabase(@ApplicationContext  context: Context): AppDatabase {
+        return AppDatabase.getDatabase(context)
     }
 
     @Singleton
@@ -75,7 +78,7 @@ class FrameworkModule(private val application: Application) {
 
     @Provides
     @Singleton
-    fun provideDictManager(context: Context): OptionsDictionariesManager = OptionsDictionariesManagerImpl(context)
+    fun provideDictManager(@ApplicationContext  context: Context): OptionsDictionariesManager = OptionsDictionariesManagerImpl(context)
 
     //Mapper
 

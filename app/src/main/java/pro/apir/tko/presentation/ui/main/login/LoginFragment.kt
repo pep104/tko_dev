@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.BuildConfig
@@ -29,6 +30,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 17.01.2020
  * Project: tko-android
  */
+@AndroidEntryPoint
 class LoginFragment : BaseFragment() {
 
     private val viewModel: LoginViewModel by viewModels()
@@ -46,7 +48,6 @@ class LoginFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectLoginFragment(this)
     }
 
     override fun onCreateView(

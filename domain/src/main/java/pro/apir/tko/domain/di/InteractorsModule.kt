@@ -2,6 +2,8 @@ package pro.apir.tko.domain.di
 
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.address.AddressInteractorImpl
 import pro.apir.tko.domain.interactors.auth.AuthInteractor
@@ -23,6 +25,7 @@ import pro.apir.tko.domain.interactors.user.UserInteractorImpl
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class InteractorsModule {
 
 

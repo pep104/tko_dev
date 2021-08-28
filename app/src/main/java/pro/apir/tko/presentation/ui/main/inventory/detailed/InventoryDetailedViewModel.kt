@@ -3,15 +3,14 @@ package pro.apir.tko.presentation.ui.main.inventory.detailed
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.presentation.platform.BaseViewModel
+import javax.inject.Inject
 
 /**
  * Created by antonsarmatin
@@ -19,10 +18,12 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Project: tko-android
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED VM
-class InventoryDetailedViewModel @AssistedInject constructor(@Assisted handle: SavedStateHandle, private val inventoryInteractor: InventoryInteractor) : BaseViewModel() {
+@HiltViewModel
+class InventoryDetailedViewModel @Inject constructor(
+    handle: SavedStateHandle,
+    private val inventoryInteractor: InventoryInteractor,
+) : BaseViewModel() {
 
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<InventoryDetailedViewModel>
 
     private val _data = handle.getLiveData<ContainerAreaShortModel>("data")
     val data: LiveData<ContainerAreaShortModel>

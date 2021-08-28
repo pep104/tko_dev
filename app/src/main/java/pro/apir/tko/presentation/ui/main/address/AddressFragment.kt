@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import com.redmadrobot.inputmask.MaskedTextChangedListener
 import com.redmadrobot.inputmask.helper.AffinityCalculationStrategy
 import com.redmadrobot.inputmask.model.Notation
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_address.view.*
 import kotlinx.android.synthetic.main.fragment_address.view.btnBack
 import kotlinx.android.synthetic.main.fragment_address.view.btnSearch
@@ -51,6 +52,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Project: tko-android
  */
 //Fragment for pick or edit address of container area
+@AndroidEntryPoint
 class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener {
 
     private val viewModel: AddressViewModel by viewModels()
@@ -162,7 +164,6 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectAddressFragment(this)
 
         //Try to get AddressModel parcelable
         arguments?.let { bundle ->

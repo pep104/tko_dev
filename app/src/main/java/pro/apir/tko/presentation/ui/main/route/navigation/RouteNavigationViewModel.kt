@@ -1,10 +1,9 @@
 package pro.apir.tko.presentation.ui.main.route.navigation
 
 import androidx.lifecycle.SavedStateHandle
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
-import pro.apir.tko.di.ViewModelAssistedFactory
+import dagger.hilt.android.lifecycle.HiltViewModel
 import pro.apir.tko.presentation.platform.BaseViewModel
+import javax.inject.Inject
 
 /**
  * Created by Антон Сарматин
@@ -12,9 +11,8 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Project: tko-android
  *
  */
-class RouteNavigationViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle): BaseViewModel() {
-
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<RouteNavigationViewModel>
+@HiltViewModel
+class RouteNavigationViewModel @Inject constructor(private val handle: SavedStateHandle) :
+    BaseViewModel() {
 
 }

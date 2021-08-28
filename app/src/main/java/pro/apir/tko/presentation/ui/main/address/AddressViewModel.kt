@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -15,12 +14,12 @@ import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
 import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.core.utils.LocationUtils
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.address.AddressSuggestionRequester
+import javax.inject.Inject
 import kotlin.math.absoluteValue
 
 /**
@@ -28,15 +27,13 @@ import kotlin.math.absoluteValue
  * Date: 22.01.2020
  * Project: tko-android
  */
-class AddressViewModel @AssistedInject constructor(
-    @Assisted
+@HiltViewModel
+class AddressViewModel @Inject constructor(
     private val handle: SavedStateHandle,
     private val addressRequester: AddressSuggestionRequester,
     private val locationManager: LocationManager,
 ) : BaseViewModel() {
 
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<AddressViewModel>
 
     private var addressCoordinatesJob: Job? = null
 
@@ -54,7 +51,7 @@ class AddressViewModel @AssistedInject constructor(
 
     private val _addressCoordinatesLoading = MutableLiveData<Boolean>(false)
     val addressCoordinatesLoading: LiveData<Boolean>
-    get()  = _addressCoordinatesLoading
+        get() = _addressCoordinatesLoading
 
     private val _viewType = handle.getLiveData<ViewType>("viewType", ViewType.BOTTOM_CARD)
     val viewType: LiveData<ViewType>

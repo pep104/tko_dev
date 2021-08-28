@@ -3,26 +3,24 @@ package pro.apir.tko.presentation.ui.main
 import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.*
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.blocked.BlockedInteractor
+import javax.inject.Inject
 
 /**
  * Created by antonsarmatin
  * Date: 2019-12-28
  * Project: android-template
  */
-class GlobalState @AssistedInject constructor(
-    @Assisted handle: SavedStateHandle,
+@HiltViewModel
+class GlobalState @Inject constructor(
+    handle: SavedStateHandle,
     private val blockedInteractor: BlockedInteractor,
 ) : ViewModel() {
 
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<GlobalState>
 
     private val _userState = handle.getLiveData<UserState>("userState")
     val userState: LiveData<UserState>

@@ -1,6 +1,8 @@
 package pro.apir.tko.data.di
 
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 /**
  * Created by Антон Сарматин
@@ -8,6 +10,7 @@ import dagger.Module
  * Project: tko-android
  */
 @Module
+@InstallIn(SingletonComponent::class)
 class MapperModule {
 
 

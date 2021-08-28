@@ -10,6 +10,8 @@ apply plugin: 'com.google.gms.google-services'
 
 apply plugin: 'com.google.firebase.crashlytics'
 
+apply plugin: 'dagger.hilt.android.plugin'
+
 
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -138,12 +140,10 @@ dependencies {
 
 
     //Dagger2
-    implementation 'com.google.dagger:dagger:2.25.2'
-    kapt 'com.google.dagger:dagger-compiler:2.25.2'
-    compileOnly 'org.glassfish:javax.annotation:3.1.1'
-    compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:0.5.2")
-    kapt("com.squareup.inject:assisted-inject-processor-dagger2:0.5.2")
-    compileOnly 'com.github.pengrad:jdk9-deps:1.0'
+
+    implementation("com.google.dagger:hilt-android:2.38.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+
 
     //Java8 Time API backport
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.2'

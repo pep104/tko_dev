@@ -13,6 +13,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_menu.view.*
 import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.R
@@ -23,6 +24,7 @@ import pro.apir.tko.presentation.platform.BaseFragment
  * Date: 18.01.2020
  * Project: tko-android
  */
+@AndroidEntryPoint
 class MenuFragment : BaseFragment() {
 
     private val viewModel: MenuViewModel by viewModels()
@@ -36,7 +38,6 @@ class MenuFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectMenuFragment(this)
 
         requireActivity()
                 .onBackPressedDispatcher

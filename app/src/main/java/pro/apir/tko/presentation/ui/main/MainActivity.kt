@@ -5,12 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseActivity
@@ -20,13 +22,15 @@ const val KEY_EVENT_ACTION = "key_event_action"
 const val KEY_EVENT_EXTRA = "key_event_extra"
 private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
+
+    private val globalState: GlobalState by viewModels()
 
     private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectMainActivity(this)
 
         setContentView(R.layout.activity_main)
 

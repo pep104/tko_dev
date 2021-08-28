@@ -2,6 +2,8 @@ package pro.apir.tko.data.di
 
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.attachment.AttachmentRepositoryImpl
 import pro.apir.tko.data.repository.auth.AuthRepositoryImpl
@@ -27,6 +29,7 @@ import pro.apir.tko.domain.repository.user.UserRepository
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
 
     @Binds

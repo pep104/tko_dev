@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.bottomsheet_inventory_detailed.view.*
 import kotlinx.android.synthetic.main.content_map_detailed.view.*
 import kotlinx.android.synthetic.main.fragment_inventory_detailed.view.*
@@ -52,6 +53,7 @@ import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
  * Project: tko-android
  */
 //TODO EXTRACT CONTROLS etc TO BASE DETAILED FRAGMENT
+@AndroidEntryPoint
 class InventoryDetailedFragment : BaseFragment() {
 
     private val viewModel: InventoryDetailedViewModel by viewModels()
@@ -90,7 +92,6 @@ class InventoryDetailedFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectInventoryDetailedFragment(this)
 
         arguments?.let { bundle ->
             val id = bundle.getLong(KEY_ID, 0L)

@@ -5,14 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
-import pro.apir.tko.di.ViewModelAssistedFactory
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
@@ -20,22 +18,23 @@ import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.RouteModel
 import pro.apir.tko.presentation.extension.notifyObserver
 import pro.apir.tko.presentation.ui.main.list.BaseListViewModel
+import javax.inject.Inject
 
 /**
  * Created by antonsarmatin
  * Date: 2020-02-08
  * Project: tko-android
  */
-class RouteListViewModel @AssistedInject constructor(@Assisted private val handle: SavedStateHandle,
-                                                     private val inventoryInteractor: InventoryInteractor,
-                                                     private val routeInteractor: RouteInteractor,
-                                                     private val routeSessionInteractor: RouteSessionInteractor,
-                                                     private val locationManager: LocationManager,
-                                                     private val routeTrackApi: RouteTrackApi,
-                                                     private val routeSessionDao: RouteSessionDao) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
-
-    @AssistedInject.Factory
-    interface Factory : ViewModelAssistedFactory<RouteListViewModel>
+@HiltViewModel
+class RouteListViewModel @Inject constructor(
+    private val handle: SavedStateHandle,
+    private val inventoryInteractor: InventoryInteractor,
+    private val routeInteractor: RouteInteractor,
+    private val routeSessionInteractor: RouteSessionInteractor,
+    private val locationManager: LocationManager,
+    private val routeTrackApi: RouteTrackApi,
+    private val routeSessionDao: RouteSessionDao,
+) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
 
     private var pagingJob: Job? = null
 

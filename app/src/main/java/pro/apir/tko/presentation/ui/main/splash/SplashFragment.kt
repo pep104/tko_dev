@@ -6,11 +6,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import pro.apir.tko.R
 import pro.apir.tko.core.exception.Failure
 import pro.apir.tko.presentation.platform.BaseFragment
 import pro.apir.tko.presentation.ui.main.GlobalState
 
+@AndroidEntryPoint
 class SplashFragment : BaseFragment() {
 
     override fun layoutId() = R.layout.fragment_splash
@@ -22,7 +24,6 @@ class SplashFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectSplashFragment(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

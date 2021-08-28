@@ -90,7 +90,6 @@ class RouteDetailedFragment : BaseFragment(), RoutePointsAdapter.OnRoutePointCli
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appComponent.createMainComponent().injectRouteDetailedFragment(this)
 
         arguments?.let {
             val route: RouteModel? = it.getParcelable(KEY_ROUTE)

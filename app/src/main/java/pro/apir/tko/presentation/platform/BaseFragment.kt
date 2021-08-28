@@ -14,16 +14,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
-import pro.apir.tko.App
 import pro.apir.tko.R
 import pro.apir.tko.core.exception.Failure
-import pro.apir.tko.di.ViewModelFactory
-import pro.apir.tko.di.component.AppComponent
 import pro.apir.tko.presentation.extension.alert
 import pro.apir.tko.presentation.ui.main.GlobalState
-import javax.inject.Inject
 
 
 /**
@@ -31,25 +27,24 @@ import javax.inject.Inject
  *
  * @see Fragment
  */
+@AndroidEntryPoint
 abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
 
     abstract fun layoutId(): Int
 
     abstract fun handleFailure(): LiveData<Failure>?
 
-    val appComponent: AppComponent by lazy(mode = LazyThreadSafetyMode.NONE) {
-        (activity?.application as App).appComponent
-    }
+
 
     internal val globalState: GlobalState by activityViewModels()
 
     internal open val failureObserver by lazy {
         Observer<Failure> {
             when (it) {
-                is Failure.FeatureFailure ->  throw NotImplementedError("You should override failureObserver to handle FeatureFailure - ${it.javaClass.simpleName}")
+                is Failure.FeatureFailure -> throw NotImplementedError("You should override failureObserver to handle FeatureFailure - ${it.javaClass.simpleName}")
                 Failure.NetworkConnection -> alert(R.string.error_network_connection)
                 is Failure.ServerError -> {
-                    if(it.errorMessage != null){
+                    if (it.errorMessage != null) {
                         alert(it.errorMessage)
                     }
                 }
@@ -59,18 +54,22 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
             }
         }
     }
+//
+//    @Inject
+//    lateinit var viewModelFactory: ViewModelFactory
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
-
-    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory = viewModelFactory.create(this, arguments)
+//    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory = viewModelFactory.create(this, arguments)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(layoutId(), container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View =
+        inflater.inflate(layoutId(), container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -92,15 +91,16 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
         activity?.onBackPressed()
     }
 
-    internal fun setStatusBarColor(@ColorRes color: Int){
-            val startColor = activity?.window?.statusBarColor
-            val endColor = ContextCompat.getColor(requireContext(),color)
-            ObjectAnimator.ofArgb(activity?.window, "statusBarColor", startColor!!, endColor).start()
+    internal fun setStatusBarColor(@ColorRes color: Int) {
+        val startColor = activity?.window?.statusBarColor
+        val endColor = ContextCompat.getColor(requireContext(), color)
+        ObjectAnimator.ofArgb(activity?.window, "statusBarColor", startColor!!, endColor).start()
     }
 
-    internal fun setStatusBarLightMode(isLight: Boolean){
+    internal fun setStatusBarLightMode(isLight: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            activity?.window?.decorView?.systemUiVisibility = if(isLight) View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            activity?.window?.decorView?.systemUiVisibility =
+                if (isLight) View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
 
     }
