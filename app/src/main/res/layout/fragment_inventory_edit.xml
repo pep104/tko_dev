@@ -12,7 +12,7 @@
         layout="@layout/toolbar_back_title" />
 
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -161,14 +161,26 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/titleContainers"
+                android:layout_width="match_parent"
+                style="@style/TextListHeader"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                android:text="@string/text_container" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycerViewContainers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                tools:itemCount="2"
+                android:clipChildren="false"
+                tools:itemCount="9"
                 tools:listitem="@layout/item_edit_container" />
 
             <com.google.android.material.button.MaterialButton
@@ -563,6 +575,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
