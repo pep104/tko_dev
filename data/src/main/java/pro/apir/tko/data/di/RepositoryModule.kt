@@ -5,6 +5,7 @@ import dagger.Module
 import pro.apir.tko.data.repository.address.AddressRepositoryImpl
 import pro.apir.tko.data.repository.attachment.AttachmentRepositoryImpl
 import pro.apir.tko.data.repository.auth.AuthRepositoryImpl
+import pro.apir.tko.data.repository.blocked.BlockedRepositoryImpl
 import pro.apir.tko.data.repository.credentials.CredentialsRepositoryImpl
 import pro.apir.tko.data.repository.host.HostRepositoryImpl
 import pro.apir.tko.data.repository.inventory.InventoryRepositoryImpl
@@ -15,6 +16,7 @@ import pro.apir.tko.data.repository.user.UserRepositoryImpl
 import pro.apir.tko.domain.repository.address.AddressRepository
 import pro.apir.tko.domain.repository.attachment.AttachmentRepository
 import pro.apir.tko.domain.repository.auth.AuthRepository
+import pro.apir.tko.domain.repository.blocked.BlockedRepository
 import pro.apir.tko.domain.repository.credentials.CredentialsRepository
 import pro.apir.tko.domain.repository.host.HostRepository
 import pro.apir.tko.domain.repository.inventory.InventoryRepository
@@ -66,6 +68,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun hostRepository(impl: HostRepositoryImpl): HostRepository
+
+    @Binds
+    @Singleton
+    abstract fun blockedRepository(impl: BlockedRepositoryImpl): BlockedRepository
 
     //Cache
 

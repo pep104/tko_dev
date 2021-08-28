@@ -26,6 +26,8 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appComponent.createMainComponent().injectMainActivity(this)
+
         setContentView(R.layout.activity_main)
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
@@ -53,6 +55,12 @@ class MainActivity : BaseActivity() {
             }
         })
 
+        globalState.blocked.observe(this, Observer {
+            if (it) {
+                navController.navigate(R.id.action_global_blockedFragment)
+            }
+        })
+
         globalState.menuState.observe(this, Observer { state ->
             val dimenY = resources.getDimension(R.dimen.activity_menu_height)
 
@@ -61,18 +69,18 @@ class MainActivity : BaseActivity() {
                 if (state == true) {
                     layoutActivityMenu.isVisible = state
                     ViewCompat.animate(it)
-                            .translationY(dimenY)
-                            .setDuration(300)
-                            .setInterpolator(AccelerateDecelerateInterpolator())
-                            .setStartDelay(35)
+                        .translationY(dimenY)
+                        .setDuration(300)
+                        .setInterpolator(AccelerateDecelerateInterpolator())
+                        .setStartDelay(35)
                 } else {
                     ViewCompat.animate(it)
-                            .translationY(0f)
-                            .setDuration(200)
-                            .setInterpolator(AccelerateDecelerateInterpolator())
-                            .withEndAction {
-                                layoutActivityMenu.isVisible = state
-                            }
+                        .translationY(0f)
+                        .setDuration(200)
+                        .setInterpolator(AccelerateDecelerateInterpolator())
+                        .withEndAction {
+                            layoutActivityMenu.isVisible = state
+                        }
                     it.setOnTouchListener(null)
                 }
             }
