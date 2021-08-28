@@ -1,21 +1,25 @@
 package pro.apir.tko.presentation.ui.main
 
 import android.os.Parcelable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import pro.apir.tko.di.ViewModelAssistedFactory
+import pro.apir.tko.domain.interactors.blocked.BlockedInteractor
 
 /**
  * Created by antonsarmatin
  * Date: 2019-12-28
  * Project: android-template
  */
-class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle) : ViewModel() {
+class GlobalState @AssistedInject constructor(
+    @Assisted handle: SavedStateHandle,
+    private val blockedInteractor: BlockedInteractor,
+) : ViewModel() {
 
     @AssistedInject.Factory
     interface Factory : ViewModelAssistedFactory<GlobalState>
@@ -28,24 +32,37 @@ class GlobalState @AssistedInject constructor(@Assisted handle: SavedStateHandle
     val menuState: LiveData<Boolean>
         get() = _menuState
 
+    private val _blocked = handle.getLiveData<Boolean>("blocked", false)
+    val blocked: LiveData<Boolean>
+        get() = Transformations.distinctUntilChanged(_blocked)
+
+    init {
+        viewModelScope.launch {
+            blockedInteractor.getBlock().collect {
+                Log.e("blocked","Is app blocked? -> $it")
+                _blocked.postValue(it)
+            }
+        }
+    }
+
     fun setUserState(state: UserState) {
         _userState.postValue(state)
     }
 
     fun toggleMenu() {
         val current = _menuState.value
-        if(current == false){
+        if (current == false) {
             _menuState.postValue(true)
-        }else{
+        } else {
             _menuState.postValue(false)
         }
     }
 
-    fun closeMenu(){
+    fun closeMenu() {
         _menuState.postValue(false)
     }
 
-    fun openMenu(){
+    fun openMenu() {
         _menuState.postValue(true)
     }
 

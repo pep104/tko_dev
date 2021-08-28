@@ -95,18 +95,18 @@
     <fragment
         android:id="@+id/routeListFragment"
         android:name="pro.apir.tko.presentation.ui.main.list.route.RouteListFragment"
-        android:label="RouteListFragment" >
+        android:label="RouteListFragment">
         <action
             android:id="@+id/action_routeListFragment_to_graphRoute"
             app:destination="@id/graphRoute" />
     </fragment>
     <navigation
         android:id="@+id/graphRoute"
-        app:startDestination="@id/routeDetailedFragment" >
+        app:startDestination="@id/routeDetailedFragment">
         <fragment
             android:id="@+id/routeNavigationFragment"
             android:name="pro.apir.tko.presentation.ui.main.route.navigation.RouteNavigationFragment"
-            android:label="RouteNavigationFragment" >
+            android:label="RouteNavigationFragment">
             <action
                 android:id="@+id/action_routeNavigationFragment_to_cameraFragment2"
                 app:destination="@id/cameraFragment2" />
@@ -123,5 +123,18 @@
             android:id="@+id/cameraFragment2"
             android:name="pro.apir.tko.presentation.ui.main.camera.CameraFragment"
             android:label="CameraFragment" />
-    </navigation><action android:id="@+id/action_global_splashFragment" app:destination="@id/splashFragment"/>
+    </navigation>
+    <action
+        android:id="@+id/action_global_splashFragment"
+        app:destination="@id/splashFragment" />
+    <fragment
+        android:id="@+id/blockedFragment"
+        android:name="pro.apir.tko.presentation.ui.blocked.BlockedFragment"
+        android:label="BlockedFragment" />
+    <action
+        android:id="@+id/action_global_blockedFragment"
+        app:destination="@id/blockedFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/nav_graph_main.xml"
+        app:popUpToInclusive="true" />
 </navigation>

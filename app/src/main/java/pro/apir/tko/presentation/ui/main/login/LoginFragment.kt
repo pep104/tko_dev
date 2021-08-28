@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.toolbar_title.view.*
 import pro.apir.tko.BuildConfig
 import pro.apir.tko.R
 import pro.apir.tko.presentation.entities.HostUi
-import pro.apir.tko.presentation.extension.getTextValue
 import pro.apir.tko.presentation.platform.BaseFragment
 
 /**
@@ -76,11 +75,12 @@ class LoginFragment : BaseFragment() {
         }
 
         btnLogin.setOnClickListener {
-            viewModel.login(
-                email = etMail.getTextValue(),
-                pass = etPass.getTextValue(),
-                host = tiHost.editText?.getTextValue() ?: ""
-            )
+//            viewModel.login(
+//                email = etMail.getTextValue(),
+//                pass = etPass.getTextValue(),
+//                host = tiHost.editText?.getTextValue() ?: ""
+//            )
+            findNavController().navigate(R.id.action_global_blockedFragment)
         }
 
         setupHostPicker(tiHost)
