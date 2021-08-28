@@ -258,6 +258,7 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
 
         viewModel.containers.observe(viewLifecycleOwner, Observer { containers ->
             containers?.let {
+                titleContainers.visibility = if(it.isNotEmpty()) View.VISIBLE else View.GONE
                 adapterContainers.setData(it)
             }
         })
