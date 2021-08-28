@@ -1,16 +1,20 @@
 package pro.apir.tko.presentation.ui.main.list
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.util.GeoPoint
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
+import pro.apir.tko.domain.interactors.map.MapPointInteractor
 import pro.apir.tko.domain.manager.LocationManager
+import pro.apir.tko.domain.model.BBoxModel
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.domain.model.LocationModel
+import pro.apir.tko.domain.model.map.MapPointModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 
 /**
@@ -18,19 +22,33 @@ import pro.apir.tko.presentation.platform.BaseViewModel
  * Date: 08.02.2020
  * Project: tko-android
  */
-abstract class BaseListViewModel(private val handle: SavedStateHandle,
-                                 private val inventoryInteractor: InventoryInteractor,
-                                 private val locationManager: LocationManager
+abstract class BaseListViewModel(
+    private val handle: SavedStateHandle,
+    private val mapInteractor: MapPointInteractor,
+    private val inventoryInteractor: InventoryInteractor,
+    private val locationManager: LocationManager,
 ) : BaseViewModel() {
 
+    protected var mapJob: Job? = null
     protected var fetchJob: Job? = null
     protected var searchJob: Job? = null
 
+
+    private val _allMapPoints = handle.getLiveData<List<MapPointModel>>("allMapPicture")
+    val allMapPoints: LiveData<List<MapPointModel>>
+        get() = _allMapPoints
+
+    private val _newMapPoints = MutableLiveData<List<MapPointModel>>()
+    val newMapPoints: LiveData<List<MapPointModel>>
+        get() = _newMapPoints
+
+    //TODO REMOVE?
     protected val _containers = handle.getLiveData<List<ContainerAreaListModel>>("containers")
     val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
 
-    protected val _searchContainersResults = handle.getLiveData<List<ContainerAreaListModel>>("searchResults")
+    protected val _searchContainersResults =
+        handle.getLiveData<List<ContainerAreaListModel>>("searchResults")
     val searchContainersResults: LiveData<List<ContainerAreaListModel>>
         get() = _searchContainersResults
 
@@ -73,20 +91,48 @@ abstract class BaseListViewModel(private val handle: SavedStateHandle,
                 _lastPosition = GeoPoint(it.lat, it.lon)
             }
         }
+        collectMapPoints()
     }
 
-    fun fetchContainerAreas(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double) {
-        fetchJob?.cancel()
-        if (_searchMode.value != true) {
-            fetchJob = viewModelScope.launch(Dispatchers.IO) {
-                inventoryInteractor.getContainerAreasByBoundingBox(lngMin, latMin, lngMax, latMax, 1, 500)
-                        .collect {
-                            it.fold(::handleFailure) {
-                                combineAreas(it)
-                            }
-                        }
-            }
+    fun fetchMapPoints(bbox: BBoxModel) {
+        mapJob?.cancel()
+        mapJob = viewModelScope.launch(Dispatchers.IO) {
+            mapInteractor.fetch(bbox)
         }
+    }
+
+    private fun collectMapPoints() {
+        viewModelScope.launch(Dispatchers.IO) {
+            mapInteractor.getMapPoints()
+                .collectLatest { points ->
+                    launch {
+                        val current = _allMapPoints.value ?: emptyList()
+                        val new = points.filter { !current.contains(it) }
+                        _newMapPoints.postValue(new)
+                        _allMapPoints.postValue(current + new)
+                    }
+                }
+        }
+    }
+
+
+    fun fetchContainerAreas(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double) {
+//        fetchJob?.cancel()
+//        if (_searchMode.value != true) {
+//            fetchJob = viewModelScope.launch(Dispatchers.IO) {
+//                inventoryInteractor.getContainerAreasByBoundingBox(lngMin,
+//                    latMin,
+//                    lngMax,
+//                    latMax,
+//                    1,
+//                    500)
+//                    .collect {
+//                        it.fold(::handleFailure) {
+//                            combineAreas(it)
+//                        }
+//                    }
+//            }
+//        }
     }
 
     fun switchSearchMode() {

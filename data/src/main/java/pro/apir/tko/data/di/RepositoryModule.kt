@@ -11,6 +11,7 @@ import pro.apir.tko.data.repository.blocked.BlockedRepositoryImpl
 import pro.apir.tko.data.repository.credentials.CredentialsRepositoryImpl
 import pro.apir.tko.data.repository.host.HostRepositoryImpl
 import pro.apir.tko.data.repository.inventory.InventoryRepositoryImpl
+import pro.apir.tko.data.repository.map.MapPointRepositoryImpl
 import pro.apir.tko.data.repository.route.RouteRepositoryImpl
 import pro.apir.tko.data.repository.route.RouteSessionRepositoryImpl
 import pro.apir.tko.data.repository.route.photo.RoutePhotoRepositoryImpl
@@ -22,6 +23,7 @@ import pro.apir.tko.domain.repository.blocked.BlockedRepository
 import pro.apir.tko.domain.repository.credentials.CredentialsRepository
 import pro.apir.tko.domain.repository.host.HostRepository
 import pro.apir.tko.domain.repository.inventory.InventoryRepository
+import pro.apir.tko.domain.repository.map.MapPointRepository
 import pro.apir.tko.domain.repository.route.RouteRepository
 import pro.apir.tko.domain.repository.route.RouteSessionRepository
 import pro.apir.tko.domain.repository.route.photo.RoutePhotoRepository
@@ -35,6 +37,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun authRepository(impl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun mapPointRepository(impl: MapPointRepositoryImpl): MapPointRepository
 
     @Binds
     @Singleton

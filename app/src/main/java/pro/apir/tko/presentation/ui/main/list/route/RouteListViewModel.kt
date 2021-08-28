@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import pro.apir.tko.data.framework.network.api.RouteTrackApi
 import pro.apir.tko.data.framework.room.dao.RouteSessionDao
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
+import pro.apir.tko.domain.interactors.map.MapPointInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.interactors.route.session.RouteSessionInteractor
 import pro.apir.tko.domain.manager.LocationManager
@@ -27,13 +28,14 @@ import javax.inject.Inject
 @HiltViewModel
 class RouteListViewModel @Inject constructor(
     private val handle: SavedStateHandle,
+    private val mapInteractor: MapPointInteractor,
     private val inventoryInteractor: InventoryInteractor,
     private val routeInteractor: RouteInteractor,
     private val routeSessionInteractor: RouteSessionInteractor,
     private val locationManager: LocationManager,
     private val routeTrackApi: RouteTrackApi,
     private val routeSessionDao: RouteSessionDao,
-) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
+) : BaseListViewModel(handle, mapInteractor, inventoryInteractor, locationManager) {
 
     private var pagingJob: Job? = null
 

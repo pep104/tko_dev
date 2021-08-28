@@ -8,4 +8,4 @@ import javax.inject.Inject
  * Date: 19/05/2020
  * Project: tko-android
  */
-class ContainerAreaListCache @Inject constructor() : Cache<ContainerAreaListModel>()
+class ContainerAreaListRuntimeCache @Inject constructor() : RuntimeCache<ContainerAreaListModel>()

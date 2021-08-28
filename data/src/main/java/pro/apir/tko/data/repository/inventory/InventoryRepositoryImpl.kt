@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.data.onSuccess
-import pro.apir.tko.data.cache.ContainerAreaListCache
+import pro.apir.tko.data.cache.ContainerAreaListRuntimeCache
 import pro.apir.tko.data.framework.network.api.InventoryApi
 import pro.apir.tko.data.framework.network.model.request.ContainerAreaDetailedRequest
 import pro.apir.tko.data.framework.network.model.request.data.ImageRequestData
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class InventoryRepositoryImpl @Inject constructor(
         private val inventoryApi: InventoryApi,
-        private val cache: ContainerAreaListCache
+        private val cache: ContainerAreaListRuntimeCache
 ) : InventoryRepository {
 
     override suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel> {
