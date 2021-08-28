@@ -11,7 +11,7 @@ import pro.apir.tko.domain.model.ContainerAreaListModel
 data class ContainerAreaListData(
         val id: Long,
         val identifier: String?,
-        @SerializedName("registry_nuber")
+        @SerializedName("registry_number")
         val registyNumber: String?,
         val location: String?,
         val status: String?,
