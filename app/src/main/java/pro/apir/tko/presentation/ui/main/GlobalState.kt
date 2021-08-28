@@ -39,7 +39,7 @@ class GlobalState @AssistedInject constructor(
     init {
         viewModelScope.launch {
             blockedInteractor.getBlock().collect {
-                Log.e("blocked","Is app blocked? -> $it")
+                Log.d("GlobalState","Is app blocked? -> $it")
                 _blocked.postValue(it)
             }
         }

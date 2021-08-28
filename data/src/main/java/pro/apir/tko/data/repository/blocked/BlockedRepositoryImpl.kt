@@ -1,6 +1,5 @@
 package pro.apir.tko.data.repository.blocked
 
-import android.util.Log
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,12 +26,9 @@ class BlockedRepositoryImpl @Inject constructor(): BlockedRepository {
     }
 
     private fun fetchConfig() {
-        Log.e("blocked","fetchConfig")
         remoteConfig.setDefaultsAsync(R.xml.config_defaults)
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
-            Log.e("blocked","taskComplete")
             if (task.isSuccessful) {
-                Log.e("blocked","taskSuccessful")
                 updateBlocked()
             }
         }
@@ -40,7 +36,6 @@ class BlockedRepositoryImpl @Inject constructor(): BlockedRepository {
 
     private fun updateBlocked() {
         val isBlocked = remoteConfig.getBoolean(IS_BLOCKED_KEY)
-        Log.e("blocked","updateBlocked with $isBlocked")
         _blocked.tryEmit(isBlocked)
     }
 
