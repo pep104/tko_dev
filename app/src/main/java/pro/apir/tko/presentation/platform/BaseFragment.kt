@@ -48,7 +48,7 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
                         alert(it.errorMessage)
                     }
                 }
-                Failure.RefreshTokenExpired -> {
+                Failure.RefreshTokenNotValid -> {
                     globalState.setUserState(GlobalState.UserState.TokenExpired)
                 }
             }
