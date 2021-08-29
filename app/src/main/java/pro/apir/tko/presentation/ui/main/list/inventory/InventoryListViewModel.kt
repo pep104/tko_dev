@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
+import pro.apir.tko.domain.interactors.map.MapPointInteractor
 import pro.apir.tko.domain.manager.LocationManager
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.presentation.ui.main.inventory.edit.EditResultEvent
@@ -14,9 +15,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InventoryListViewModel @Inject constructor(private val handle: SavedStateHandle,
+                                                 private val mapInteractor: MapPointInteractor,
                                                  private val inventoryInteractor: InventoryInteractor,
                                                  private val locationManager: LocationManager
-) : BaseListViewModel(handle, inventoryInteractor, locationManager) {
+) : BaseListViewModel(handle, mapInteractor, inventoryInteractor, locationManager) {
 
     fun handleEditResult(result: EditResultEvent) {
         viewModelScope.launch(Dispatchers.IO) {

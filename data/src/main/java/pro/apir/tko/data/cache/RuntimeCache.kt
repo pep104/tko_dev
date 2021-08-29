@@ -5,7 +5,7 @@ package pro.apir.tko.data.cache
  * Date: 19/05/2020
  * Project: tko-android
  */
-open class Cache<T> {
+open class RuntimeCache<T> {
 
     private val data = mutableMapOf<String, T>()
 

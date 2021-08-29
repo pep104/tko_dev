@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
@@ -93,7 +92,6 @@ class AddressFragment : BaseFragment(), AddressSearchAdapter.OnItemClickListener
         override fun onScroll(event: ScrollEvent?): Boolean {
             val lat = mapView.mapCenter.latitude.round(6)
             val lon = mapView.mapCenter.longitude.round(6)
-            Log.e("map", "$lat $lon")
             viewModel.updateCoordinatesOnDragEvent(lat, lon)
             setMapPoint(
                 lat = lat,

@@ -1,7 +1,5 @@
 package pro.apir.tko.domain.utils
 
-import android.util.Log
-
 /**
  * Created by antonsarmatin
  * Date: 2020-05-02
@@ -16,7 +14,6 @@ fun substringLocationPrefixRecursively(location: String?): String? {
     val delimiterMatch = location?.contains(',', true) == true
 
     if ((regionMatch.isNotEmpty() || localMatch.isNotEmpty()) && delimiterMatch){
-        Log.e("http","$location --- region: $regionMatch, local: $localMatch, delimiter: $delimiterMatch")
         return substringLocationPrefixRecursively(location?.substringAfter(',')?.trim())
     }
     return location?.trim()

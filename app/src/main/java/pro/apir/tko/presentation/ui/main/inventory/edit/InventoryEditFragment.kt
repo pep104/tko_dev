@@ -1,7 +1,6 @@
 package pro.apir.tko.presentation.ui.main.inventory.edit
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.core.os.bundleOf
@@ -354,7 +353,6 @@ class InventoryEditFragment : BaseFragment(), ContainerAreaEditImagesAdapter.OnI
 
         sharedCameraViewModel.photos.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrEmpty()) {
-                Log.e("edit", "camera observe callback")
                 viewModel.addNewPhotos(it)
                 sharedCameraViewModel.consume()
             }

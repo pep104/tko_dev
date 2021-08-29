@@ -119,20 +119,9 @@ class InventoryInteractorImpl @Inject constructor(
     }
 
     override suspend fun getContainerAreasByBoundingBox(
-        lngMin: Double,
-        latMin: Double,
-        lngMax: Double,
-        latMax: Double,
-        page: Int,
-        pageSize: Int,
+        bbox: BBoxModel
     ): Flow<Resource<List<ContainerAreaListModel>>> = withContext(dispatcher) {
-        val result = inventoryRepository.getContainerAreasByBoundingBox(lngMin,
-            latMin,
-            lngMax,
-            latMax,
-            page,
-            pageSize)
-        return@withContext result.map { filterContainerArea(it) }
+        return@withContext inventoryRepository.getContainerAreasByBoundingBox(bbox).map { filterContainerArea(it) }
     }
 
     override suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>> {

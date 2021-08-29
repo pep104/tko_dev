@@ -553,7 +553,6 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
 
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.e("mapMarkers", "job start")
             val newFolderOverlay = FolderOverlay()
             list.forEach {
 
@@ -589,7 +588,6 @@ class RouteNavigationFragment : BaseFragment(), RoutePointPhotoAttachAdapter.Att
                 mapView.overlayManager.remove(markersOverlay)
                 mapView.overlayManager.add(newFolderOverlay)
                 markersOverlay = newFolderOverlay
-                Log.e("mapMarkers", "job end")
             }
         }
 

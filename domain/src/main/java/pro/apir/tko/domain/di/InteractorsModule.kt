@@ -14,6 +14,8 @@ import pro.apir.tko.domain.interactors.host.HostInteractor
 import pro.apir.tko.domain.interactors.host.HostInteractorImpl
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractorImpl
+import pro.apir.tko.domain.interactors.map.MapPointInteractor
+import pro.apir.tko.domain.interactors.map.MapPointInteractorImpl
 import pro.apir.tko.domain.interactors.route.RouteInteractor
 import pro.apir.tko.domain.interactors.route.RouteInteractorImpl
 import pro.apir.tko.domain.interactors.route.photo.RoutePhotoInteractor
@@ -60,6 +62,10 @@ abstract class InteractorsModule {
     @Binds
     @Singleton
     abstract fun hostInteractor(hostInteractorImpl: HostInteractorImpl): HostInteractor
+
+    @Binds
+    @Singleton
+    abstract fun mapInteractor(mapPointInteractorImpl: MapPointInteractorImpl): MapPointInteractor
 
     @Binds
     @Singleton

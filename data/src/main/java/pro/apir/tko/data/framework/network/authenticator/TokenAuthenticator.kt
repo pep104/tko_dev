@@ -18,16 +18,14 @@ class TokenAuthenticator @Inject constructor(private val credentialsManager: Cre
 
 
     override fun authenticate(route: Route?, response: Response): Request? {
-        Log.e("authenticator", "authenticate runs")
         val refreshToken = credentialsManager.getRefreshToken()
         val ref = authApi.refresh(refreshToken).execute()
         return if (ref.isSuccessful && ref.body() != null) {
             val newToken = ref.body()!!.accessRefreshed
-            Log.e("authenticator", "new token: $newToken")
             credentialsManager.saveAccessToken(newToken)
             response.request.newBuilder().header("Authorization", "Bearer $newToken").build()
         } else {
-            Log.e("authenticator", "refresh failure")
+            Log.e("Authenticator", "Refresh failure")
             null
         }
     }
