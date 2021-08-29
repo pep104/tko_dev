@@ -14,10 +14,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.core.exception.Failure
+import pro.apir.tko.core.exception.TokenUncaughtException
 import pro.apir.tko.presentation.extension.alert
 import pro.apir.tko.presentation.ui.main.GlobalState
 
@@ -48,7 +50,11 @@ abstract class BaseFragment : Fragment(), HasDefaultViewModelProviderFactory {
                         alert(it.errorMessage)
                     }
                 }
-                Failure.RefreshTokenNotValid -> {
+                is Failure.RefreshTokenNotValid -> {
+                    if(!it.isExpired)
+                        FirebaseCrashlytics.getInstance().recordException(
+                            TokenUncaughtException()
+                        )
                     globalState.setUserState(GlobalState.UserState.TokenExpired)
                 }
             }

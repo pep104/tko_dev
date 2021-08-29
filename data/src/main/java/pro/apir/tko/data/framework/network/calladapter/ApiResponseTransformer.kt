@@ -17,22 +17,29 @@ class ApiResponseTransformer @Inject constructor() {
             }
         } else {
             val errorMessage = response.errorBody()?.string()
+
             val message = if (errorMessage.isNullOrEmpty()) {
                 response.message()
             } else {
                 errorMessage
             }
-            ApiResult.Error(message ?: "Unknown error", response.code())
+
+            if (message.checkTokenError())
+                ApiResult.Error(Failure.RefreshTokenNotValid(false))
+            else
+                ApiResult.Error(message ?: "Unknown error", response.code())
         }
     }
 
     fun <N> transform(error: Throwable): ApiResult<N> {
 
-        if (error is RefreshTokenNotValidException) {
-            return ApiResult.Error(Failure.RefreshTokenNotValid)
+        return when {
+            error is RefreshTokenNotValidException ->
+                ApiResult.Error(Failure.RefreshTokenNotValid(false))
+            error.message.checkTokenError() -> ApiResult.Error(Failure.RefreshTokenNotValid(false))
+            else -> ApiResult.Error(error.message ?: "Unknown error", 0)
         }
 
-        return ApiResult.Error(error.message ?: "Unknown error", 0)
     }
 
 }
