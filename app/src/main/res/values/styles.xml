@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:windowBackground">@color/blueMain</item>
+        <item name="android:actionMenuTextColor">@color/blueMain</item>
     </style>
 
 

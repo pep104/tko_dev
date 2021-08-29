@@ -15,7 +15,8 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_menu.view.*
-import kotlinx.android.synthetic.main.toolbar_title.view.*
+import kotlinx.android.synthetic.main.toolbar_title.view.textToolbarTitle
+import kotlinx.android.synthetic.main.toolbar_title_exit.view.*
 import pro.apir.tko.R
 import pro.apir.tko.presentation.platform.BaseFragment
 
@@ -40,19 +41,21 @@ class MenuFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
 
         requireActivity()
-                .onBackPressedDispatcher
-                .addCallback(this, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        activity?.finish()
-                    }
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activity?.finish()
                 }
-                )
+            }
+            )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         view.textToolbarTitle.text = getString(R.string.title_menu)
+        view.btnToolbarLogOut.setOnClickListener {
+            globalState.logOut()
+        }
 
         btnInventory = view.btnInventory.apply { this.isEnabled = false }
         btnRoutes = view.btnRoutes.apply { this.isEnabled = false }
@@ -67,16 +70,19 @@ class MenuFragment : BaseFragment() {
 
 
         Dexter.withActivity(activity).withPermissions(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
         ).withListener(object : MultiplePermissionsListener {
             override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
                 btnRoutes.isEnabled = true
                 btnInventory.isEnabled = true
             }
 
-            override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>?, token: PermissionToken?) {
+            override fun onPermissionRationaleShouldBeShown(
+                permissions: MutableList<PermissionRequest>?,
+                token: PermissionToken?,
+            ) {
                 token?.continuePermissionRequest()
             }
         }).check()

@@ -6,9 +6,10 @@
     android:background="@color/white"
     android:clipToPadding="false">
 
+    <!--  TODO   -->
     <include
         android:id="@+id/include"
-        layout="@layout/toolbar_title" />
+        layout="@layout/toolbar_title_exit" />
 
     <ImageView
         android:id="@+id/img_sun"

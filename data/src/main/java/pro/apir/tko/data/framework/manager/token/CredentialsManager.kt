@@ -6,6 +6,8 @@ package pro.apir.tko.data.framework.manager.token
  * Project: tko-android
  */
 interface CredentialsManager {
+
+    fun onLogout(): Boolean
     
     fun isRefreshTokenExpired(): Boolean
 
