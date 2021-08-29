@@ -87,7 +87,7 @@ abstract class BaseListFragment : BaseFragment() {
 
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
-    private val markerOverlay: FolderOverlay = FolderOverlay()
+    private var markerOverlay: FolderOverlay = FolderOverlay()
     private var searchOverlay: FolderOverlay? = null
 
     private val mapPointsObserver = Observer<List<MapPointModel>> {
@@ -110,6 +110,7 @@ abstract class BaseListFragment : BaseFragment() {
             myLocationOverlay?.enableFollowLocation()
         }
         mapView.overlayManager.add(myLocationOverlay)
+        markerOverlay = FolderOverlay()
         mapView.addOverlay(markerOverlay)
 
         viewModel().allMapPoints.value?.let {
