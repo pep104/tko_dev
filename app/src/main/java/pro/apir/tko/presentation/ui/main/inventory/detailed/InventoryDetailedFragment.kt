@@ -43,6 +43,7 @@ import pro.apir.tko.presentation.extension.dpToPx
 import pro.apir.tko.presentation.extension.goneWithFade
 import pro.apir.tko.presentation.extension.visible
 import pro.apir.tko.presentation.platform.BaseFragment
+import pro.apir.tko.presentation.platform.view.PeekingLinearLayoutManager
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment
 import pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditSharedViewModel
 import ru.sarmatin.mobble.utils.consumablelivedata.ConsumableObserver
@@ -173,8 +174,15 @@ class InventoryDetailedFragment : BaseFragment() {
 
                 textContainerInfo.text = getString(R.string.text_container_detailed_info, pluredCount, area.toString())
 
-                imageRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                it.photos?.let { photos -> adapter.setData(photos) }
+                imageRecyclerView.layoutManager = if(it.photos == null || it.photos?.size == 1) {
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                }else{
+                    PeekingLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false, 0.85f)
+                }
+
+                it.photos?.let { photos ->
+                    adapter.setData(photos)
+                }
 
                 loading.goneWithFade()
                 imgThrash.visible()

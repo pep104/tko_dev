@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="168dp"
+    android:layout_height="192dp"
     android:orientation="vertical"
     android:paddingStart="24dp"
     android:paddingTop="8dp"
@@ -15,4 +15,9 @@
         android:layout_height="match_parent"
         tools:src="@drawable/img_temp_container" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
 </FrameLayout>
