@@ -48,6 +48,8 @@ import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.domain.model.map.MapPointModel
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
+import pro.apir.tko.presentation.utils.addOverlay
+import pro.apir.tko.presentation.utils.removeOverlay
 import pro.apir.tko.presentation.utils.toModel
 
 /**
@@ -109,8 +111,7 @@ abstract class BaseListFragment : BaseFragment() {
             myLocationOverlay?.enableFollowLocation()
         }
         mapView.overlayManager.add(myLocationOverlay)
-        if (mapView.overlayManager.overlays().findLast { it == markerOverlay } == null)
-            mapView.overlayManager.add(markerOverlay)
+        mapView.addOverlay(markerOverlay)
 
         viewModel().allMapPoints.value?.let {
             addMarkers(it)
@@ -181,7 +182,9 @@ abstract class BaseListFragment : BaseFragment() {
         viewModel().newMapPoints.observe(viewLifecycleOwner, mapPointsObserver)
 
         viewModel().searchContainersResults.observe(viewLifecycleOwner, Observer {
-            setMarkers(it, true)
+            if (it.isNotEmpty())
+                mapView.removeOverlay(markerOverlay)
+            setMarkers(it)
         })
 
         viewModel().searchLoading.observe(viewLifecycleOwner, Observer {
@@ -198,13 +201,9 @@ abstract class BaseListFragment : BaseFragment() {
         viewModel().searchMode.observe(viewLifecycleOwner, Observer {
             layoutSearch.isInvisible = !it
             if (it) {
-                mapView.overlayManager.remove(markerOverlay)
                 etSearch.focusWithKeyboard()
             } else {
-
-                if (mapView.overlayManager.overlays().findLast { it == markerOverlay } == null)
-                    mapView.overlayManager.add(markerOverlay)
-
+                mapView.addOverlay(markerOverlay)
                 hideKeyboard()
             }
         })
@@ -271,8 +270,8 @@ abstract class BaseListFragment : BaseFragment() {
         super.onPause()
     }
 
-
-    protected fun setMarkers(list: List<ContainerAreaListModel>, fromSearch: Boolean = false) {
+    protected fun setMarkers(list: List<ContainerAreaListModel>) {
+        Log.d("!!!","set markers")
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
             val newFolderOverlay = FolderOverlay()
@@ -280,7 +279,10 @@ abstract class BaseListFragment : BaseFragment() {
                 ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle_orange)
 
             list.mapNotNull(ContainerAreaListModel::coordinates)
-                .forEach { setMarker(markerOverlay, it, icon) }
+                .forEach {
+                    Log.d("!!!","set")
+                    setMarker(newFolderOverlay, it, icon)
+                }
 
             withContext(Dispatchers.Main) {
                 mapView.overlayManager.remove(searchOverlay)
