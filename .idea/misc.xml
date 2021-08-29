@@ -9,6 +9,7 @@
         <entry key="app/src/main/res/drawable/shape_rounded_grey_8.xml" value="0.33125" />
         <entry key="app/src/main/res/drawable/shape_rounded_white_8.xml" value="0.33125" />
         <entry key="app/src/main/res/layout/bottomsheet_inventory_detailed.xml" value="0.2800925925925926" />
+        <entry key="app/src/main/res/layout/dialog_add_container.xml" value="0.49398148148148147" />
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.29347826086956524" />
         <entry key="app/src/main/res/layout/fragment_blocked.xml" value="0.24096657633243" />
         <entry key="app/src/main/res/layout/fragment_inventory_detailed.xml" value="0.2800925925925926" />

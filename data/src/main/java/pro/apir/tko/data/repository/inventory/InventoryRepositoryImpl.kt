@@ -47,10 +47,10 @@ class InventoryRepositoryImpl @Inject constructor(
                 inventoryApi.getContainerAreasByBoundingBox(nextPageLink)
             },
             processPage = {
-                 if (it is ApiResult.Success) {
-                     emit(
-                         it.toResult { it.results.map { resp -> resp.toModel() } }
-                     )
+                if (it is ApiResult.Success) {
+                    emit(
+                        it.toResult { it.results.map { resp -> resp.toModel() } }
+                    )
                     it.data.next
                 } else {
                     null
@@ -75,7 +75,7 @@ class InventoryRepositoryImpl @Inject constructor(
             model.id,
             model.area,
             coordinatesData,
-            model.containers?.map { ContainerData(it.id, it.type, it.volume) },
+            model.containers?.map { ContainerData(it.id, it.type, it.loading, it.volume) },
             model.location,
             model.registryNumber,
             model.photos?.map { ImageRequestData(it.image) },

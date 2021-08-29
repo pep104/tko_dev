@@ -53,6 +53,7 @@
     <string name="text_count">Количество</string>
     <string name="text_container_volume">Объем контейнера, м³</string>
     <string name="text_container_type">Тип контейнера</string>
+    <string name="text_container_loading">Тип погрузки</string>
     <string name="btn_add_container">Добавить контейнер</string>
     <string name="text_count_short">Кол-во</string>
     <string name="text_route_list_header">Маршруты</string>
@@ -121,6 +122,12 @@
     <string name="host_tbo_ecoservice">ТБОЭкосервис</string>
     <string name="host_primorie">Приморье</string>
     <string name="action_exit">Выйти</string>
+    <string name="container_loading_side">Боковая погрузка</string>
+    <string name="container_loading_rear">Задняя погрузка</string>
+    <string name="container_loading_front">Фронтальная погрузка</string>
+    <string name="container_loading_portal">Портальная</string>
+    <string name="container_loading_crane">Кран-манипулятор</string>
+    <string name="container_loading_multilift">Крюковой мультилифт</string>
 
 
 </resources>
