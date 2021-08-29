@@ -3,7 +3,6 @@ package pro.apir.tko.presentation.ui.main.list
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -271,7 +270,6 @@ abstract class BaseListFragment : BaseFragment() {
     }
 
     protected fun setMarkers(list: List<ContainerAreaListModel>) {
-        Log.d("!!!","set markers")
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
             val newFolderOverlay = FolderOverlay()
@@ -280,7 +278,6 @@ abstract class BaseListFragment : BaseFragment() {
 
             list.mapNotNull(ContainerAreaListModel::coordinates)
                 .forEach {
-                    Log.d("!!!","set")
                     setMarker(newFolderOverlay, it, icon)
                 }
 
@@ -294,7 +291,6 @@ abstract class BaseListFragment : BaseFragment() {
     }
 
     protected fun addMarkers(list: List<MapPointModel>) {
-        Log.d("markers", "add: ${list.size} ")
         mapJob?.cancel()
         val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
