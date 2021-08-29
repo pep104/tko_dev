@@ -120,6 +120,7 @@
     <string name="host_apir">АПИР</string>
     <string name="host_tbo_ecoservice">ТБОЭкосервис</string>
     <string name="host_primorie">Приморье</string>
+    <string name="action_exit">Выйти</string>
 
 
 </resources>
