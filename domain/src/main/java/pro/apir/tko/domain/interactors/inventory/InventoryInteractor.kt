@@ -2,6 +2,7 @@ package pro.apir.tko.domain.interactors.inventory
 
 import kotlinx.coroutines.flow.Flow
 import pro.apir.tko.core.data.Resource
+import pro.apir.tko.domain.model.BBoxModel
 import pro.apir.tko.domain.model.ContainerAreaListModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
 import pro.apir.tko.domain.model.ImageModel
@@ -16,7 +17,7 @@ interface InventoryInteractor {
 
     suspend fun getContainerArea(id: Long): Resource<ContainerAreaShortModel>
 
-    suspend fun getContainerAreasByBoundingBox(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double, page: Int, pageSize: Int): Flow<Resource<List<ContainerAreaListModel>>>
+    suspend fun getContainerAreasByBoundingBox(bbox: BBoxModel): Flow<Resource<List<ContainerAreaListModel>>>
 
     suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>>
 

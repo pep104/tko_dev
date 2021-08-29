@@ -42,7 +42,6 @@ abstract class BaseListViewModel(
     val newMapPoints: LiveData<List<MapPointModel>>
         get() = _newMapPoints
 
-    //TODO REMOVE?
     protected val _containers = handle.getLiveData<List<ContainerAreaListModel>>("containers")
     val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
@@ -116,23 +115,18 @@ abstract class BaseListViewModel(
     }
 
 
-    fun fetchContainerAreas(lngMin: Double, latMin: Double, lngMax: Double, latMax: Double) {
-//        fetchJob?.cancel()
-//        if (_searchMode.value != true) {
-//            fetchJob = viewModelScope.launch(Dispatchers.IO) {
-//                inventoryInteractor.getContainerAreasByBoundingBox(lngMin,
-//                    latMin,
-//                    lngMax,
-//                    latMax,
-//                    1,
-//                    500)
-//                    .collect {
-//                        it.fold(::handleFailure) {
-//                            combineAreas(it)
-//                        }
-//                    }
-//            }
-//        }
+    fun fetchContainerAreas(bbox: BBoxModel) {
+        fetchJob?.cancel()
+        if (_searchMode.value != true) {
+            fetchJob = viewModelScope.launch(Dispatchers.IO) {
+                inventoryInteractor.getContainerAreasByBoundingBox(bbox)
+                    .collectLatest {
+                        it.fold(::handleFailure) {
+                            combineAreas(it)
+                        }
+                    }
+            }
+        }
     }
 
     fun switchSearchMode() {

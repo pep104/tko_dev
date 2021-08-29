@@ -1,5 +1,6 @@
 package pro.apir.tko.domain.model.map
 
+import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import pro.apir.tko.domain.model.CoordinatesModel
 
@@ -12,4 +13,4 @@ import pro.apir.tko.domain.model.CoordinatesModel
 data class MapPointModel(
     val coordinates: CoordinatesModel,
     val url: String
-)
+): Parcelable

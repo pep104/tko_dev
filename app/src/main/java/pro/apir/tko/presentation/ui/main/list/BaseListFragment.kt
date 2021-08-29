@@ -121,12 +121,7 @@ abstract class BaseListFragment : BaseFragment() {
                 val box = mapView.boundingBox
                 viewModel().setLocation(mapView.mapCenter)
                 viewModel().fetchMapPoints(box.toModel())
-//                viewModel().fetchContainerAreas(
-//                    box.lonWest,
-//                    box.latSouth,
-//                    box.lonEast,
-//                    box.latNorth
-//                )
+                viewModel().fetchContainerAreas(box.toModel())
                 return true
             }
 
