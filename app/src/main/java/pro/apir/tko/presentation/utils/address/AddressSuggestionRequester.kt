@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.data.getOrElse
+import pro.apir.tko.core.data.map
 import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.model.AddressModel
@@ -32,6 +33,8 @@ class AddressSuggestionRequester @Inject constructor(
     private val _selectedAddress = MutableSharedFlow<SuggestionResult>()
     val selectedAddress = _selectedAddress.asSharedFlow()
 
+    private var _userCoordinates: LocationModel? = null
+
 
     fun select(
         addressModel: AddressModel,
@@ -55,12 +58,15 @@ class AddressSuggestionRequester @Inject constructor(
     }
 
     suspend fun fetchByLocation(locationModel: LocationModel): Resource<AddressModel> {
+        _userCoordinates = null
         return addressInteractor.getAddressByLocation(locationModel)
     }
 
     fun fetchUser() {
         scope.launch {
             addressInteractor.getAddressByUser().onSuccess {
+                if (it.lat != null && it.lng != null)
+                    _userCoordinates = LocationModel(it.lat!!, it.lng!!)
                 setPartialResult(it)
             }
         }
@@ -72,6 +78,11 @@ class AddressSuggestionRequester @Inject constructor(
             queryJob = scope.launch {
                 delay(DEBOUNCE_DELAY)
                 val suggestionsResult = addressInteractor.getAddressSuggestions(query.get())
+                    .map { list ->
+                        list.map { address ->
+                            address.setUserCoordinatesIfNeeded()
+                        }
+                    }
                 _suggestions.emit(suggestionsResult)
             }
         }
@@ -83,7 +94,7 @@ class AddressSuggestionRequester @Inject constructor(
     }
 
     private suspend fun setPartialResult(addressModel: AddressModel) {
-        _selectedAddress.emit(SuggestionResult.Partial(addressModel))
+        _selectedAddress.emit(SuggestionResult.Partial(addressModel.setUserCoordinatesIfNeeded()))
         fetchSuggestions(addressModel.toQuery())
     }
 
@@ -91,7 +102,7 @@ class AddressSuggestionRequester @Inject constructor(
         if (addressModel.lat == null || addressModel.lng == null) {
             setFinalAddress(fetchDetailed(addressModel))
         } else {
-            _selectedAddress.emit(SuggestionResult.Final(addressModel))
+            _selectedAddress.emit(SuggestionResult.Final(addressModel.setUserCoordinatesIfNeeded()))
         }
     }
 
@@ -114,6 +125,17 @@ class AddressSuggestionRequester @Inject constructor(
         scope.cancel()
     }
 
+    private fun AddressModel.setUserCoordinatesIfNeeded(): AddressModel {
+        val userCoordinates = _userCoordinates
+        return if (userCoordinates != null) {
+            this.copy(
+                lat = userCoordinates.lat,
+                lng = userCoordinates.lon
+            )
+        } else {
+            this
+        }
+    }
 
     companion object {
 

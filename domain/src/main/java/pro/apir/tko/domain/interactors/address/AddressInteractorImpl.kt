@@ -155,7 +155,7 @@ class AddressInteractorImpl @Inject constructor(
             is Resource.Error -> locations
             is Resource.Success -> {
                 locations.data
-                    .copy(isUserLocation = true)
+                    .copy(isUserLocation = true, lat = userLocation.lat, lng = userLocation.lon)
                     .removeLocationPrefix()
                     .asResource()
             }
