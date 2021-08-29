@@ -5,14 +5,21 @@
       <map>
         <entry key="../../../../../layout/custom_preview.xml" value="0.5333333333333333" />
         <entry key="app/src/main/res/drawable/ic_map_static.xml" value="0.534375" />
+        <entry key="app/src/main/res/drawable/shape_oval_light_grey.xml" value="0.33125" />
+        <entry key="app/src/main/res/drawable/shape_rounded_grey_8.xml" value="0.33125" />
+        <entry key="app/src/main/res/drawable/shape_rounded_white_8.xml" value="0.33125" />
+        <entry key="app/src/main/res/layout/bottomsheet_inventory_detailed.xml" value="0.2800925925925926" />
         <entry key="app/src/main/res/layout/fragment_address.xml" value="0.29347826086956524" />
         <entry key="app/src/main/res/layout/fragment_blocked.xml" value="0.24096657633243" />
+        <entry key="app/src/main/res/layout/fragment_inventory_detailed.xml" value="0.2800925925925926" />
         <entry key="app/src/main/res/layout/fragment_inventory_edit.xml" value="0.26384648931530746" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.5557291666666667" />
         <entry key="app/src/main/res/layout/fragment_splash.xml" value="0.379981884057971" />
         <entry key="app/src/main/res/layout/item_container_list.xml" value="0.5557291666666667" />
         <entry key="app/src/main/res/layout/item_edit_container.xml" value="0.2586050724637681" />
         <entry key="app/src/main/res/layout/item_host.xml" value="0.5557291666666667" />
+        <entry key="app/src/main/res/layout/item_image_container_edit_list.xml" value="0.2800925925925926" />
+        <entry key="app/src/main/res/layout/item_image_container_list.xml" value="0.2800925925925926" />
         <entry key="app/src/production/res/xml/network_security_config_prod.xml" value="0.2520263424518744" />
       </map>
     </option>
