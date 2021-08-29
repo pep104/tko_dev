@@ -47,10 +47,9 @@ class InventoryRepositoryImpl @Inject constructor(
                 inventoryApi.getContainerAreasByBoundingBox(nextPageLink)
             },
             processPage = {
+                val result = it.toResult { it.results.map { resp -> resp.toModel() } }
+                emit(result)
                 if (it is ApiResult.Success) {
-                    emit(
-                        it.toResult { it.results.map { resp -> resp.toModel() } }
-                    )
                     it.data.next
                 } else {
                     null
