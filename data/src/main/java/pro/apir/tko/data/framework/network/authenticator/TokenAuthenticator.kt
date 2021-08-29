@@ -5,7 +5,7 @@ import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
-import pro.apir.tko.core.exception.RefreshTokenNotValidException
+import pro.apir.tko.core.exception.RefreshTokenExpiredException
 import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.api.AuthApi
 import javax.inject.Inject
@@ -31,7 +31,7 @@ class TokenAuthenticator @Inject constructor(
                 .build()
         } else {
             Log.e("Authenticator", "Refresh failure")
-            throw RefreshTokenNotValidException()
+            throw RefreshTokenExpiredException()
         }
     }
 

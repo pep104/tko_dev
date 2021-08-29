@@ -7,5 +7,5 @@ import java.io.IOException
  * Date: 15/02/2021
  * Project: tko
  */
-class RefreshTokenNotValidException : IOException("Current refresh token was expired or blacklisted")
+class RefreshTokenExpiredException : IOException("Current refresh token was expired or blacklisted")
 class TokenUncaughtException(): Exception("Uncaught exception for token")
