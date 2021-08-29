@@ -11,7 +11,7 @@ sealed class Failure {
             val statusCode: Int = 0
     ) : Failure()
 
-    object RefreshTokenNotValid : Failure()
+    data class RefreshTokenNotValid(val isExpired: Boolean = true) : Failure()
 
     object Ignore : Failure()
 

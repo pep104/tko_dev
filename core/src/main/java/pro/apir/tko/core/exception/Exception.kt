@@ -8,3 +8,4 @@ import java.io.IOException
  * Project: tko
  */
 class RefreshTokenNotValidException : IOException("Current refresh token was expired or blacklisted")
+class TokenUncaughtException(): Exception("Uncaught exception for token")

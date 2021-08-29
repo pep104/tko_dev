@@ -20,7 +20,6 @@ class TokenAuthenticator @Inject constructor(
     private val authApi: AuthApi,
 ) : Authenticator {
 
-
     override fun authenticate(route: Route?, response: Response): Request? {
         val refreshToken = credentialsManager.getRefreshToken()
         val ref = authApi.refresh(refreshToken).execute()
@@ -31,9 +30,9 @@ class TokenAuthenticator @Inject constructor(
                 .header("Authorization", "Bearer $newToken")
                 .build()
         } else {
-            throw RefreshTokenNotValidException()
             Log.e("Authenticator", "Refresh failure")
-            null
+            throw RefreshTokenNotValidException()
         }
     }
+
 }
