@@ -1,8 +1,8 @@
 package pro.apir.tko.presentation.ui.main.list
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -43,8 +43,13 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import pro.apir.tko.R
 import pro.apir.tko.domain.model.ContainerAreaListModel
+import pro.apir.tko.domain.model.CoordinatesModel
+import pro.apir.tko.domain.model.map.MapPointModel
 import pro.apir.tko.presentation.extension.*
 import pro.apir.tko.presentation.platform.BaseFragment
+import pro.apir.tko.presentation.utils.addOverlay
+import pro.apir.tko.presentation.utils.removeOverlay
+import pro.apir.tko.presentation.utils.toModel
 
 /**
  * Created by Антон Сарматин
@@ -81,18 +86,18 @@ abstract class BaseListFragment : BaseFragment() {
     protected var mapJob: Job? = null
 
     private var myLocationOverlay: MyLocationNewOverlay? = null
-    private var markerOverlay: FolderOverlay? = null
 
+    private var markerOverlay: FolderOverlay = FolderOverlay()
+    private var searchOverlay: FolderOverlay? = null
 
-    private val containersObserver = Observer<List<ContainerAreaListModel>> {
-        Log.e("observer", "container base list")
-        if (!it.isNullOrEmpty()) {
-            setMarkers(it)
-        }
+    private val mapPointsObserver = Observer<List<MapPointModel>> {
+        if (!it.isNullOrEmpty())
+            addMarkers(it)
     }
 
     protected fun setMap(mapView: MapView) {
-        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        Configuration.getInstance()
+            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
         mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
         mapView.setMultiTouchControls(true)
         mapView.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
@@ -105,12 +110,19 @@ abstract class BaseListFragment : BaseFragment() {
             myLocationOverlay?.enableFollowLocation()
         }
         mapView.overlayManager.add(myLocationOverlay)
+        markerOverlay = FolderOverlay()
+        mapView.addOverlay(markerOverlay)
+
+        viewModel().allMapPoints.value?.let {
+            addMarkers(it)
+        }
 
         mapView.addMapListener(DelayedMapListener(object : MapListener {
             override fun onScroll(event: ScrollEvent?): Boolean {
                 val box = mapView.boundingBox
                 viewModel().setLocation(mapView.mapCenter)
-                viewModel().fetchContainerAreas(box.lonWest, box.latSouth, box.lonEast, box.latNorth)
+                viewModel().fetchMapPoints(box.toModel())
+                viewModel().fetchContainerAreas(box.toModel())
                 return true
             }
 
@@ -144,7 +156,8 @@ abstract class BaseListFragment : BaseFragment() {
         mapView = view.map
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
-        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
             }
@@ -166,15 +179,12 @@ abstract class BaseListFragment : BaseFragment() {
         }
 
 
-        viewModel().containers.observe(viewLifecycleOwner, containersObserver)
+        viewModel().newMapPoints.observe(viewLifecycleOwner, mapPointsObserver)
 
         viewModel().searchContainersResults.observe(viewLifecycleOwner, Observer {
-            if (it.isNullOrEmpty()) {
-
-            } else {
-                viewModel().containers.removeObserver(containersObserver)
-                setMarkers(it, true)
-            }
+            if (it.isNotEmpty())
+                mapView.removeOverlay(markerOverlay)
+            setMarkers(it)
         })
 
         viewModel().searchLoading.observe(viewLifecycleOwner, Observer {
@@ -193,7 +203,7 @@ abstract class BaseListFragment : BaseFragment() {
             if (it) {
                 etSearch.focusWithKeyboard()
             } else {
-                viewModel().containers.observe(viewLifecycleOwner, containersObserver)
+                mapView.addOverlay(markerOverlay)
                 hideKeyboard()
             }
         })
@@ -223,17 +233,16 @@ abstract class BaseListFragment : BaseFragment() {
         }
 
         requireActivity()
-                .onBackPressedDispatcher
-                .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        if (!layoutSearch.isVisible) {
-                            findNavController().navigateUp()
-                        } else {
-                            viewModel().switchSearchMode()
-                        }
+            .onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!layoutSearch.isVisible) {
+                        findNavController().navigateUp()
+                    } else {
+                        viewModel().switchSearchMode()
                     }
                 }
-                )
+            })
 
     }
 
@@ -261,40 +270,49 @@ abstract class BaseListFragment : BaseFragment() {
         super.onPause()
     }
 
-
-    //TODO to base vm and background task
-    protected fun setMarkers(list: List<ContainerAreaListModel>, fromSearch: Boolean = false) {
+    protected fun setMarkers(list: List<ContainerAreaListModel>) {
         mapJob?.cancel()
         mapJob = lifecycleScope.launch(Dispatchers.IO) {
-            Log.e("mapMarkers", "job start")
             val newFolderOverlay = FolderOverlay()
+            val icon =
+                ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle_orange)
 
-            list.forEach {
-                val coordinates = it.coordinates
-                if (coordinates != null
-                        && coordinates.lat != 0.0 && coordinates.lng != 0.0
-                        && coordinates.lat in -85.05..85.05) {
-                    val location = GeoPoint(coordinates.lat, coordinates.lng)
-                    val marker = Marker(mapView)
-                    marker.icon = if (fromSearch) {
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle_orange)
-                    } else {
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
-                    }
-                    marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
-                    marker.position = location
-                    marker.infoWindow = null
-                    newFolderOverlay.add(marker)
+            list.mapNotNull(ContainerAreaListModel::coordinates)
+                .forEach {
+                    setMarker(newFolderOverlay, it, icon)
                 }
-            }
+
             withContext(Dispatchers.Main) {
-                mapView.overlayManager.remove(markerOverlay)
+                mapView.overlayManager.remove(searchOverlay)
                 mapView.overlayManager.add(newFolderOverlay)
-                markerOverlay = newFolderOverlay
-                Log.e("mapMarkers", "job end")
+                searchOverlay = newFolderOverlay
             }
         }
 
+    }
+
+    protected fun addMarkers(list: List<MapPointModel>) {
+        mapJob?.cancel()
+        val icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_marker_circle)
+        mapJob = lifecycleScope.launch(Dispatchers.IO) {
+            list.forEach {
+                setMarker(markerOverlay, it.coordinates, icon)
+            }
+        }
+    }
+
+    private fun setMarker(overlay: FolderOverlay, coordinates: CoordinatesModel, icon: Drawable?) {
+        if (coordinates.lat != 0.0 && coordinates.lng != 0.0
+            && coordinates.lat in -85.05..85.05
+        ) {
+            val marker = Marker(mapView).apply {
+                this.icon = icon
+                this.position = GeoPoint(coordinates.lat, coordinates.lng)
+                this.infoWindow = null
+                this.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+            }
+            overlay.add(marker)
+        }
     }
 
 }

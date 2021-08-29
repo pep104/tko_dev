@@ -93,4 +93,6 @@ dependencies {
 
     //Java8 Time API backport
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.2'
+
+    implementation 'id.zelory:compressor:3.0.1'
 }

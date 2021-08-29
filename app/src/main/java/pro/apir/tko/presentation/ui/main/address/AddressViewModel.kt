@@ -311,7 +311,7 @@ class AddressViewModel @Inject constructor(
     }
 
     companion object {
-        private const val FETCH_DISTANCE_THRESHOLD = 50
+        private const val FETCH_DISTANCE_THRESHOLD = 500
     }
 
 }

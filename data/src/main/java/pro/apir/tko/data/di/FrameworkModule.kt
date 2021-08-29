@@ -19,6 +19,8 @@ import pro.apir.tko.data.framework.network.NetworkHandler
 import pro.apir.tko.data.framework.room.AppDatabase
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapper
 import pro.apir.tko.data.mapper.TrackingFailureCodeMapperImpl
+import pro.apir.tko.data.util.compressor.CompressorImpl
+import pro.apir.tko.data.util.compressor.ImageCompressor
 import pro.apir.tko.domain.manager.LocationManager
 import javax.inject.Singleton
 
@@ -85,5 +87,10 @@ class FrameworkModule() {
     @Provides
     @Singleton
     fun trackingFailureMapper(): TrackingFailureCodeMapper = TrackingFailureCodeMapperImpl()
+
+    //LocationUtils
+    @Provides
+    @Singleton
+    fun imageCompressor(@ApplicationContext context: Context): ImageCompressor = CompressorImpl(context)
 
 }

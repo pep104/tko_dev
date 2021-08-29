@@ -7,10 +7,12 @@
     android:background="@color/white"
     android:clipToPadding="false"
     android:elevation="4dp"
+    android:id="@+id/appBarLayout"
     app:contentInsetEnd="24dp"
     app:contentInsetStart="24dp">
 
     <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"

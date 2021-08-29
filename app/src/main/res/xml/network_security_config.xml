@@ -5,6 +5,7 @@
         <domain includeSubdomains="true">dadata.ru</domain>
         <domain includeSubdomains="true">37.139.32.239</domain>
         <domain includeSubdomains="true">176.118.22.114</domain>
+        <domain includeSubdomains="true">test.tko.apir.pro</domain>
     </domain-config>
 </network-security-config>
 

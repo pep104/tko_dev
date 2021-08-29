@@ -12,18 +12,31 @@ import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import java.util.*
 import javax.inject.Inject
 
-class CredentialsManagerImpl @Inject constructor(private val preferencesManager: PreferencesManager) : CredentialsManager {
+class CredentialsManagerImpl @Inject constructor(private val preferencesManager: PreferencesManager) :
+    CredentialsManager {
+
+    override fun onLogout(): Boolean {
+        saveUserId(-1)
+        saveAccessToken("")
+        saveRefreshToken("")
+        return true
+    }
 
     override fun isRefreshTokenExpired(): Boolean {
         //FIXME
-        val currentTime = (Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis / 1000L) + 10800
+        val currentTime =
+            (Calendar.getInstance(TimeZone.getTimeZone("UTC")).timeInMillis / 1000L) + 10800
         val refreshExpirationTime = preferencesManager.getLong(KEY_REFRESH_TOKEN_EXPIRATION)
         return refreshExpirationTime < currentTime
     }
 
     override fun saveRefreshToken(refreshToken: String): Boolean {
         preferencesManager.saveString(KEY_REFRESH_TOKEN, refreshToken)
-        retrieveExpiration(refreshToken)
+        if (refreshToken.isNotBlank())
+            retrieveExpiration(refreshToken)
+        else
+            preferencesManager.saveLong(KEY_REFRESH_TOKEN_EXPIRATION, 0)
+
         return true
     }
 

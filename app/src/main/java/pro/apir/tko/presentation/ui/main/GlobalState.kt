@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.domain.interactors.blocked.BlockedInteractor
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class GlobalState @Inject constructor(
     handle: SavedStateHandle,
     private val blockedInteractor: BlockedInteractor,
+    private val credentialsManager: CredentialsManager,
 ) : ViewModel() {
 
 
@@ -37,14 +39,20 @@ class GlobalState @Inject constructor(
     init {
         viewModelScope.launch {
             blockedInteractor.getBlock().collect {
-                Log.d("GlobalState","Is app blocked? -> $it")
+                Log.d("GlobalState", "Is app blocked? -> $it")
                 _blocked.postValue(it)
             }
         }
     }
 
     fun setUserState(state: UserState) {
+        if (state == UserState.LoggedOut) throw IllegalStateException("Use logOut function instead")
         _userState.postValue(state)
+    }
+
+    fun logOut() {
+        credentialsManager.onLogout()
+        _userState.postValue(UserState.LoggedOut)
     }
 
     fun toggleMenu() {
@@ -68,6 +76,9 @@ class GlobalState @Inject constructor(
     sealed class UserState() {
         @Parcelize
         object Authenticated : UserState(), Parcelable
+
+        @Parcelize
+        object LoggedOut : UserState(), Parcelable
 
         @Parcelize
         object LoginNeeded : UserState(), Parcelable

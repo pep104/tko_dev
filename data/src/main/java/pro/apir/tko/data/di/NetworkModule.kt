@@ -196,6 +196,10 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    fun mapApi(retrofit: Retrofit): MapApi = retrofit.create(MapApi::class.java)
+
+    @Singleton
+    @Provides
     fun inventoryApi(retrofit: Retrofit): InventoryApi = retrofit.create(InventoryApi::class.java)
 
     @Singleton
