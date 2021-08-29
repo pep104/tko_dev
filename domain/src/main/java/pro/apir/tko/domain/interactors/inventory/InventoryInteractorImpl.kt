@@ -1,11 +1,15 @@
 package pro.apir.tko.domain.interactors.inventory
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pro.apir.tko.core.data.Resource
 import pro.apir.tko.core.data.map
+import pro.apir.tko.core.data.onSuccess
 import pro.apir.tko.domain.model.*
 import pro.apir.tko.domain.repository.attachment.AttachmentRepository
 import pro.apir.tko.domain.repository.host.HostRepository
@@ -60,11 +64,19 @@ class InventoryInteractorImpl @Inject constructor(
             val host = hostRepository.getHost()
             //Upload new photos
             val uploaded = mutableListOf<AttachmentModel>()
-            newPhotos?.forEach { newPhoto ->
-                attachmentRepository.uploadFile(newPhoto).fold({}, {
-                    uploaded.addAll(it)
-                })
-            }
+            Log.d("attachment","prepare")
+            newPhotos?.map { newPhoto ->
+                launch {
+                    Log.d("attachment","start")
+                    attachmentRepository
+                        .uploadFile(newPhoto)
+                        .onSuccess {
+                            Log.d("attachment","success")
+                            uploaded.addAll(it)
+                        }
+                }
+            }?.joinAll()
+            Log.d("attachment","joined")
 
             //Combine existing photos and uploaded to result
             val photosCombined = mutableListOf<ImageUploadModel>()
@@ -119,9 +131,10 @@ class InventoryInteractorImpl @Inject constructor(
     }
 
     override suspend fun getContainerAreasByBoundingBox(
-        bbox: BBoxModel
+        bbox: BBoxModel,
     ): Flow<Resource<List<ContainerAreaListModel>>> = withContext(dispatcher) {
-        return@withContext inventoryRepository.getContainerAreasByBoundingBox(bbox).map { filterContainerArea(it) }
+        return@withContext inventoryRepository.getContainerAreasByBoundingBox(bbox)
+            .map { filterContainerArea(it) }
     }
 
     override suspend fun searchContainerArea(search: String): Resource<List<ContainerAreaListModel>> {
