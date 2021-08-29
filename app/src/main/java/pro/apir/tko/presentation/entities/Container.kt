@@ -2,6 +2,7 @@ package pro.apir.tko.presentation.entities
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import pro.apir.tko.domain.model.ContainerLoading
 import pro.apir.tko.domain.model.ContainerModel
 import kotlin.random.Random
 
@@ -12,24 +13,40 @@ import kotlin.random.Random
  */
 @Parcelize
 data class Container(
-        val id: Int?,
-        val isNew: Boolean = false,
-        var type: String,
-        var volume: Double?
+    val id: Int?,
+    val isNew: Boolean = false,
+    var type: String,
+    var loading: ContainerLoading,
+    var volume: Double?,
 ) : Parcelable {
 
     //Maps from domain model
-    constructor(model: ContainerModel) : this(model.id, false, model.type, model.volume)
+    constructor(model: ContainerModel) : this(
+        model.id,
+        false,
+        model.type,
+        model.loading,
+        model.volume
+    )
 
     //Create new container
-    constructor(type: String, volume: Double?) : this(Random.nextInt(1000, 9999), true, type, volume)
+    constructor(
+        type: String,
+        loading: ContainerLoading,
+        volume: Double?,
+    ) : this(
+        Random.nextInt(1000, 9999),
+        true,
+        type,
+        loading,
+        volume)
 
     //Maps to domain model
     fun toModel(): ContainerModel {
         return if (isNew) {
-            ContainerModel(null, type, volume)
+            ContainerModel(null, type, loading, volume)
         } else {
-            ContainerModel(id, type, volume)
+            ContainerModel(id, type, loading, volume)
         }
     }
 

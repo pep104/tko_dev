@@ -16,6 +16,7 @@ import pro.apir.tko.domain.interactors.address.AddressInteractor
 import pro.apir.tko.domain.interactors.inventory.InventoryInteractor
 import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.ContainerAreaShortModel
+import pro.apir.tko.domain.model.ContainerLoading
 import pro.apir.tko.domain.model.CoordinatesModel
 import pro.apir.tko.presentation.entities.Container
 import pro.apir.tko.presentation.entities.PhotoWrapper
@@ -217,9 +218,13 @@ class InventoryEditViewModel @Inject constructor(
         }
     }
 
-    fun updateContainer(id: Int?, type: String, volume: Double?) {
+    fun updateContainer(id: Int?, type: String, loading: ContainerLoading, volume: Double?) {
         _containers.value?.let { list ->
-            list.find { it.id == id }.apply { this?.type = type; this?.volume = volume }
+            list.find { it.id == id }?.apply {
+                this.type = type
+                this.volume = volume
+                this.loading = loading
+            }
         }
     }
 

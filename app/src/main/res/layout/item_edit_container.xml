@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutSpinner"
+        android:id="@+id/layoutSpinnerType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
@@ -58,9 +58,68 @@
         android:layout_height="1dp"
         android:layout_marginTop="4dp"
         android:background="@color/blueDivider"
-        app:layout_constraintEnd_toEndOf="@+id/layoutSpinner"
+        app:layout_constraintEnd_toEndOf="@+id/layoutSpinnerType"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutSpinner" />
+        app:layout_constraintTop_toBottomOf="@id/layoutSpinnerType" />
+
+    <TextView
+        android:id="@+id/textHintContainerLoading"
+        style="@style/TextHintContainerEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/text_container_loading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dividerType" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutSpinnerLoading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textHintContainerLoading">
+
+        <Spinner
+            android:id="@+id/spinnerLoading"
+            style="@style/EditTextContainer"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:clickable="false"
+            android:src="@drawable/ic_spinner_arrow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/dividerLoading"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="@color/blueDivider"
+        app:layout_constraintEnd_toEndOf="@+id/layoutSpinnerLoading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutSpinnerLoading" />
+
 
 
     <TextView
@@ -72,7 +131,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="32dp"
         android:text="@string/text_container_volume"
-        app:layout_constraintTop_toBottomOf="@id/dividerType" />
+        app:layout_constraintTop_toBottomOf="@id/dividerLoading" />
 
     <EditText
         android:id="@+id/etVolume"
