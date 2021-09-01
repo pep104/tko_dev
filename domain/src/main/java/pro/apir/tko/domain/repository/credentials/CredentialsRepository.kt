@@ -22,4 +22,9 @@ interface CredentialsRepository {
 
     fun getUserId(): Int
 
+    fun saveCredentials(login: String, password: String)
+
+    fun getCredentials(): Pair<String, String>
+
+
 }

@@ -37,15 +37,20 @@ class LoginViewModel @Inject constructor(
     val host: LiveData<HostUi>
         get() = _host
 
+    private val _hasCredentials = MutableLiveData<CredentialsState>(CredentialsState.Empty)
+    val hasCredentials: LiveData<CredentialsState>
+        get() = _hasCredentials
+
     init {
         getHost()
+        getCredentials()
     }
 
     fun login(email: String, pass: String, host: String) {
         viewModelScope.launch(Dispatchers.IO) {
             loading(true)
             updateHost(host)
-            delay(300)
+            delay(400)
             authInteractor.auth(email, pass).fold(::handleFailure) {
                 loading(false)
                 _requestState.postValue(true)
@@ -63,6 +68,22 @@ class LoginViewModel @Inject constructor(
             val currentHost = HostUi.fromDomain(hostInteractor.getHost())
             _host.postValue(currentHost)
         }
+    }
+
+    private fun getCredentials() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val (email, pass) = authInteractor.getCredentials()
+            if (email.isNotBlank() && pass.isNotBlank()) {
+                _hasCredentials.postValue(
+                    CredentialsState.Exists(email, pass)
+                )
+            }
+        }
+    }
+
+    sealed class CredentialsState {
+        object Empty : CredentialsState()
+        data class Exists(val email: String, val pass: String) : CredentialsState()
     }
 
 }

@@ -10,8 +10,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import pro.apir.tko.core.constant.SUGGESTION_DETAILED_URL
 import pro.apir.tko.core.constant.SUGGESTION_URL
 import pro.apir.tko.data.BuildConfig
+import pro.apir.tko.data.framework.manager.credentials.CredentialsManager
 import pro.apir.tko.data.framework.manager.host.HostManager
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
 import pro.apir.tko.data.framework.network.NetworkHandler
 import pro.apir.tko.data.framework.network.api.*
 import pro.apir.tko.data.framework.network.authenticator.TokenAuthenticator

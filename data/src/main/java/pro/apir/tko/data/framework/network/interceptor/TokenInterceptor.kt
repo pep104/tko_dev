@@ -3,7 +3,7 @@ package pro.apir.tko.data.framework.network.interceptor
 import okhttp3.Interceptor
 import okhttp3.Response
 import pro.apir.tko.core.exception.RefreshTokenExpiredException
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
+import pro.apir.tko.data.framework.manager.credentials.CredentialsManager
 import javax.inject.Inject
 
 class TokenInterceptor @Inject constructor(private val credentialsManager: CredentialsManager) : Interceptor {

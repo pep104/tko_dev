@@ -9,7 +9,11 @@ import pro.apir.tko.domain.model.AccessTokenModel
  * Date: 17.01.2020
  * Project: tko-android
  */
-data class RefreshAccessTokenResponse(@SerializedName("access") val accessRefreshed: String) : BaseResponse() {
+data class RefreshAccessTokenResponse(
+    @SerializedName("access") val accessRefreshed: String,
+    @SerializedName("refresh") val refresh: String? = null,
+) :
+    BaseResponse() {
 
     fun toModel() = AccessTokenModel(accessRefreshed)
 
