@@ -18,6 +18,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingTop="16dp"
+        android:paddingBottom="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/include">
 
@@ -161,16 +162,37 @@
 
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clipToPadding="false"
+                android:paddingLeft="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:itemCount="1"
+                tools:listitem="@layout/item_image_container_edit_list" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddPhoto"
+                style="@style/TextButtonWithIcon"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/btn_add_photo"
+                app:icon="@drawable/ic_camera_add" />
+
             <TextView
                 android:id="@+id/titleContainers"
-                android:layout_width="match_parent"
                 style="@style/TextListHeader"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/text_container"
                 android:visibility="gone"
-                android:text="@string/text_container" />
+                tools:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycerViewContainers"
@@ -542,39 +564,22 @@
 
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewImages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:paddingLeft="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:itemCount="1"
-                tools:listitem="@layout/item_image_container_edit_list" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddPhoto"
-                style="@style/TextButtonWithIcon"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/btn_add_photo"
-                app:icon="@drawable/ic_camera_add" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSave"
-                style="@style/ButtonPrimary"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/btn_save" />
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSave"
+        style="@style/ButtonPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/btn_save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
