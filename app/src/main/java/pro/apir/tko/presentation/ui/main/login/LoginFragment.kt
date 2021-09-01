@@ -101,6 +101,7 @@ class LoginFragment : BaseFragment() {
             btnLogin.isEnabled = !it
             etPass.isEnabled = !it
             etMail.isEnabled = !it
+            tiHost.isEnabled = !it
             loading.isVisible = it
         })
 
