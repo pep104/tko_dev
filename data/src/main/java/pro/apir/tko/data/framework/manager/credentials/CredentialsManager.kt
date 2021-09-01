@@ -7,8 +7,8 @@ package pro.apir.tko.data.framework.manager.credentials
  */
 interface CredentialsManager {
 
-    fun onLogout(): Boolean
-    
+    fun onLogout(full: Boolean = true): Boolean
+
     fun isRefreshTokenExpired(): Boolean
 
     fun saveRefreshToken(refreshToken: String): Boolean
@@ -26,5 +26,5 @@ interface CredentialsManager {
     fun saveCredentials(login: String, password: String)
 
     fun getCredentials(): Pair<String, String>
-    
+
 }

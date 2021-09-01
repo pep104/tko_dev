@@ -18,11 +18,12 @@ class CredentialsManagerImpl @Inject constructor(
 ) :
     CredentialsManager {
 
-    override fun onLogout(): Boolean {
+    override fun onLogout(full: Boolean): Boolean {
         saveUserId(-1)
         saveAccessToken("")
         saveRefreshToken("")
-        encryptedCredentials.clear()
+        if (full)
+            encryptedCredentials.clear()
         return true
     }
 

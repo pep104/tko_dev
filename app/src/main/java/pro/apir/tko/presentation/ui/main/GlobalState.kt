@@ -46,14 +46,14 @@ class GlobalState @Inject constructor(
     }
 
     fun setUserState(state: UserState) {
-        if(state == UserState.LoggedOut || state == UserState.TokenExpired)
-            credentialsManager.onLogout()
+        if (state == UserState.LoggedOut || state == UserState.TokenExpired)
+            credentialsManager.onLogout(state == UserState.LoggedOut)
 
         _userState.postValue(state)
     }
 
     fun logOut() {
-       setUserState(UserState.LoggedOut)
+        setUserState(UserState.LoggedOut)
     }
 
     fun toggleMenu() {
