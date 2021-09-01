@@ -42,7 +42,8 @@ abstract class BaseListViewModel(
     val newMapPoints: LiveData<List<MapPointModel>>
         get() = _newMapPoints
 
-    protected val _containers = handle.getLiveData<List<ContainerAreaListModel>>("containers")
+    //hotfix handle.getLiveData<List<ContainerAreaListModel>>("containers") т.к. может вызвать ошибку по памяти в парселе
+    protected val _containers = MutableLiveData<List<ContainerAreaListModel>>()
     val containers: LiveData<List<ContainerAreaListModel>>
         get() = _containers
 
