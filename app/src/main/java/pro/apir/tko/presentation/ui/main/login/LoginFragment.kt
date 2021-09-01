@@ -97,6 +97,17 @@ class LoginFragment : BaseFragment() {
             findNavController().navigate(R.id.action_loginFragment_to_menuFragment)
         })
 
+        viewModel.hasCredentials.observe(viewLifecycleOwner, Observer {
+            when(it){
+                is LoginViewModel.CredentialsState.Exists -> {
+                    if(etMail.getTextValue().isBlank() && etPass.getTextValue().isBlank()){
+                        etMail.setText(it.email)
+                        etPass.setText(it.pass)
+                    }
+                }
+            }
+        })
+
         viewModel.loading.observe(viewLifecycleOwner, Observer {
             btnLogin.isEnabled = !it
             etPass.isEnabled = !it

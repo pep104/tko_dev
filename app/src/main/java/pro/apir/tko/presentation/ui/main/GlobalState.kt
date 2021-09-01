@@ -7,7 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
+import pro.apir.tko.data.framework.manager.credentials.CredentialsManager
 import pro.apir.tko.domain.interactors.blocked.BlockedInteractor
 import javax.inject.Inject
 

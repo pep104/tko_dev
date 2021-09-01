@@ -12,4 +12,6 @@ interface AuthInteractor {
 
     suspend fun auth(email: String, password: String): Resource<AuthTokenModel>
 
+    fun getCredentials(): Pair<String, String>
+
 }

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
+import pro.apir.tko.data.framework.manager.credentials.CredentialsManager
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.ui.main.GlobalState
 import javax.inject.Inject

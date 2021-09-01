@@ -1,4 +1,4 @@
-package pro.apir.tko.data.framework.manager.token
+package pro.apir.tko.data.framework.manager.credentials
 
 /**
  * Created by Антон Сарматин
@@ -22,5 +22,9 @@ interface CredentialsManager {
     fun saveUserId(id: Int)
 
     fun getUserId(): Int
+
+    fun saveCredentials(login: String, password: String)
+
+    fun getCredentials(): Pair<String, String>
     
 }

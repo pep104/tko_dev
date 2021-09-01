@@ -1,4 +1,4 @@
-package pro.apir.tko.data.framework.manager.token
+package pro.apir.tko.data.framework.manager.credentials
 
 import android.util.Log
 import androidx.annotation.Keep
@@ -12,13 +12,17 @@ import pro.apir.tko.data.framework.manager.preferences.PreferencesManager
 import java.util.*
 import javax.inject.Inject
 
-class CredentialsManagerImpl @Inject constructor(private val preferencesManager: PreferencesManager) :
+class CredentialsManagerImpl @Inject constructor(
+    private val preferencesManager: PreferencesManager,
+    private val encryptedCredentials: EncryptedCredentials,
+) :
     CredentialsManager {
 
     override fun onLogout(): Boolean {
         saveUserId(-1)
         saveAccessToken("")
         saveRefreshToken("")
+        encryptedCredentials.clear()
         return true
     }
 
@@ -59,6 +63,14 @@ class CredentialsManagerImpl @Inject constructor(private val preferencesManager:
 
     override fun getUserId(): Int {
         return preferencesManager.getInt(KEY_USER_ID)
+    }
+
+    override fun saveCredentials(login: String, password: String) {
+        encryptedCredentials.saveCredentials(login, password)
+    }
+
+    override fun getCredentials(): Pair<String, String> {
+        return encryptedCredentials.getCredentials()
     }
 
     private fun retrieveExpiration(access: String) {

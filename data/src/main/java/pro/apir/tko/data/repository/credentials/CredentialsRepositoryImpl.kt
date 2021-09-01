@@ -1,6 +1,6 @@
 package pro.apir.tko.data.repository.credentials
 
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
+import pro.apir.tko.data.framework.manager.credentials.CredentialsManager
 import pro.apir.tko.domain.repository.credentials.CredentialsRepository
 import javax.inject.Inject
 
@@ -24,4 +24,8 @@ class CredentialsRepositoryImpl @Inject constructor(private val credentialsManag
     override fun saveUserId(id: Int) = credentialsManager.saveUserId(id)
 
     override fun getUserId(): Int = credentialsManager.getUserId()
+
+    override fun saveCredentials(login: String, password: String) = credentialsManager.saveCredentials(login, password)
+
+    override fun getCredentials(): Pair<String, String> = credentialsManager.getCredentials()
 }

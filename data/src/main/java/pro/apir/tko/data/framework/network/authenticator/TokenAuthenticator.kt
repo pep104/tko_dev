@@ -6,7 +6,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 import pro.apir.tko.core.exception.RefreshTokenExpiredException
-import pro.apir.tko.data.framework.manager.token.CredentialsManager
+import pro.apir.tko.data.framework.manager.credentials.CredentialsManager
 import pro.apir.tko.data.framework.network.api.AuthApi
 import javax.inject.Inject
 
