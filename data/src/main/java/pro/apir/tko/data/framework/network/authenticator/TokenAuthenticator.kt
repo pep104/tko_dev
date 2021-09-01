@@ -24,8 +24,12 @@ class TokenAuthenticator @Inject constructor(
         val refreshToken = credentialsManager.getRefreshToken()
         val ref = authApi.refresh(refreshToken).execute()
         return if (ref.isSuccessful && ref.body() != null) {
-            val newToken = ref.body()!!.accessRefreshed
-            credentialsManager.saveAccessToken(newToken)
+            val newToken = ref.body()?.accessRefreshed?.also {
+                credentialsManager.saveAccessToken(it)
+            }
+            ref.body()!!.refresh?.let {
+                credentialsManager.saveRefreshToken(it)
+            }
             response.request.newBuilder()
                 .header("Authorization", "Bearer $newToken")
                 .build()
