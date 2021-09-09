@@ -178,7 +178,7 @@ abstract class BaseListViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val existing = mutableListOf<ContainerAreaListModel>()
             containers.value?.let { existing.addAll(it) }
-            val combined = existing.union(newList)
+            val combined = existing.union(newList).distinctBy { it.id }
             _containers.postValue(combined.toList())
         }
     }
