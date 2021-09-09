@@ -35,34 +35,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgPick" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:clipToPadding="false"
+        android:paddingTop="9dp"
+        android:paddingBottom="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textHeader">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="9dp"
-            android:paddingBottom="56dp"
-            tools:itemCount="20"
-            tools:listitem="@layout/item_container_list" />
-
-
-    </androidx.core.widget.NestedScrollView>
+        app:layout_constraintTop_toBottomOf="@id/textHeader"
+        tools:itemCount="200"
+        tools:listitem="@layout/item_container_list" />
 
     <View
         android:id="@+id/fade"
         android:layout_width="match_parent"
         android:layout_height="8dp"
         android:background="@drawable/gradient_white_fading"
-        app:layout_constraintTop_toTopOf="@+id/nestedScrollView" />
+        app:layout_constraintTop_toTopOf="@+id/recyclerView" />
 
     <ProgressBar
         android:id="@+id/loadingList"
