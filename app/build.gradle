@@ -35,8 +35,8 @@ android {
         applicationId "pro.apir.tko"
         minSdkVersion 22
         targetSdkVersion 30
-        versionCode 32
-        versionName "1.2.2.1"
+        versionCode 33
+        versionName "1.2.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
