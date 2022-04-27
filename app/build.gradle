@@ -13,9 +13,9 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'dagger.hilt.android.plugin'
 
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+//def keystorePropertiesFile = rootProject.file("keystore.properties")
+//def keystoreProperties = new Properties()
+//keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 androidExtensions {
     experimental = true
@@ -48,14 +48,14 @@ android {
         exclude 'META-INF/LICENSE'
     }
 
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
-    }
+//    signingConfigs {
+//        release {
+//            keyAlias keystoreProperties['keyAlias']
+//            keyPassword keystoreProperties['keyPassword']
+//            storeFile file(keystoreProperties['storeFile'])
+//            storePassword keystoreProperties['storePassword']
+//        }
+//    }
 
 
     buildTypes {
@@ -71,16 +71,16 @@ android {
         dev {
             dimension "environment"
             applicationIdSuffix ".dev"
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
         }
         stage {
             dimension "environment"
             applicationIdSuffix ".stage"
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
         }
         production {
             dimension "environment"
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
         }
     }
 
