@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main.xml"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="pro.apir.tko.presentation.ui.main.splash.SplashFragment"
+        android:label="splash_fragment"
+        tools:layout="@layout/fragment_splash">
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="pro.apir.tko.presentation.ui.main.login.LoginFragment"
+        android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="pro.apir.tko.presentation.ui.main.menu.MenuFragment"
+        android:label="MenuFragment">
+        <action
+            android:id="@+id/action_menuFragment_to_inventoryListFragment"
+            app:destination="@id/inventoryListFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_menuFragment_to_routeListFragment"
+            app:destination="@id/routeListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inventoryListFragment"
+        android:name="pro.apir.tko.presentation.ui.main.list.inventory.InventoryListFragment"
+        android:label="InventoryListFragment">
+        <action
+            android:id="@+id/action_inventoryListFragment_to_inventoryDetailedFragment"
+            app:destination="@id/inventoryDetailedFragment" />
+        <action
+            android:id="@+id/action_inventoryListFragment_to_inventoryEditFragment"
+            app:destination="@id/inventoryEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/inventoryDetailedFragment"
+        android:name="pro.apir.tko.presentation.ui.main.inventory.detailed.InventoryDetailedFragment"
+        android:label="InventoryDetailedFragment">
+        <action
+            android:id="@+id/action_inventoryDetailedFragment_to_inventoryEditFragment"
+            app:destination="@id/inventoryEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="pro.apir.tko.presentation.ui.main.address.AddressFragment"
+        android:label="AddressFragment" />
+    <fragment
+        android:id="@+id/inventoryEditFragment"
+        android:name="pro.apir.tko.presentation.ui.main.inventory.edit.InventoryEditFragment"
+        android:label="InventoryEditFragment">
+        <action
+            android:id="@+id/action_inventoryEditFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+        <action
+            android:id="@+id/action_inventoryEditFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="pro.apir.tko.presentation.ui.main.camera.CameraFragment"
+        android:label="CameraFragment" />
+    <fragment
+        android:id="@+id/routeListFragment"
+        android:name="pro.apir.tko.presentation.ui.main.list.route.RouteListFragment"
+        android:label="RouteListFragment">
+        <action
+            android:id="@+id/action_routeListFragment_to_graphRoute"
+            app:destination="@id/graphRoute" />
+    </fragment>
+    <navigation
+        android:id="@+id/graphRoute"
+        app:startDestination="@id/routeDetailedFragment">
+        <fragment
+            android:id="@+id/routeNavigationFragment"
+            android:name="pro.apir.tko.presentation.ui.main.route.navigation.RouteNavigationFragment"
+            android:label="RouteNavigationFragment">
+            <action
+                android:id="@+id/action_routeNavigationFragment_to_cameraFragment2"
+                app:destination="@id/cameraFragment2" />
+        </fragment>
+        <fragment
+            android:id="@+id/routeDetailedFragment"
+            android:name="pro.apir.tko.presentation.ui.main.route.RouteDetailedFragment"
+            android:label="RouteDetailedFragment">
+            <action
+                android:id="@+id/action_routeDetailedFragment_to_routeNavigationFragment"
+                app:destination="@id/routeNavigationFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/cameraFragment2"
+            android:name="pro.apir.tko.presentation.ui.main.camera.CameraFragment"
+            android:label="CameraFragment" />
+    </navigation>
+    <action
+        android:id="@+id/action_global_splashFragment"
+        app:destination="@id/splashFragment" />
+    <fragment
+        android:id="@+id/blockedFragment"
+        android:name="pro.apir.tko.presentation.ui.blocked.BlockedFragment"
+        android:label="BlockedFragment" />
+    <action
+        android:id="@+id/action_global_blockedFragment"
+        app:destination="@id/blockedFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/nav_graph_main.xml"
+        app:popUpToInclusive="true" />
+</navigation>

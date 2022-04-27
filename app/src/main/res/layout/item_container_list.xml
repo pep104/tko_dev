@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/veryBlackA10" />
+
+    <TextView
+        android:id="@+id/textHeader"
+        style="@style/TextListHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        tools:text="Ул. Достоевского 74 • 3.1 км"/>
+
+    <TextView
+        android:id="@+id/textMessage"
+        style="@style/TextListMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:ellipsize="end"
+        android:layout_marginBottom="12dp"
+        android:lines="1"
+        tools:text="234 23445 - ВС • 6 контейнеров • 3,75 м³"/>
+
+</LinearLayout>

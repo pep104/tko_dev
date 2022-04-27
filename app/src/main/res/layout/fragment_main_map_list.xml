@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:background="@color/white">
+
+    <include layout="@layout/content_map" />
+
+    <include layout="@layout/bottomsheet_list_map" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAdd"
+        style="@style/ButtonPrimary"
+        android:elevation="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/btn_add_inventory"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bottomsheet_peek_height">360dp</dimen>
+    <dimen name="round_address_cards">8dp</dimen>
+    <dimen name="bottomsheet_margin_top">0dp</dimen>
+    <dimen name="bottomsheet_elevation">4dp</dimen>
+    <dimen name="round_button_large">72dp</dimen>
+    <dimen name="shutter_button_margin">24dp</dimen>
+    <dimen name="round_button_previews">56dp</dimen>
+    <dimen name="spacing_large">2dp</dimen>
+    <dimen name="stroke_small">2dp</dimen>
+
+    <dimen name="card_point_round">8dp</dimen>
+
+    <dimen name="activity_menu_height">164dp</dimen>
+    <dimen name="width_navigation_pos">48dp</dimen>
+</resources>

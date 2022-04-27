@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    tools:background="@color/black">
+
+    <ImageButton
+        android:id="@+id/btnExit"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/transparent"
+        android:cropToPadding="false"
+        android:elevation="8dp"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_close_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@id/btnAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:background="@android:color/transparent"
+        android:cropToPadding="false"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_send_action"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@id/btnShutter"
+        android:layout_width="@dimen/round_button_large"
+        android:layout_height="@dimen/round_button_large"
+        android:layout_marginEnd="@dimen/shutter_button_margin"
+        android:background="@drawable/ic_shutter"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imagePreview"
+        android:layout_width="@dimen/round_button_previews"
+        android:layout_height="@dimen/round_button_previews"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/shape_rounded_white_8"
+        android:padding="@dimen/spacing_large"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnShutter"
+        app:layout_constraintStart_toStartOf="@+id/btnShutter" />
+
+    <TextView
+        android:id="@+id/textBadge"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/shape_oval_white"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toTopOf="@+id/imagePreview"
+        app:layout_constraintEnd_toEndOf="@+id/imagePreview"
+        app:layout_constraintStart_toEndOf="@+id/imagePreview"
+        app:layout_constraintTop_toTopOf="@+id/imagePreview"
+        tools:text="2" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

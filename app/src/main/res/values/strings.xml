@@ -1,0 +1,133 @@
+<resources>
+    <string name="app_name">APIR TKO</string>
+
+    <!--    FIXME?-->
+    <string name="url_file">https://test.tko.apir.pro%1$s</string>
+
+    <string name="btn_login">Войти</string>
+    <string name="text_host_hint">Сервер</string>
+    <string name="text_login_hint">Логин</string>
+    <string name="text_mail_hint">Пароль</string>
+    <string name="hint_login">Введите логин</string>
+    <string name="hint_pass">Введите пароль</string>
+    <string name="btn_recovery_pass">Забыли пароль?</string>
+
+    <string name="btn_inventory">Инвентаризация</string>
+    <string name="btn_routes">Маршруты</string>
+    <string name="btn_add_inventory">Добавить конт. площадку</string>
+
+    <string name="text_list_container_message">%1$s • %2$s  • %3$sм²</string>
+    <string name="text_inventory_list_header">Контейнерные площадки</string>
+
+    <string name="text_container_detailed_info"> %1$s  • %2$sм² </string>
+    <string name="title_auth">Вход</string>
+    <string name="title_menu">Главная</string>
+    <string name="title_container_new">Добавить конт. площадку</string>
+    <string name="title_container_edit">Уточнить данные</string>
+    <string name="btn_edit_inventory">Уточнить данные</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="text_reg_number">Реестровый номер</string>
+    <string name="text_address_hint">Фактический адрес</string>
+    <string name="text_coordinates_placeholder">%1$s, %2$s</string>
+    <string name="text_address">Адрес</string>
+    <string name="text_coordinates">Координаты</string>
+    <string name="text_container">Контейнеры</string>
+    <string name="hint_address_search">Введите адрес</string>
+    <string name="btn_done">Готово</string>
+    <string name="btn_add_photo">Добавить фотографию</string>
+    <string name="btn_camera_dismiss">ОТМЕНА</string>
+    <string name="hint_reg_num">Укажите реестровый номер</string>
+    <string name="hint_adress_edit">Улица, дом, номер</string>
+    <string name="text_address_choose_placeholder">Выберите адрес</string>
+    <string name="text_coordinates_choose_placeholder">Выберите точку на карте</string>
+    <string name="text_coordinates_not_found">Координаты не найдены</string>
+    <string name="text_container_area">Размер площадки, м²</string>
+    <string name="hint_area">Укажите размер площадки</string>
+    <string name="text_option_access">Доступ к контейнерам</string>
+    <string name="text_option_fence">Ограждение</string>
+    <string name="text_option_cover">Тип покрытия</string>
+    <string name="text_option_kgo">Секции для КГО</string>
+    <string name="text_option_info_plate">Нал. информации установ. образца</string>
+    <string name="text_option_has_cover">Наличие крыши</string>
+    <string name="dialog_header_add_container">Добавить контейнер</string>
+    <string name="text_count">Количество</string>
+    <string name="text_container_volume">Объем контейнера, м³</string>
+    <string name="text_container_type">Тип контейнера</string>
+    <string name="text_container_loading">Тип погрузки</string>
+    <string name="btn_add_container">Добавить контейнер</string>
+    <string name="text_count_short">Кол-во</string>
+    <string name="text_route_list_header">Маршруты</string>
+    <string name="btn_choose_route">Выбрать маршрут</string>
+
+    <string name="text_address_title">Уточнить адрес</string>
+    <string name="text_address_title_coordinates">Выберите точку</string>
+
+    <string name="hint_address_coordinates_input">Введите координаты</string>
+
+    <string name="text_route_list_info">%1$s — %2$s км</string>
+
+    <string name="text_route_point_title_meters">%1$s  • %2$sм от вас</string>
+    <string name="text_route_point_title_kilometers">%1$s  • %2$sкм от вас</string>
+    <string name="text_route_point_title_null_dist">%1$s</string>
+
+    <string name="text_route_point_info">%1$s  • %2$sм³</string>
+
+    <string name="text_route_point_distance_meters">%1$sм от вас</string>
+    <string name="text_route_point_distance_kilometers">%1$sкм от вас</string>
+
+    <string name="btn_route_start">Начать</string>
+    <string name="btn_route_continue">Продолжить</string>
+
+    <string name="title_activity_menu">Меню</string>
+    <string name="btn_route_action_done">Готово</string>
+    <string name="btn_route_action_add_photos">Добавить фото</string>
+    <string name="btn_route_action_next">Далее</string>
+    <string name="btn_finish_route">Завершить</string>
+
+    <string name="btn_add_waste_are">Добавить площадку</string>
+    <string name="btn_submit">Подтвердить</string>
+
+    <string name="text_loading_placeholder">Операция выполняется</string>
+
+    <string name="mask_coordinates">[m][09]{.}[099999]{, }[m][099]{.}[099999]</string>
+
+    //Errors
+    <string name="error_network_connection">Ошибка подключения к интернету</string>
+    <string name="error_default">Произошла ошибка</string>
+    <string name="error_route_tracking_not_exist">Сессия данного маршрута не найдена</string>
+    <string name="error_route_not_completed">Точки маршрута не выполнены</string>
+    <string name="text_error_coordinates_not_valid">Введите верные координаты</string>
+
+    //Toast
+    <string name="toast_copy_done">Скопировано в буфер обмена</string>
+    <string name="btn_coordinates_by_user_location">Моя геопозиция</string>
+    <string name="text_address_not_found">Не найден</string>
+
+    <plurals name="plurals_containers">
+        <item quantity="zero">0 контейнеров</item>
+        <item quantity="one">%1$d контейнер</item>
+        <item quantity="two">%1$d контейнера</item>
+        <item quantity="few">%1$d контейнера</item>
+        <item quantity="many">%1$d контейнеров</item>
+        <item quantity="other">%1$d контейнеров</item>
+    </plurals>
+
+    <string-array name="option_true_false_select">
+        <item>Нет</item>
+        <item>Есть</item>
+    </string-array>
+
+
+    <string name="host_apir">АПИР</string>
+    <string name="host_tbo_ecoservice">ТБОЭкосервис</string>
+    <string name="host_primorie">Приморье</string>
+    <string name="action_exit">Выйти</string>
+    <string name="container_loading_side">Боковая погрузка</string>
+    <string name="container_loading_rear">Задняя погрузка</string>
+    <string name="container_loading_front">Фронтальная погрузка</string>
+    <string name="container_loading_portal">Портальная</string>
+    <string name="container_loading_crane">Кран-манипулятор</string>
+    <string name="container_loading_multilift">Крюковой мультилифт</string>
+
+
+</resources>

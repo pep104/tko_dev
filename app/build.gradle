@@ -1,0 +1,199 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: "kotlin-kapt"
+
+apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'com.google.firebase.crashlytics'
+
+apply plugin: 'dagger.hilt.android.plugin'
+
+
+//def keystorePropertiesFile = rootProject.file("keystore.properties")
+//def keystoreProperties = new Properties()
+//keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+androidExtensions {
+    experimental = true
+}
+
+android {
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    compileSdkVersion 30
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "pro.apir.tko"
+        minSdkVersion 22
+        targetSdkVersion 30
+        versionCode 33
+        versionName "1.2.2.2"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+
+//    signingConfigs {
+//        release {
+//            keyAlias keystoreProperties['keyAlias']
+//            keyPassword keystoreProperties['keyPassword']
+//            storeFile file(keystoreProperties['storeFile'])
+//            storePassword keystoreProperties['storePassword']
+//        }
+//    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "environment"
+    productFlavors {
+        dev {
+            dimension "environment"
+            applicationIdSuffix ".dev"
+//            signingConfig signingConfigs.release
+        }
+        stage {
+            dim1ension "environment"
+            applicationIdSuffix ".stage"
+  //          signingConfig signingConfigs.release
+        }
+        production {
+            dimension "environment"
+    //        signingConfig signingConfigs.release
+        }
+    }
+
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':data')
+    implementation project(':core')
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha01'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    kapt "androidx.lifecycle:lifecycle-compiler:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.4.0-alpha01"
+
+    implementation 'com.google.android.material:material:1.3.0'
+
+
+    //Location
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
+
+    //Kotlin Extensions
+    implementation "androidx.activity:activity-ktx:1.1.0"
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
+
+    //Tests
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    //Navigation
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.3'
+
+
+    //Firebase
+    implementation 'com.google.firebase:firebase-core:18.0.2'
+    implementation 'com.google.firebase:firebase-analytics:18.0.2'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.3.1'
+
+
+    //Dagger2
+
+    implementation("com.google.dagger:hilt-android:2.38.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.38.1")
+
+
+    //Java8 Time API backport
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.2'
+
+    //Paging
+    implementation 'android.arch.paging:runtime:1.0.1'
+
+    // Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.0'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.7.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
+
+    // CameraX
+    def camerax_version = "1.0.0-alpha06"
+    implementation "androidx.camera:camera-core:${camerax_version}"
+    implementation "androidx.camera:camera-camera2:${camerax_version}"
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation 'jp.wasabeef:glide-transformations:4.3.0'
+
+    //OSM
+    implementation 'org.osmdroid:osmdroid-android:6.1.10'
+
+    //Dexter
+    implementation 'com.karumi:dexter:6.0.1'
+
+    //Horizontal Number Picker
+    implementation 'com.shawnlin:number-picker:2.4.8'
+
+    //InputMask
+    implementation 'com.redmadrobot:input-mask-android:6.0.0'
+
+    //Mobble
+    implementation 'ru.sarmatin.mobble:utils:1.0.3'
+
+}
+
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        def versionName = variant.versionName
+        def versionCode = variant.versionCode
+        def buildType = variant.buildType.name
+        def flavor = variant.getFlavorName()
+        outputFileName = "${project.rootProject.name}-${versionName}-${versionCode}-${flavor}-${buildType}.apk"
+    }
+}
+

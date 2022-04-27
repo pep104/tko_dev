@@ -1,0 +1,53 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+#update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Deploy test build to App Distribution"
+  lane :beta do
+
+    gradle(task: "clean")
+    gradle(
+        task: "assemble",
+        build_type: "Debug",
+        print_command: false
+    )
+
+    firebase_app_distribution(
+        app: "1:970273977574:android:fba27eeca1310ba61e3727",
+        groups: "apir-test",
+        release_notes: "Редактирование координат перемещением карты",
+        firebase_cli_path: "/usr/local/bin/firebase"
+    )
+
+  end
+
+  desc "Deploy release build to play store"
+  lane :playstore do
+    gradle(
+        task: 'assemble', # or 'bundle' for aab
+        build_type: 'Release',
+        print_command: false
+    )
+    upload_to_play_store # Uploads the APK built in the gradle step above and releases it to all production users
+  end
+
+end
