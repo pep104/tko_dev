@@ -19,6 +19,7 @@ import pro.apir.tko.domain.model.AddressModel
 import pro.apir.tko.domain.model.LocationModel
 import pro.apir.tko.presentation.platform.BaseViewModel
 import pro.apir.tko.presentation.utils.address.AddressSuggestionRequester
+import java.io.File
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -224,16 +225,41 @@ class AddressViewModel @Inject constructor(
     }
 
     private suspend fun updateCordinatesWithFetchNewAddress(lat: Double, lon: Double) {
+        val fileName = "Data.txt"
+        val file = File(fileName)
         _addressCoordinatesLoading.value = true
         delay(400)
         addressRequester.fetchByLocation(LocationModel(lat, lon)).fold(
             onFailure = {
+                file.appendText("$lat $lon")
                 _addressCoordinatesLoading.value = false
                 _addressCoordinatesChanger.postValue(null)
             },
             onSuccess = {
-                _addressCoordinatesLoading.value = false
-                _addressCoordinatesChanger.postValue(it.copy(lat = lat, lng = lon))
+                if (file.readText() != null){
+                    val listOfData: MutableList<String> = ArrayList()
+                    file.forEachLine {
+//                        val pr = it.indexOf(" ")
+////                        val latFromFile = it.substring(0, pr + 1)
+////                        val lonFromFile = it.substring(pr + 1)
+                        
+                        listOfData.add(it)
+                    }
+                    for (i in listOfData) {
+                        val pr = i.indexOf(" ")
+                        val latFromFile = i.substring(0, pr + 1)
+                        val lonFromFile = i.substring(pr + 1)
+                        _addressCoordinatesLoading.value = false
+                        _addressCoordinatesChanger.postValue(it.copy(lat = latFromFile.toDouble(),
+                            lng = lonFromFile.toDouble()))
+                    }
+                    file.writeText("")
+
+                } else {
+
+                    _addressCoordinatesLoading.value = false
+                    _addressCoordinatesChanger.postValue(it.copy(lat = lat, lng = lon))
+                }
             }
         )
     }
